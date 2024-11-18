@@ -10,7 +10,7 @@
 		D1829C222CEBF0D700920833 /* URnetworkSdk in Frameworks */ = {isa = PBXBuildFile; productRef = D1829C212CEBF0D700920833 /* URnetworkSdk */; };
 		D1829C242CEBF0E300920833 /* URnetworkSdk in Frameworks */ = {isa = PBXBuildFile; productRef = D1829C232CEBF0E300920833 /* URnetworkSdk */; };
 		D1B95A842CEBE76400542E0E /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1B95A832CEBE76400542E0E /* NetworkExtension.framework */; };
-		D1B95A8C2CEBE76400542E0E /* extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D1B95A812CEBE76400542E0E /* extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D1B95A8C2CEBE76400542E0E /* URnetworkVPN.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D1B95A812CEBE76400542E0E /* URnetworkVPN.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,7 +44,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				D1B95A8C2CEBE76400542E0E /* extension.appex in Embed Foundation Extensions */,
+				D1B95A8C2CEBE76400542E0E /* URnetworkVPN.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -52,20 +52,20 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		D1B95A4F2CEBDD6900542E0E /* network.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = network.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D1B95A4F2CEBDD6900542E0E /* URnetwork.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = URnetwork.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1B95A602CEBDD6A00542E0E /* networkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = networkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1B95A6A2CEBDD6A00542E0E /* networkUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = networkUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D1B95A812CEBE76400542E0E /* extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = extension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D1B95A812CEBE76400542E0E /* URnetworkVPN.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = URnetworkVPN.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1B95A832CEBE76400542E0E /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		D1B95A8D2CEBE76400542E0E /* Exceptions for "extension" folder in "extension" target */ = {
+		D1B95A8D2CEBE76400542E0E /* Exceptions for "extension" folder in "URnetworkVPN" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = D1B95A802CEBE76400542E0E /* extension */;
+			target = D1B95A802CEBE76400542E0E /* URnetworkVPN */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -88,7 +88,7 @@
 		D1B95A852CEBE76400542E0E /* extension */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				D1B95A8D2CEBE76400542E0E /* Exceptions for "extension" folder in "extension" target */,
+				D1B95A8D2CEBE76400542E0E /* Exceptions for "extension" folder in "URnetworkVPN" target */,
 			);
 			path = extension;
 			sourceTree = "<group>";
@@ -145,10 +145,10 @@
 		D1B95A502CEBDD6900542E0E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D1B95A4F2CEBDD6900542E0E /* network.app */,
+				D1B95A4F2CEBDD6900542E0E /* URnetwork.app */,
 				D1B95A602CEBDD6A00542E0E /* networkTests.xctest */,
 				D1B95A6A2CEBDD6A00542E0E /* networkUITests.xctest */,
-				D1B95A812CEBE76400542E0E /* extension.appex */,
+				D1B95A812CEBE76400542E0E /* URnetworkVPN.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -164,9 +164,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D1B95A4E2CEBDD6900542E0E /* network */ = {
+		D1B95A4E2CEBDD6900542E0E /* URnetwork */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D1B95A742CEBDD6B00542E0E /* Build configuration list for PBXNativeTarget "network" */;
+			buildConfigurationList = D1B95A742CEBDD6B00542E0E /* Build configuration list for PBXNativeTarget "URnetwork" */;
 			buildPhases = (
 				D1B95A4B2CEBDD6900542E0E /* Sources */,
 				D1B95A4C2CEBDD6900542E0E /* Frameworks */,
@@ -182,12 +182,12 @@
 			fileSystemSynchronizedGroups = (
 				D1B95A512CEBDD6900542E0E /* network */,
 			);
-			name = network;
+			name = URnetwork;
 			packageProductDependencies = (
 				D1829C212CEBF0D700920833 /* URnetworkSdk */,
 			);
 			productName = network;
-			productReference = D1B95A4F2CEBDD6900542E0E /* network.app */;
+			productReference = D1B95A4F2CEBDD6900542E0E /* URnetwork.app */;
 			productType = "com.apple.product-type.application";
 		};
 		D1B95A5F2CEBDD6A00542E0E /* networkTests */ = {
@@ -236,9 +236,9 @@
 			productReference = D1B95A6A2CEBDD6A00542E0E /* networkUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
-		D1B95A802CEBE76400542E0E /* extension */ = {
+		D1B95A802CEBE76400542E0E /* URnetworkVPN */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D1B95A8E2CEBE76400542E0E /* Build configuration list for PBXNativeTarget "extension" */;
+			buildConfigurationList = D1B95A8E2CEBE76400542E0E /* Build configuration list for PBXNativeTarget "URnetworkVPN" */;
 			buildPhases = (
 				D1B95A7D2CEBE76400542E0E /* Sources */,
 				D1B95A7E2CEBE76400542E0E /* Frameworks */,
@@ -252,12 +252,12 @@
 			fileSystemSynchronizedGroups = (
 				D1B95A852CEBE76400542E0E /* extension */,
 			);
-			name = extension;
+			name = URnetworkVPN;
 			packageProductDependencies = (
 				D1829C232CEBF0E300920833 /* URnetworkSdk */,
 			);
 			productName = extension;
-			productReference = D1B95A812CEBE76400542E0E /* extension.appex */;
+			productReference = D1B95A812CEBE76400542E0E /* URnetworkVPN.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -303,10 +303,10 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D1B95A4E2CEBDD6900542E0E /* network */,
+				D1B95A4E2CEBDD6900542E0E /* URnetwork */,
 				D1B95A5F2CEBDD6A00542E0E /* networkTests */,
 				D1B95A692CEBDD6A00542E0E /* networkUITests */,
-				D1B95A802CEBE76400542E0E /* extension */,
+				D1B95A802CEBE76400542E0E /* URnetworkVPN */,
 			);
 		};
 /* End PBXProject section */
@@ -413,17 +413,17 @@
 /* Begin PBXTargetDependency section */
 		D1B95A622CEBDD6A00542E0E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D1B95A4E2CEBDD6900542E0E /* network */;
+			target = D1B95A4E2CEBDD6900542E0E /* URnetwork */;
 			targetProxy = D1B95A612CEBDD6A00542E0E /* PBXContainerItemProxy */;
 		};
 		D1B95A6C2CEBDD6A00542E0E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D1B95A4E2CEBDD6900542E0E /* network */;
+			target = D1B95A4E2CEBDD6900542E0E /* URnetwork */;
 			targetProxy = D1B95A6B2CEBDD6A00542E0E /* PBXContainerItemProxy */;
 		};
 		D1B95A8B2CEBE76400542E0E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D1B95A802CEBE76400542E0E /* extension */;
+			target = D1B95A802CEBE76400542E0E /* URnetworkVPN */;
 			targetProxy = D1B95A8A2CEBE76400542E0E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -566,7 +566,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.1;
@@ -574,10 +574,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.bringyour.network;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				XROS_DEPLOYMENT_TARGET = 2.1;
 			};
 			name = Debug;
@@ -605,7 +606,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.1;
@@ -613,10 +614,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.bringyour.network;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				XROS_DEPLOYMENT_TARGET = 2.1;
 			};
 			name = Release;
@@ -720,9 +722,9 @@
 				DEVELOPMENT_TEAM = DWD39RZH9Z;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = extension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = extension;
+				INFOPLIST_KEY_CFBundleDisplayName = URnetworkVPN;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -748,9 +750,9 @@
 				DEVELOPMENT_TEAM = DWD39RZH9Z;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = extension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = extension;
+				INFOPLIST_KEY_CFBundleDisplayName = URnetworkVPN;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -780,7 +782,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D1B95A742CEBDD6B00542E0E /* Build configuration list for PBXNativeTarget "network" */ = {
+		D1B95A742CEBDD6B00542E0E /* Build configuration list for PBXNativeTarget "URnetwork" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D1B95A752CEBDD6B00542E0E /* Debug */,
@@ -807,7 +809,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D1B95A8E2CEBE76400542E0E /* Build configuration list for PBXNativeTarget "extension" */ = {
+		D1B95A8E2CEBE76400542E0E /* Build configuration list for PBXNativeTarget "URnetworkVPN" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D1B95A8F2CEBE76400542E0E /* Debug */,
