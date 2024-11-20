@@ -23,10 +23,12 @@ extension Theme {
         systemBackground: Color("UrBlack"),
 
         accentColor: Color("UrElectricBlue"),
+        dangerColor: Color("UrCoral"),
         
         textColor: Color.white,
         inverseTextColor: Color("UrBlack"),
         textMutedColor: Color(red: 0.6, green: 0.6, blue: 0.6),
+        textFaintColor: Color(red: 0.35, green: 0.35, blue: 0.35),
         borderBaseColor: .white.opacity(0.12),
         
         titleFont: Font.custom("ABCGravity-Extended", size: 32),
