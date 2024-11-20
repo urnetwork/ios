@@ -52,6 +52,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		178F47EA2CEDA80A00CD9C3D /* URnetwork-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "URnetwork-Info.plist"; sourceTree = "<group>"; };
 		D1B95A4F2CEBDD6900542E0E /* URnetwork.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = URnetwork.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1B95A602CEBDD6A00542E0E /* networkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = networkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1B95A6A2CEBDD6A00542E0E /* networkUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = networkUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -133,6 +134,7 @@
 		D1B95A462CEBDD6900542E0E = {
 			isa = PBXGroup;
 			children = (
+				178F47EA2CEDA80A00CD9C3D /* URnetwork-Info.plist */,
 				D1B95A512CEBDD6900542E0E /* network */,
 				D1B95A632CEBDD6A00542E0E /* networkTests */,
 				D1B95A6D2CEBDD6A00542E0E /* networkUITests */,
@@ -556,6 +558,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "URnetwork-Info.plist";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -596,6 +599,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "URnetwork-Info.plist";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
