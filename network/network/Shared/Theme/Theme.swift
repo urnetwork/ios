@@ -11,11 +11,15 @@ struct Theme {
     let systemBackground: Color
 
     let accentColor: Color
+    let dangerColor: Color
 
     let textColor: Color
     let inverseTextColor: Color
     let textMutedColor: Color
+    let textFaintColor: Color
+    
     let borderBaseColor: Color
+    let borderStrongColor: Color
 
     let titleFont: Font
     let titleCondensedFont: Font
