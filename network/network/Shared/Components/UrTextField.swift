@@ -12,6 +12,8 @@ struct UrTextField: View {
     @EnvironmentObject var themeManager: ThemeManager
     @Binding var text: String
     
+    @FocusState private var isFocused: Bool
+    
     // placeholder text
     var placeholder: String
     
@@ -26,8 +28,7 @@ struct UrTextField: View {
     
     // adds supporting text below the text field divider
     var supportingText: String?
-    
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             
@@ -45,7 +46,9 @@ struct UrTextField: View {
                         .font(themeManager.currentTheme.bodyFont)
                         .foregroundColor(themeManager.currentTheme.textFaintColor)
                 )
-                    .foregroundColor(.white)
+                .foregroundColor(.white)
+                .disabled(!isEnabled)
+                .focused($isFocused)
                 
                 if !isValid {
                     Image("ur.symbols.warning")
@@ -56,7 +59,8 @@ struct UrTextField: View {
             // divider
             if (isEnabled) {
                 Divider()
-                    .background(themeManager.currentTheme.borderBaseColor)
+                    .background(isFocused
+                                ? themeManager.currentTheme.borderStrongColor :themeManager.currentTheme.borderBaseColor)
             }
         
             // should we show supporting text if input is disabled?
