@@ -10,9 +10,23 @@ import URnetworkSdk
 
 @main
 struct networkApp: App {
+    
+    // @StateObject private var themeManager = ThemeManager()
+    
     var body: some Scene {
+//        WindowGroup {
+//            ContentView()
+//        }
         WindowGroup {
-            ContentView()
+            if #available(iOS 16.0, *) {
+                NavigationStack {
+                    ContentView()
+                        .environmentObject(ThemeManager.shared)
+                }
+                .background(ThemeManager.shared.currentTheme.systemBackground.ignoresSafeArea())
+            } else {
+                // Fallback on earlier versions
+            } // Set background for the entire stack
         }
     }
     
