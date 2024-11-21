@@ -20,6 +20,7 @@ struct Theme {
     
     let borderBaseColor: Color
     let borderStrongColor: Color
+    let borderEmphasisColor: Color
 
     let titleFont: Font
     let titleCondensedFont: Font
