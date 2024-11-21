@@ -29,6 +29,8 @@ struct UrTextField: View {
     // adds supporting text below the text field divider
     var supportingText: String?
 
+    var onTextChange: ((String) -> Void)?
+
     var body: some View {
         VStack(alignment: .leading) {
             
@@ -49,6 +51,9 @@ struct UrTextField: View {
                 .foregroundColor(.white)
                 .disabled(!isEnabled)
                 .focused($isFocused)
+                .onChange(of: text) { newValue in
+                    onTextChange?(newValue)
+                }
                 
                 if !isValid {
                     Image("ur.symbols.warning")

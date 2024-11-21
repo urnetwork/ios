@@ -33,16 +33,20 @@ struct UrButton: View {
             HStack {
                 Text(text)
                     .foregroundColor(foregroundColor)
+                    .font(
+                        Font.custom("PP NeueBit", size: 24)
+                        .weight(.bold)
+                    )
                 
                 if let trailingIcon {
                     Image(trailingIcon)
                     // UrImage(path: trailingIconPath)
                 }
             }
+            .frame(maxWidth: isFullWidth ? .infinity : nil)
+            .padding(.horizontal, 32)
+            .padding(.vertical, 12)
         }
-        .frame(maxWidth: isFullWidth ? .infinity : nil)
-        .padding(.horizontal, 32)
-        .padding(.vertical, 12)
         .background(backgroundColor)
         .cornerRadius(100)
         .overlay(

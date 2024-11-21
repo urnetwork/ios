@@ -8,26 +8,37 @@
 import SwiftUI
 import URnetworkSdk
 
+class AuthenticationManager: ObservableObject {
+    @Published var isAuthenticated: Bool = false
+}
+
 @main
 struct networkApp: App {
     
-    // @StateObject private var themeManager = ThemeManager()
+    @StateObject private var authManager = AuthenticationManager()
     
     var body: some Scene {
-//        WindowGroup {
-//            ContentView()
-//        }
         WindowGroup {
-            if #available(iOS 16.0, *) {
-                NavigationStack {
-                    ContentView()
-                        .environmentObject(ThemeManager.shared)
+            
+            if authManager.isAuthenticated {
+                
+                TabView {
+                    
+                    ConnectView()
+                        .tabItem {
+                            Label("Account", systemImage: "person.circle")
+                        }
+                        
                 }
                 .background(ThemeManager.shared.currentTheme.systemBackground.ignoresSafeArea())
+                .environmentObject(ThemeManager.shared)
+                
             } else {
-                // Fallback on earlier versions
-            } // Set background for the entire stack
+                
+                LoginNavigationView()
+                    .environmentObject(ThemeManager.shared)
+                
+            }
         }
     }
-    
 }
