@@ -32,6 +32,7 @@ extension Theme {
         
         borderBaseColor: .white.opacity(0.12),
         borderStrongColor: Color(red: 1, green: 1, blue: 1, opacity: 0.8),
+        borderEmphasisColor: Color(red: 1, green: 1, blue: 1, opacity: 0.24),
         
         titleFont: Font.custom("ABCGravity-Extended", size: 32),
         titleCondensedFont: Font.custom("ABCGravity-ExtraCondensed", size: 32),
