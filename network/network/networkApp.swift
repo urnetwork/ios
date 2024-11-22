@@ -17,6 +17,19 @@ struct networkApp: App {
     
     @StateObject private var authManager = AuthenticationManager()
     
+    init() {
+        
+        // Get app's document directory path
+        let documentsPath = FileManager.default.urls(for: .documentDirectory,
+                                                   in: .userDomainMask)[0]
+        
+        // Print for debugging
+        print("📁 Documents path: \(documentsPath.path)")
+        
+        NetworkSpaceManager.shared.initialize(with: documentsPath.path())
+        
+    }
+    
     var body: some Scene {
         WindowGroup {
             
