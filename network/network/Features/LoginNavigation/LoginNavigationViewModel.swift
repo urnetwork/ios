@@ -19,10 +19,11 @@ extension LoginNavigationView {
         
         @Published var navigationPath: [LoginInitialNavigationPath] = []
         
-        func navigate() {
+        func navigate(_ path: LoginInitialNavigationPath) {
             print("navigate hit")
             // navigationPath = .password(userAuth)
-            navigationPath.append(.password("hello@ur.io"))
+            // navigationPath.append(.password("hello@ur.io"))
+            navigationPath.append(path)
         }
         
     }
