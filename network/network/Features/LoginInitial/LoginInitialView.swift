@@ -68,7 +68,6 @@ struct LoginInitialView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
-        .applySystemBackground()
     }
 }
 

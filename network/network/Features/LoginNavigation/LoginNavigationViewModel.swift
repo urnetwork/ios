@@ -25,6 +25,12 @@ extension LoginNavigationView {
             // navigationPath.append(.password("hello@ur.io"))
             navigationPath.append(path)
         }
-        
+
+        // can be used in custom back button        
+        // func back() {
+        //     if !navigationPath.isEmpty {
+        //         navigationPath.removeLast()
+        //     }
+        // }
     }
 }
