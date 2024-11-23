@@ -14,6 +14,17 @@ struct LoginInitialView: View {
     
     var navigate: (LoginInitialNavigationPath) -> Void
     
+    private func getStarted() {
+        viewModel.getStarted(
+            navigateToLogin: {
+                navigate(.password(viewModel.userAuth))
+            },
+            navigateToCreateNetwork: {
+                navigate(.createNetwork(viewModel.userAuth))
+            }
+        )
+    }
+    
     // todo - login with apple
     
     var body: some View {
@@ -28,7 +39,10 @@ struct LoginInitialView: View {
                     if newValue.contains(" ") {
                         viewModel.userAuth = newValue.filter { !$0.isWhitespace }
                     }
-                }
+                },
+                keyboardType: .emailAddress,
+                submitLabel: .continue,
+                onSubmit: getStarted
             )
             
             Spacer()
@@ -36,16 +50,8 @@ struct LoginInitialView: View {
             
             UrButton(
                 text: "Get started",
-                onClick: {
-                    viewModel.getStarted(
-                        navigateToLogin: {
-                            navigate(.password(viewModel.userAuth))
-                        },
-                        navigateToCreateNetwork: {
-                            navigate(.createNetwork(viewModel.userAuth))
-                        }
-                    )
-                }
+                onClick: getStarted,
+                enabled: viewModel.isValidUserAuth && !viewModel.isCheckingUserAuth
             )
             
             Spacer()

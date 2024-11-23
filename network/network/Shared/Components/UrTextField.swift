@@ -31,6 +31,33 @@ struct UrTextField: View {
 
     var onTextChange: ((String) -> Void)?
 
+    // keyboard type
+    var keyboardType: UIKeyboardType = .default
+    
+    // submit label
+    var submitLabel: SubmitLabel = .return
+
+    var onSubmit: (() -> Void)?
+    
+
+    private var autoCapitalization: TextInputAutocapitalization {
+        switch keyboardType {
+        case .emailAddress:
+            return .never
+        default:
+            return .sentences
+        }
+    }
+    
+    private var shouldDisableAutocorrection: Bool {
+        switch keyboardType {
+        case .emailAddress:
+            return true
+        default:
+            return false
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading) {
             
@@ -48,7 +75,15 @@ struct UrTextField: View {
                         .font(themeManager.currentTheme.bodyFont)
                         .foregroundColor(themeManager.currentTheme.textFaintColor)
                 )
-                .foregroundColor(.white)
+                .tint(themeManager.currentTheme.textColor)
+                .submitLabel(submitLabel)
+                .onSubmit {
+                    onSubmit?()
+                }
+                .keyboardType(keyboardType)
+                .textInputAutocapitalization(autoCapitalization)
+                .disableAutocorrection(shouldDisableAutocorrection)
+                .foregroundColor(themeManager.currentTheme.textColor)
                 .disabled(!isEnabled)
                 .focused($isFocused)
                 .onChange(of: text) { newValue in
