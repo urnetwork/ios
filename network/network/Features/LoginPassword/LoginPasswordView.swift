@@ -10,17 +10,81 @@ import SwiftUI
 struct LoginPasswordView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
+    @StateObject private var viewModel = ViewModel()
     
-    var userAuth: String
+    let userAuth: String
+    
+    @State private var emailOrPhone: String
+    
+    init(userAuth: String) {
+        print("initialize user auth")
+        self.userAuth = userAuth
+        // Initialize the state with the passed value
+        _emailOrPhone = State(initialValue: userAuth)
+    }
+    
+    private var login = {
+        
+    }
     
     var body: some View {
-        VStack {
-            Text("Login password screen")
-                .foregroundColor(.urWhite)
+        
+        
+        GeometryReader { geometry in
+            ScrollView(.vertical) {
+                VStack {
+                    Text("It's nice to see you again")
+                        .foregroundColor(.urWhite)
+                        .font(themeManager.currentTheme.titleFont)
+                    
+                    Spacer().frame(height: 64)
+                    
+                    UrTextField(
+                        text: $emailOrPhone,
+                        placeholder: "Enter your phone number or email",
+                        isEnabled: false,
+                        label: "Email or phone number"
+                    )
+                    
+                    Spacer().frame(height: 16)
+                    
+                    UrTextField(
+                        text: $viewModel.password,
+                        placeholder: "************",
+                        label: "Password",
+                        submitLabel: .continue,
+                        onSubmit: login,
+                        isSecure: true
+                    )
+                    
+                    Spacer().frame(height: 32)
+                    
+                    UrButton(
+                        text: "Continue",
+                        onClick: login
+                        // todo add icon
+                    )
+                    
+                    Spacer().frame(height: 32)
+                    
+                    HStack {
+                        Text("Forgot your password?")
+                            .foregroundColor(themeManager.currentTheme.textMutedColor)
+                        Text("Reset it.")
+                            .foregroundColor(themeManager.currentTheme.textColor)
+                    }
+                    
+                    
+                }
+                // .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding()
+                .frame(minHeight: geometry.size.height) // Makes VStack take full height
+                 .frame(maxWidth: .infinity) // Centers horizontally
+                 // .verticalAlignment(.center)
+                // .applySystemBackground()
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding()
-        .applySystemBackground()
+    
     }
 }
 

@@ -39,6 +39,8 @@ struct UrTextField: View {
 
     var onSubmit: (() -> Void)?
     
+    var isSecure: Bool = false
+    
 
     private var autoCapitalization: TextInputAutocapitalization {
         switch keyboardType {
@@ -68,26 +70,51 @@ struct UrTextField: View {
             
             // textfield row
             HStack {
-                TextField(
-                    "",
-                    text: $text,
-                    prompt: Text(placeholder)
-                        .font(themeManager.currentTheme.bodyFont)
-                        .foregroundColor(themeManager.currentTheme.textFaintColor)
-                )
-                .tint(themeManager.currentTheme.textColor)
-                .submitLabel(submitLabel)
-                .onSubmit {
-                    onSubmit?()
-                }
-                .keyboardType(keyboardType)
-                .textInputAutocapitalization(autoCapitalization)
-                .disableAutocorrection(shouldDisableAutocorrection)
-                .foregroundColor(themeManager.currentTheme.textColor)
-                .disabled(!isEnabled)
-                .focused($isFocused)
-                .onChange(of: text) { newValue in
-                    onTextChange?(newValue)
+                
+                if isSecure {
+                    SecureField(
+                        "",
+                        text: $text,
+                        prompt: Text(placeholder)
+                            .font(themeManager.currentTheme.bodyFont)
+                            .foregroundColor(themeManager.currentTheme.textFaintColor)
+                    )
+                    .tint(themeManager.currentTheme.textColor)
+                    .submitLabel(submitLabel)
+                    .onSubmit {
+                        onSubmit?()
+                    }
+                    .keyboardType(keyboardType)
+                    .textInputAutocapitalization(autoCapitalization)
+                    .disableAutocorrection(shouldDisableAutocorrection)
+                    .foregroundColor(themeManager.currentTheme.textColor)
+                    .disabled(!isEnabled)
+                    .focused($isFocused)
+                    .onChange(of: text) { newValue in
+                        onTextChange?(newValue)
+                    }
+                } else {
+                    TextField(
+                        "",
+                        text: $text,
+                        prompt: Text(placeholder)
+                            .font(themeManager.currentTheme.bodyFont)
+                            .foregroundColor(themeManager.currentTheme.textFaintColor)
+                    )
+                    .tint(themeManager.currentTheme.textColor)
+                    .submitLabel(submitLabel)
+                    .onSubmit {
+                        onSubmit?()
+                    }
+                    .keyboardType(keyboardType)
+                    .textInputAutocapitalization(autoCapitalization)
+                    .disableAutocorrection(shouldDisableAutocorrection)
+                    .foregroundColor(themeManager.currentTheme.textColor)
+                    .disabled(!isEnabled)
+                    .focused($isFocused)
+                    .onChange(of: text) { newValue in
+                        onTextChange?(newValue)
+                    }
                 }
                 
                 if !isValid {

@@ -121,12 +121,15 @@ extension LoginInitialView {
                         self.loginErrorMessage = "An error occurred. Please try again later."
                     }
                     
+                    isCheckingUserAuth = false
+                    
                     return
                     
                 }
                 
                 // on new network
                 navigateToCreateNetwork()
+                isCheckingUserAuth = false
                 
             }
             

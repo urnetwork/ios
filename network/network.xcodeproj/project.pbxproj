@@ -364,7 +364,7 @@
 		};
 		D1B95A922CEBE7D200542E0E /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 8;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
@@ -375,7 +375,7 @@
 			);
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
 			shellScript = "export BRINGYOUR_HOME=`realpath ../..`\nexport WARP_HOME=\"$BRINGYOUR_HOME\"\nexport WARP_VERSION_HOME=\"$BRINGYOUR_HOME/version\"\nexport PATH=\"$PATH:$BRINGYOUR_HOME/warp/warpctl/build/darwin/arm64\"\nexport PATH=\"$PATH:/usr/local/go/bin:$HOME/go/bin\"\ncd ../../sdk\nmake init\nmake build_ios\n";
 		};
