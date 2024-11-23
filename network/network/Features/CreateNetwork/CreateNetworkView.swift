@@ -48,7 +48,8 @@ struct CreateNetworkView: View {
                         text: $viewModel.networkName,
                         placeholder: "Enter a name for your network",
                         label: "Network name",
-                        submitLabel: .next
+                        submitLabel: .next,
+                        disableCapitalization: true
                     )
                     .focused($focusedField, equals: .networkName)
                     .onSubmit {
