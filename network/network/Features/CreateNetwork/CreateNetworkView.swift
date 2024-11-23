@@ -11,14 +11,77 @@ struct CreateNetworkView: View {
     
     var userAuth: String
     
+    @EnvironmentObject var themeManager: ThemeManager
+    
+    @StateObject private var viewModel = ViewModel()
+    
+    @FocusState private var focusedField: Field?
+
+    enum Field {
+        case networkName, password
+    }
+    
     var body: some View {
-        VStack {
-            Text("Create Network")
-                .foregroundColor(.urWhite)
+
+        GeometryReader { geometry in
+            
+            ScrollView(.vertical) {
+                VStack {
+                    Text("Join URnetwork")
+                        .foregroundColor(.urWhite)
+                        .font(themeManager.currentTheme.titleFont)
+                    
+                    Spacer().frame(height: 48)
+                    
+                    UrTextField(
+                        text: $viewModel.userAuth,
+                        placeholder: "Enter your phone number or email",
+                        isEnabled: false,
+                        label: "Email of phone number",
+                        keyboardType: .emailAddress,
+                        submitLabel: .next
+                    )
+                    
+                    Spacer().frame(height: 24)
+                    
+                    UrTextField(
+                        text: $viewModel.networkName,
+                        placeholder: "Enter a name for your network",
+                        label: "Network name",
+                        submitLabel: .next
+                    )
+                    .focused($focusedField, equals: .networkName)
+                    .onSubmit {
+                        focusedField = .password
+                    }
+                    
+                    Spacer().frame(height: 24)
+                    
+                    UrTextField(
+                        text: $viewModel.password,
+                        placeholder: "************",
+                        label: "Password",
+                        submitLabel: .done,
+                        isSecure: true
+                    )
+                    .focused($focusedField, equals: .password)
+                    
+                    // todo - custom switch
+                    
+                    Spacer().frame(height: 48)
+                    
+                    UrButton(text: "Continue", onClick: {})
+                    
+                }
+                .padding()
+                .frame(minHeight: geometry.size.height)
+                .frame(maxWidth: .infinity)
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding()
-        .applySystemBackground()
+        .onAppear {
+            viewModel.setUserAuth(userAuth)
+        }
+        
     }
 }
 
@@ -26,4 +89,6 @@ struct CreateNetworkView: View {
     CreateNetworkView(
         userAuth: "hello@ur.io"
     )
+    .environmentObject(ThemeManager.shared)
+    .applySystemBackground()
 }
