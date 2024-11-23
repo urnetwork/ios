@@ -82,7 +82,7 @@ extension LoginInitialView {
             navigateToCreateNetwork: @escaping () -> Void
         ) {
             
-            if !isValidUserAuth {
+            if !isValidUserAuth || isCheckingUserAuth {
                 return
             }
             
