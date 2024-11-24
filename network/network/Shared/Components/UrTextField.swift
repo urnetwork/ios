@@ -15,13 +15,13 @@ struct UrTextField: View {
     @FocusState private var isFocused: Bool
     
     // placeholder text
-    var placeholder: String
+    var placeholder: LocalizedStringKey
     
     // field is enabled
     var isEnabled: Bool = true
     
     // text field label
-    var label: String
+    var label: LocalizedStringKey
     
     // input is correct
     var isValid: Bool = true

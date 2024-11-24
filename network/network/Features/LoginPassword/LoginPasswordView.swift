@@ -70,7 +70,7 @@ struct LoginPasswordView: View {
                     HStack {
                         Text("Forgot your password?")
                             .foregroundColor(themeManager.currentTheme.textMutedColor)
-                        Text("Reset it.")
+                        Text("Reset it.", comment: "Referring to resetting the password")
                             .foregroundColor(themeManager.currentTheme.textColor)
                     }
                     

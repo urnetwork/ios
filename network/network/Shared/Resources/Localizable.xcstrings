@@ -1,0 +1,60 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    "************" : {
+
+    },
+    "Account" : {
+
+    },
+    "Continue" : {
+
+    },
+    "Email or phone" : {
+
+    },
+    "Email or phone number" : {
+
+    },
+    "Enter a name for your network" : {
+
+    },
+    "Enter your phone number or email" : {
+
+    },
+    "Forgot your password?" : {
+
+    },
+    "Get started" : {
+
+    },
+    "Hello, world!" : {
+
+    },
+    "Hello, World!" : {
+
+    },
+    "It's nice to see you again" : {
+
+    },
+    "Join URnetwork" : {
+      "comment" : "URnetwork is the project name and should not be translated"
+    },
+    "Network name" : {
+
+    },
+    "or" : {
+      "comment" : "Referring to the two options 'Get started' *or* 'Login with Apple'"
+    },
+    "Password" : {
+
+    },
+    "Reset it." : {
+      "comment" : "Referring to resetting the password"
+    }
+  },
+  "version" : "1.0"
+}
