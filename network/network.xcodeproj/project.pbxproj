@@ -294,6 +294,28 @@
 			knownRegions = (
 				en,
 				Base,
+				ar,
+				fr,
+				de,
+				el,
+				hi,
+				he,
+				id,
+				it,
+				ja,
+				ko,
+				pl,
+				ru,
+				es,
+				"es-419",
+				sv,
+				th,
+				uk,
+				vi,
+				"zh-HK",
+				"zh-Hans",
+				"pt-BR",
+				"pt-PT",
 			);
 			mainGroup = D1B95A462CEBDD6900542E0E;
 			minimizedProjectReferenceProxies = 1;
@@ -488,6 +510,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -542,6 +565,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Release;
 		};

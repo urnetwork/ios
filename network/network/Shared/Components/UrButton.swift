@@ -18,7 +18,7 @@ struct UrButton: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     
-    var text: String
+    var text: LocalizedStringKey
     var onClick: () -> Void
     var style: UrButtonStyle = .primary
     var enabled: Bool = true

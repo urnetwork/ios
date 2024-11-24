@@ -57,7 +57,7 @@ struct LoginInitialView: View {
             Spacer()
                 .frame(height: 24)
             
-            Text("or")
+            Text("or", comment: "Referring to the two options 'Get started' *or* 'Login with Apple'")
                 .foregroundColor(themeManager.currentTheme.textMutedColor)
             
             Spacer()

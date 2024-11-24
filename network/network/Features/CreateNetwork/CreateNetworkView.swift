@@ -27,7 +27,7 @@ struct CreateNetworkView: View {
             
             ScrollView(.vertical) {
                 VStack {
-                    Text("Join URnetwork")
+                    Text("Join URnetwork", comment: "URnetwork is the project name and should not be translated")
                         .foregroundColor(.urWhite)
                         .font(themeManager.currentTheme.titleFont)
                     
@@ -37,7 +37,7 @@ struct CreateNetworkView: View {
                         text: $viewModel.userAuth,
                         placeholder: "Enter your phone number or email",
                         isEnabled: false,
-                        label: "Email of phone number",
+                        label: "Email or phone number",
                         keyboardType: .emailAddress,
                         submitLabel: .next
                     )
