@@ -76,12 +76,9 @@ struct LoginPasswordView: View {
                     
                     
                 }
-                // .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
-                .frame(minHeight: geometry.size.height) // Makes VStack take full height
-                 .frame(maxWidth: .infinity) // Centers horizontally
-                 // .verticalAlignment(.center)
-                // .applySystemBackground()
+                .frame(minHeight: geometry.size.height)
+                .frame(maxWidth: .infinity)
             }
         }
     

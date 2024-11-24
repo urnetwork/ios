@@ -41,14 +41,22 @@ struct UrTextField: View {
     
     var isSecure: Bool = false
     
+    var disableCapitalization: Bool = false
+    
 
     private var autoCapitalization: TextInputAutocapitalization {
-        switch keyboardType {
-        case .emailAddress:
+        
+        if (disableCapitalization) {
             return .never
-        default:
-            return .sentences
+        } else {
+            switch keyboardType {
+            case .emailAddress:
+                return .never
+            default:
+                return .sentences
+            }
         }
+    
     }
     
     private var shouldDisableAutocorrection: Bool {
