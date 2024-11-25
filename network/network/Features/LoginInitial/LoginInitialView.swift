@@ -32,8 +32,8 @@ struct LoginInitialView: View {
 
             UrTextField(
                 text: $viewModel.userAuth,
-                placeholder: "Enter your phone number or email",
                 label: "Email or phone",
+                placeholder: "Enter your phone number or email",
                 onTextChange: { newValue in
                     // Filter whitespace
                     if newValue.contains(" ") {
