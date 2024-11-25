@@ -46,6 +46,12 @@
     "Network name" : {
 
     },
+    "Network names must be 6 characters or more" : {
+
+    },
+    "Nice! This network name is available" : {
+
+    },
     "or" : {
       "comment" : "Referring to the two options 'Get started' *or* 'Login with Apple'"
     },
@@ -54,6 +60,12 @@
     },
     "Reset it." : {
       "comment" : "Referring to resetting the password"
+    },
+    "There was an error checking the network name" : {
+
+    },
+    "This network name is already taken" : {
+
     }
   },
   "version" : "1.0"

@@ -7,6 +7,7 @@
 
 import Foundation
 import URnetworkSdk
+import SwiftUICore
 
 
 private class NetworkCheckCallback: NSObject, SdkNetworkCheckCallbackProtocol {
@@ -32,11 +33,10 @@ extension CreateNetworkView {
         private let api = NetworkSpaceManager.shared.networkSpace?.getApi()
         private var networkNameValidationVc: SdkNetworkNameValidationViewController?
         
-        init() {
-            if let api = api {
-                networkNameValidationVc = SdkNetworkNameValidationViewController(api)
-            }
-        }
+        let networkNameTooShort: LocalizedStringKey = "Network names must be 6 characters or more"
+        let networkNameUnavailable: LocalizedStringKey = "This network name is already taken"
+        let networkNameCheckError: LocalizedStringKey = "There was an error checking the network name"
+        let networkNameAvailable: LocalizedStringKey = "Nice! This network name is available"
         
         @Published var userAuth: String = "" {
             didSet {
@@ -46,11 +46,13 @@ extension CreateNetworkView {
         
         @Published var networkName: String = "" {
             didSet {
-                checkNetworkName()
+                if oldValue != networkName {
+                    checkNetworkName()
+                }
             }
         }
         
-        @Published var isNetworkNameValid: Bool = false
+        @Published private(set) var networkNameValidationState: ValidationState = .notChecked
         
         @Published private(set) var isCheckingNetworkName: Bool = false
         
@@ -61,6 +63,20 @@ extension CreateNetworkView {
         }
         
         @Published private(set) var formIsValid: Bool = false
+        
+        @Published private(set) var networkNameSupportingText: LocalizedStringKey = ""
+        
+        init() {
+            if let api = api {
+                networkNameValidationVc = SdkNetworkNameValidationViewController(api)
+            }
+            
+            setNetworkNameSupportingText(networkNameTooShort)
+        }
+        
+        private func setNetworkNameSupportingText(_ text: LocalizedStringKey) {
+            networkNameSupportingText = text
+        }
         
         // for debouncing calls to check network name availability
         private var networkCheckWorkItem: DispatchWorkItem?
@@ -79,10 +95,17 @@ extension CreateNetworkView {
             networkCheckWorkItem?.cancel()
             
             if networkName.count < 6 {
+                
+                if networkNameSupportingText != networkNameTooShort {
+                    setNetworkNameSupportingText(networkNameTooShort)
+                }
+    
                 return
             }
             
-            if let networkNameValidationVc = networkNameValidationVc {
+            self.networkNameValidationState = .validating
+            
+            if networkNameValidationVc != nil {
                 
                 isCheckingNetworkName = true
                 
@@ -92,12 +115,22 @@ extension CreateNetworkView {
                     
                     if let error = error {
                         print("error checking network name: \(error.localizedDescription)")
+                        setNetworkNameSupportingText(networkNameCheckError)
+                        self.networkNameValidationState = .invalid
+                        
                         return
                     }
                     
                     if let result = result {
                         print("result checking network name \(networkName): \(result.available)")
-                        self.isNetworkNameValid = result.available
+                        self.networkNameValidationState = result.available ? .valid : .invalid
+                        
+                        
+                        if (result.available) {
+                            setNetworkNameSupportingText(networkNameAvailable)
+                        } else {
+                            setNetworkNameSupportingText(networkNameUnavailable)
+                        }
                     }
                     
                     validateForm()
