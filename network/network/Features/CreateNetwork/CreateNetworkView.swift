@@ -48,6 +48,8 @@ struct CreateNetworkView: View {
                         text: $viewModel.networkName,
                         placeholder: "Enter a name for your network",
                         label: "Network name",
+                        validationState: viewModel.networkNameValidationState,
+                        supportingText: viewModel.networkNameSupportingText,
                         submitLabel: .next,
                         disableCapitalization: true
                     )

@@ -24,10 +24,10 @@ struct UrTextField: View {
     var label: LocalizedStringKey
     
     // input is correct
-    var isValid: Bool = true
+    var validationState: ValidationState?
     
     // adds supporting text below the text field divider
-    var supportingText: String?
+    var supportingText: LocalizedStringKey?
 
     var onTextChange: ((String) -> Void)?
 
@@ -67,6 +67,22 @@ struct UrTextField: View {
             return false
         }
     }
+    
+    private var foregroundSupportColor: Color {
+        
+        if (validationState != nil) {
+            
+            if validationState == .invalid {
+                return themeManager.currentTheme.dangerColor
+            }
+            
+            return themeManager.currentTheme.textMutedColor
+            
+        } else {
+            return themeManager.currentTheme.textMutedColor
+        }
+        
+    }
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -74,7 +90,7 @@ struct UrTextField: View {
             // label
             Text(label)
                 .font(themeManager.currentTheme.secondaryBodyFont)
-                .foregroundColor(isValid ? themeManager.currentTheme.textMutedColor : themeManager.currentTheme.dangerColor)
+                .foregroundColor(foregroundSupportColor)
             
             // textfield row
             HStack {
@@ -125,11 +141,21 @@ struct UrTextField: View {
                     }
                 }
                 
-                if !isValid {
-                    Image("ur.symbols.warning")
-                        .foregroundColor(themeManager.currentTheme.dangerColor)
+                if (validationState != nil) {
+                    
+                    if validationState == .invalid {
+                        Image("ur.symbols.warning")
+                            .foregroundColor(themeManager.currentTheme.dangerColor)
+                    }
+                    
+                    if validationState == .validating {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle())
+                            .frame(height: 24)
+                    }
                 }
             }
+            .frame(height: 24)
         
             // divider
             if (isEnabled) {
@@ -142,7 +168,7 @@ struct UrTextField: View {
             if let supportingText {
                 Text(supportingText)
                     .font(themeManager.currentTheme.secondaryBodyFont)
-                    .foregroundColor(isValid ? themeManager.currentTheme.textMutedColor : themeManager.currentTheme.dangerColor)
+                    .foregroundColor(foregroundSupportColor)
             }
         }
     }
@@ -155,6 +181,7 @@ struct UrTextField: View {
     
     @State var emptyValue = ""
     @State var sampleValue = "lorem@ipsum.com"
+    
     VStack {
         // empty text field
         UrTextField(
@@ -192,7 +219,7 @@ struct UrTextField: View {
             text: $sampleValue,
             placeholder: "Placeholder",
             label: "Your email",
-            isValid: false,
+            validationState: ValidationState.invalid,
             supportingText: "Network name is too short. Try one with at least 6 characters,"
         )
         
@@ -205,7 +232,7 @@ struct UrTextField: View {
             placeholder: "Placeholder",
             isEnabled: false,
             label: "Your email",
-            isValid: true
+            validationState: ValidationState.valid
         )
     }
     .environmentObject(themeManager)
@@ -213,3 +240,4 @@ struct UrTextField: View {
     .padding()
     .background(themeManager.currentTheme.systemBackground)
 }
+
