@@ -10,24 +10,24 @@ import SwiftUI
 struct UrTextField: View {
     
     @EnvironmentObject var themeManager: ThemeManager
+    
     @Binding var text: String
-    
     @FocusState private var isFocused: Bool
-    
-    // placeholder text
-    var placeholder: LocalizedStringKey
-    
-    // field is enabled
-    var isEnabled: Bool = true
     
     // text field label
     var label: LocalizedStringKey
     
-    // input is correct
-    var validationState: ValidationState?
+    // placeholder text
+    var placeholder: LocalizedStringKey
     
     // adds supporting text below the text field divider
     var supportingText: LocalizedStringKey?
+    
+    // field is enabled
+    var isEnabled: Bool = true
+    
+    // input is correct
+    var validationState: ValidationState?
 
     var onTextChange: ((String) -> Void)?
 
@@ -186,8 +186,8 @@ struct UrTextField: View {
         // empty text field
         UrTextField(
             text: $emptyValue,
-            placeholder: "Placeholder",
-            label: "Your email"
+            label: "Your email",
+            placeholder: "Placeholder"
         )
         
         Spacer()
@@ -196,8 +196,8 @@ struct UrTextField: View {
         // populated
         UrTextField(
             text: $sampleValue,
-            placeholder: "Placeholder",
-            label: "Your email"
+            label: "Your email",
+            placeholder: "Placeholder"
         )
         
         Spacer()
@@ -206,8 +206,8 @@ struct UrTextField: View {
         // populated with supporting text
         UrTextField(
             text: $sampleValue,
-            placeholder: "Placeholder",
             label: "Your email",
+            placeholder: "Placeholder",
             supportingText: "Network names must be 6 characters or more"
         )
         
@@ -217,10 +217,10 @@ struct UrTextField: View {
         // error exists
         UrTextField(
             text: $sampleValue,
-            placeholder: "Placeholder",
             label: "Your email",
-            validationState: ValidationState.invalid,
-            supportingText: "Network name is too short. Try one with at least 6 characters,"
+            placeholder: "Placeholder",
+            supportingText: "Network name is too short. Try one with at least 6 characters",
+            validationState: ValidationState.invalid
         )
         
         Spacer()
@@ -229,9 +229,9 @@ struct UrTextField: View {
         // disabled input
         UrTextField(
             text: $sampleValue,
+            label: "Your email",
             placeholder: "Placeholder",
             isEnabled: false,
-            label: "Your email",
             validationState: ValidationState.valid
         )
     }

@@ -41,17 +41,17 @@ struct LoginPasswordView: View {
                     
                     UrTextField(
                         text: $emailOrPhone,
+                        label: "Email or phone number",
                         placeholder: "Enter your phone number or email",
-                        isEnabled: false,
-                        label: "Email or phone number"
+                        isEnabled: false
                     )
                     
                     Spacer().frame(height: 16)
                     
                     UrTextField(
                         text: $viewModel.password,
-                        placeholder: "************",
                         label: "Password",
+                        placeholder: "************",
                         submitLabel: .continue,
                         onSubmit: login,
                         isSecure: true

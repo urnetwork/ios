@@ -35,9 +35,9 @@ struct CreateNetworkView: View {
                     
                     UrTextField(
                         text: $viewModel.userAuth,
+                        label: "Email or phone number",
                         placeholder: "Enter your phone number or email",
                         isEnabled: false,
-                        label: "Email or phone number",
                         keyboardType: .emailAddress,
                         submitLabel: .next
                     )
@@ -46,10 +46,10 @@ struct CreateNetworkView: View {
                     
                     UrTextField(
                         text: $viewModel.networkName,
-                        placeholder: "Enter a name for your network",
                         label: "Network name",
-                        validationState: viewModel.networkNameValidationState,
+                        placeholder: "Enter a name for your network",
                         supportingText: viewModel.networkNameSupportingText,
+                        validationState: viewModel.networkNameValidationState,
                         submitLabel: .next,
                         disableCapitalization: true
                     )
@@ -62,8 +62,8 @@ struct CreateNetworkView: View {
                     
                     UrTextField(
                         text: $viewModel.password,
-                        placeholder: "************",
                         label: "Password",
+                        placeholder: "************",
                         submitLabel: .done,
                         isSecure: true
                     )
