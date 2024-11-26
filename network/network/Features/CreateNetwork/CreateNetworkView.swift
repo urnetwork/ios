@@ -85,8 +85,6 @@ struct CreateNetworkView: View {
                             .foregroundColor(themeManager.currentTheme.textColor)
                             .font(themeManager.currentTheme.secondaryBodyFont)
                     }
-                    // .toggleStyle(CheckboxToggleStyle(tint: themeManager.currentTheme.accentColor))
-                    // .toggleStyle(SwitchToggleStyle(tint: themeManager.currentTheme.accentColor))
                     
                     Spacer().frame(height: 48)
                     
