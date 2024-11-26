@@ -54,7 +54,6 @@ extension CreateNetworkView {
         
         @Published private(set) var networkNameValidationState: ValidationState = .notChecked
         
-        @Published private(set) var isCheckingNetworkName: Bool = false
         
         @Published var password: String = "" {
             didSet {
@@ -65,6 +64,8 @@ extension CreateNetworkView {
         @Published private(set) var formIsValid: Bool = false
         
         @Published private(set) var networkNameSupportingText: LocalizedStringKey = ""
+        
+        @Published var termsAgreed: Bool = false
         
         init() {
             if let api = api {
@@ -107,8 +108,6 @@ extension CreateNetworkView {
             
             if networkNameValidationVc != nil {
                 
-                isCheckingNetworkName = true
-                
                 let callback = NetworkCheckCallback { [weak self] result, error in
                     
                     guard let self = self else { return }
@@ -134,8 +133,6 @@ extension CreateNetworkView {
                     }
                     
                     validateForm()
-                    
-                    self.isCheckingNetworkName = false
             
                 }
                 
