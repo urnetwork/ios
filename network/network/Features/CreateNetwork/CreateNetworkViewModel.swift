@@ -33,10 +33,12 @@ extension CreateNetworkView {
         private let api = NetworkSpaceManager.shared.networkSpace?.getApi()
         private var networkNameValidationVc: SdkNetworkNameValidationViewController?
         
-        let networkNameTooShort: LocalizedStringKey = "Network names must be 6 characters or more"
-        let networkNameUnavailable: LocalizedStringKey = "This network name is already taken"
-        let networkNameCheckError: LocalizedStringKey = "There was an error checking the network name"
-        let networkNameAvailable: LocalizedStringKey = "Nice! This network name is available"
+        private static let networkNameTooShort: LocalizedStringKey = "Network names must be 6 characters or more"
+        private static let networkNameUnavailable: LocalizedStringKey = "This network name is already taken"
+        private static let networkNameCheckError: LocalizedStringKey = "There was an error checking the network name"
+        private static let networkNameAvailable: LocalizedStringKey = "Nice! This network name is available"
+        
+        private static let minPasswordLength = 12
         
         @Published var userAuth: String = "" {
             didSet {
@@ -65,14 +67,18 @@ extension CreateNetworkView {
         
         @Published private(set) var networkNameSupportingText: LocalizedStringKey = ""
         
-        @Published var termsAgreed: Bool = false
+        @Published var termsAgreed: Bool = false {
+            didSet {
+                validateForm()
+            }
+        }
         
         init() {
             if let api = api {
                 networkNameValidationVc = SdkNetworkNameValidationViewController(api)
             }
             
-            setNetworkNameSupportingText(networkNameTooShort)
+            setNetworkNameSupportingText(ViewModel.networkNameTooShort)
         }
         
         private func setNetworkNameSupportingText(_ text: LocalizedStringKey) {
@@ -88,7 +94,10 @@ extension CreateNetworkView {
 
         
         private func validateForm() {
-            formIsValid = !userAuth.isEmpty && !networkName.isEmpty && password.count >= 6
+            formIsValid = ValidationUtils.isValidUserAuth(userAuth) &&
+                            networkNameValidationState == .valid &&
+                            password.count >= ViewModel.minPasswordLength &&
+                            termsAgreed
         }
         
         private func checkNetworkName() {
@@ -97,14 +106,14 @@ extension CreateNetworkView {
             
             if networkName.count < 6 {
                 
-                if networkNameSupportingText != networkNameTooShort {
-                    setNetworkNameSupportingText(networkNameTooShort)
+                if networkNameSupportingText != ViewModel.networkNameTooShort {
+                    setNetworkNameSupportingText(ViewModel.networkNameTooShort)
                 }
     
                 return
             }
             
-            self.networkNameValidationState = .validating
+            networkNameValidationState = .validating
             
             if networkNameValidationVc != nil {
                 
@@ -114,8 +123,9 @@ extension CreateNetworkView {
                     
                     if let error = error {
                         print("error checking network name: \(error.localizedDescription)")
-                        setNetworkNameSupportingText(networkNameCheckError)
+                        setNetworkNameSupportingText(ViewModel.networkNameCheckError)
                         self.networkNameValidationState = .invalid
+                        validateForm()
                         
                         return
                     }
@@ -126,9 +136,9 @@ extension CreateNetworkView {
                         
                         
                         if (result.available) {
-                            setNetworkNameSupportingText(networkNameAvailable)
+                            setNetworkNameSupportingText(ViewModel.networkNameAvailable)
                         } else {
-                            setNetworkNameSupportingText(networkNameUnavailable)
+                            setNetworkNameSupportingText(ViewModel.networkNameUnavailable)
                         }
                     }
                     

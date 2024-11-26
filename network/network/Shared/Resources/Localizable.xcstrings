@@ -70,6 +70,9 @@
     "Password" : {
 
     },
+    "Password must be at least 12 characters long" : {
+
+    },
     "Reset it." : {
       "comment" : "Referring to resetting the password"
     },

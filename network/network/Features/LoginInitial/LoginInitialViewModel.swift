@@ -47,7 +47,7 @@ extension LoginInitialView {
         
         @Published var userAuth: String = "" {
             didSet {
-                isValidUserAuth = validateUserAuth()
+                isValidUserAuth = ValidationUtils.isValidUserAuth(userAuth)
             }
         }
 
@@ -56,26 +56,6 @@ extension LoginInitialView {
         @Published private(set) var isCheckingUserAuth: Bool = false
         
         @Published private(set) var loginErrorMessage: String?
-        
-        // Email regex pattern
-        private let emailRegex = #"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"#
-        
-        // Phone regex pattern (basic international format)
-        private let phoneRegex = #"^\+?[1-9]\d{1,14}$"#
-
-        private func isValidEmail(_ string: String) -> Bool {
-            string.range(of: emailRegex, options: .regularExpression) != nil
-        }
-        
-        private func isValidPhone(_ string: String) -> Bool {
-            string.range(of: phoneRegex, options: .regularExpression) != nil
-        }
-        
-        private func validateUserAuth() -> Bool {
-            let trimmedAuth = userAuth.trimmingCharacters(in: .whitespaces)
-            return !trimmedAuth.isEmpty &&
-                   (isValidEmail(trimmedAuth) || isValidPhone(trimmedAuth))
-        }
         
         func getStarted(
             navigateToLogin: @escaping () -> Void,
