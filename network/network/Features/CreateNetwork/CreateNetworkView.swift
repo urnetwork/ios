@@ -69,7 +69,22 @@ struct CreateNetworkView: View {
                     )
                     .focused($focusedField, equals: .password)
                     
-                    // todo - custom switch
+                    Spacer().frame(height: 32)
+                    
+                    UrSwitchToggle(isOn: $viewModel.termsAgreed) {
+                        Text("I agree to URnetwork's ")
+                            .foregroundColor(themeManager.currentTheme.textMutedColor)
+                            .font(themeManager.currentTheme.secondaryBodyFont)
+                        + Text("[Terms and Services](https://ur.io/terms)")
+                            .foregroundColor(themeManager.currentTheme.textColor)
+                            .font(themeManager.currentTheme.secondaryBodyFont)
+                        + Text(" and ")
+                            .foregroundColor(themeManager.currentTheme.textMutedColor)
+                            .font(themeManager.currentTheme.secondaryBodyFont)
+                        + Text("[Privacy Policy](https://ur.io/privacy)")
+                            .foregroundColor(themeManager.currentTheme.textColor)
+                            .font(themeManager.currentTheme.secondaryBodyFont)
+                    }
                     
                     Spacer().frame(height: 48)
                     

@@ -4,6 +4,15 @@
     "" : {
 
     },
+    " and " : {
+
+    },
+    "[Privacy Policy](https://ur.io/privacy)" : {
+
+    },
+    "[Terms and Services](https://ur.io/terms)" : {
+
+    },
     "************" : {
 
     },
@@ -35,6 +44,9 @@
 
     },
     "Hello, World!" : {
+
+    },
+    "I agree to URnetwork's " : {
 
     },
     "It's nice to see you again" : {
