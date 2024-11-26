@@ -19,7 +19,7 @@ struct UrSwitchToggleStyle: ToggleStyle {
                 // track
                 RoundedRectangle(cornerRadius: 16)
                     .fill(configuration.isOn ? themeManager.currentTheme.accentColor : Color.clear)
-                    .frame(width: 48, height: 28)
+                    .frame(width: 42, height: 24)
                     .overlay(
                         // track border
                         RoundedRectangle(cornerRadius: 16)
@@ -30,7 +30,7 @@ struct UrSwitchToggleStyle: ToggleStyle {
                 // circle
                 Circle()
                     .fill(themeManager.currentTheme.systemBackground)
-                    .frame(width: 16, height: 16)
+                    .frame(width: 12, height: 12)
                     .overlay(
                         // circle border
                         Circle()
@@ -40,7 +40,7 @@ struct UrSwitchToggleStyle: ToggleStyle {
                             )
                             .animation(.easeInOut(duration: 0.2), value: configuration.isOn)
                     )
-                    .offset(x: configuration.isOn ? 10 : -10)
+                    .offset(x: configuration.isOn ? 10 : -8)
                     .animation(.easeInOut(duration: 0.2), value: configuration.isOn)
             }
             .onTapGesture {

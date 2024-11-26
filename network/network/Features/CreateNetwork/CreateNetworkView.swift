@@ -64,6 +64,7 @@ struct CreateNetworkView: View {
                         text: $viewModel.password,
                         label: "Password",
                         placeholder: "************",
+                        supportingText: "Password must be at least 12 characters long",
                         submitLabel: .done,
                         isSecure: true
                     )
@@ -88,7 +89,11 @@ struct CreateNetworkView: View {
                     
                     Spacer().frame(height: 48)
                     
-                    UrButton(text: "Continue", onClick: {})
+                    UrButton(
+                        text: "Continue",
+                        onClick: {},
+                        enabled: viewModel.formIsValid
+                    )
                     
                 }
                 .padding()
