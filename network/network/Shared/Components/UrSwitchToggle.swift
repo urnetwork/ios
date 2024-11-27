@@ -29,13 +29,13 @@ struct UrSwitchToggleStyle: ToggleStyle {
                 
                 // circle
                 Circle()
-                    .fill(themeManager.currentTheme.systemBackground)
+                    .fill(themeManager.currentTheme.backgroundColor)
                     .frame(width: 12, height: 12)
                     .overlay(
                         // circle border
                         Circle()
                             .stroke(
-                                configuration.isOn ? themeManager.currentTheme.systemBackground : themeManager.currentTheme.accentColor,
+                                configuration.isOn ? themeManager.currentTheme.backgroundColor : themeManager.currentTheme.accentColor,
                                 lineWidth: 4
                             )
                             .animation(.easeInOut(duration: 0.2), value: configuration.isOn)

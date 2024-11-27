@@ -20,7 +20,7 @@ final class ThemeManager: ObservableObject {
 
 extension Theme {
     static let dark = Theme(
-        systemBackground: Color("UrBlack"),
+        backgroundColor: Color("UrBlack"),
 
         accentColor: Color("UrElectricBlue"),
         dangerColor: Color("UrCoral"),
