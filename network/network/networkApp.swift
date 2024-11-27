@@ -48,7 +48,6 @@ struct networkApp: App {
             } else {
                 
                 LoginNavigationView()
-                    .background(Color.green)
                     .environmentObject(ThemeManager.shared)
                 
             }
