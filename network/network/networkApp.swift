@@ -43,7 +43,6 @@ struct networkApp: App {
                         }
                         
                 }
-                .background(ThemeManager.shared.currentTheme.systemBackground.ignoresSafeArea())
                 .environmentObject(ThemeManager.shared)
                 
             } else {

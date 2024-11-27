@@ -11,28 +11,27 @@ struct LoginNavigationView: View {
     
     @StateObject private var viewModel = ViewModel()
     
+    @EnvironmentObject var themeManager: ThemeManager
+    
     var body: some View {
         NavigationStack(
             path: $viewModel.navigationPath
-//            root: {
-//                LoginInitialView(
-//                    navigate: viewModel.navigate
-//                )
-//            }
         ) {
             LoginInitialView(
                 navigate: viewModel.navigate
             )
+            .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
             .navigationDestination(for: LoginInitialNavigationPath.self) { path in
                 switch path {
                     case .password(let userAuth):
                         LoginPasswordView(userAuth: userAuth)
+                            .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                     case .createNetwork(let userAuth):
                         CreateNetworkView(userAuth: userAuth)
+                            .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                 }
             }
         }
-        .background(ThemeManager.shared.currentTheme.systemBackground.ignoresSafeArea())
     }
 }
 

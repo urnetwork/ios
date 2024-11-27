@@ -113,5 +113,4 @@ struct CreateNetworkView: View {
         userAuth: "hello@ur.io"
     )
     .environmentObject(ThemeManager.shared)
-    .applySystemBackground()
 }

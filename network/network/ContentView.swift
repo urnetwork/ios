@@ -25,7 +25,7 @@ struct ContentView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
         // .background(Color("UrBlack"))
-        .background(themeManager.currentTheme.systemBackground)
+        .background(themeManager.currentTheme.backgroundColor)
     }
 }
 

@@ -238,6 +238,6 @@ struct UrTextField: View {
     .environmentObject(themeManager)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .padding()
-    .background(themeManager.currentTheme.systemBackground)
+    .background(themeManager.currentTheme.backgroundColor)
 }
 

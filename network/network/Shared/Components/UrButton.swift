@@ -46,7 +46,6 @@ struct UrButton: View {
             .frame(maxWidth: isFullWidth ? .infinity : nil)
             .frame(height: 48)
             .padding(.horizontal, 32)
-            .padding(.vertical, 12)
         }
         .background(backgroundColor)
         .cornerRadius(100)
@@ -191,6 +190,6 @@ struct UrButton: View {
     .environmentObject(themeManager)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .padding()
-    .background(themeManager.currentTheme.systemBackground)
+    .background(themeManager.currentTheme.backgroundColor)
     
 }
