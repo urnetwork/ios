@@ -36,7 +36,9 @@ extension Theme {
         
         titleFont: Font.custom("ABCGravity-Extended", size: 32),
         titleCondensedFont: Font.custom("ABCGravity-ExtraCondensed", size: 32),
-        bodyFont: Font.custom("PP Neue Montreal", size: 16),
-        secondaryBodyFont: Font.custom("PP Neue Montreal", size: 14)
+        // bodyFont: Font.custom("PP Neue Montreal", size: 16),
+        bodyFont: Font.custom("PPNeueMontreal-Regular", size: 16),
+        // secondaryBodyFont: Font.custom("PP Neue Montreal", size: 14)
+        secondaryBodyFont: Font.custom("PPNeueMontreal-Regular", size: 14)
     )
 }

@@ -4,6 +4,9 @@
     "" : {
 
     },
+    " " : {
+
+    },
     " and " : {
 
     },
@@ -21,6 +24,9 @@
     },
     "Continue" : {
 
+    },
+    "Don't see it? " : {
+      "comment" : "Referring to the OTP code"
     },
     "Email or phone" : {
 
@@ -73,13 +79,25 @@
     "Password must be at least 12 characters long" : {
 
     },
+    "Resend code" : {
+
+    },
     "Reset it." : {
       "comment" : "Referring to resetting the password"
+    },
+    "Tell us who you really are. Enter the code we sent you to verify your identity." : {
+
+    },
+    "Test verify view" : {
+
     },
     "There was an error checking the network name" : {
 
     },
     "This network name is already taken" : {
+
+    },
+    "You've got mail" : {
 
     }
   },

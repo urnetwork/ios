@@ -11,6 +11,7 @@ enum LoginInitialNavigationPath: Hashable {
     // case initial
     case password(_ userAuth: String)
     case createNetwork(_ userAuth: String)
+    case verify(_ userAuth: String)
 }
 
 extension LoginNavigationView {
@@ -20,9 +21,6 @@ extension LoginNavigationView {
         @Published var navigationPath: [LoginInitialNavigationPath] = []
         
         func navigate(_ path: LoginInitialNavigationPath) {
-            print("navigate hit")
-            // navigationPath = .password(userAuth)
-            // navigationPath.append(.password("hello@ur.io"))
             navigationPath.append(path)
         }
 
