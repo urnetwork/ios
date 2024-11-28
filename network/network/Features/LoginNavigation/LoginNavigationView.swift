@@ -29,6 +29,9 @@ struct LoginNavigationView: View {
                     case .createNetwork(let userAuth):
                         CreateNetworkView(userAuth: userAuth)
                             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
+                    case .verify(let userAuth):
+                        CreateNetworkVerifyView(userAuth: userAuth)
+                            .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                 }
             }
         }
