@@ -129,10 +129,8 @@ struct CreateNetworkView: View {
         switch result {
             
             case .successWithJwt(let jwt):
-                print("CreateNetworkView: successWithJwt: \(jwt)")
                 break
             case .successWithVerificationRequired:
-                print("CreateNetworkView: successWithVerificationRequired:")
                 if let userAuth = userAuth {
                     navigate(.verify(userAuth))
                 } else {

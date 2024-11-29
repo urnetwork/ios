@@ -108,19 +108,7 @@ struct CreateNetworkVerifyView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
                 .frame(minHeight: geometry.size.height)
-                .frame(maxWidth: .infinity)
-//                .onAppear {
-//                    
-//                    if (userAuth != nil) {
-//                        
-//                    }
-//                    
-//                    if (authJwt != nil) {
-//                        
-//                    }
-//                    
-//                }
-                
+                .frame(maxWidth: .infinity)                
             }
         }
     }

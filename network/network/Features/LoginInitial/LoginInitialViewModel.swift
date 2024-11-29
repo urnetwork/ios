@@ -50,41 +50,47 @@ extension LoginInitialView {
                 
                 guard let self = self else { return }
                 
-                if let error {
-                    self.loginErrorMessage = error.localizedDescription
-                    self.isCheckingUserAuth = false
-                    return
-                }
-                
-                if let resultError = result?.error {
-                    self.loginErrorMessage = resultError.message
-                    self.isCheckingUserAuth = false
-                    return
-                }
-                
-                if let authAllowed = result?.authAllowed {
-                    
-                    if authAllowed.contains("password") {
-                        self.loginErrorMessage = nil
-                        
-                        // login
-                        navigateToLogin()
-                    } else {
-                        print("authAllowed missing password: \(authAllowed)")
-                        
-                        // todo - localize this
-                        self.loginErrorMessage = "An error occurred. Please try again later."
+                DispatchQueue.main.async {
+                 
+                    if let error {
+                        self.loginErrorMessage = error.localizedDescription
+                        self.isCheckingUserAuth = false
+                        return
                     }
                     
-                    isCheckingUserAuth = false
+                    if let resultError = result?.error {
+                        self.loginErrorMessage = resultError.message
+                        self.isCheckingUserAuth = false
+                        return
+                    }
                     
-                    return
+                    if let authAllowed = result?.authAllowed {
+                        
+                        if authAllowed.contains("password") {
+                            self.loginErrorMessage = nil
+                            
+                            // login
+                            navigateToLogin()
+                        } else {
+                            print("authAllowed missing password: \(authAllowed)")
+                            
+                            // todo - localize this
+                            self.loginErrorMessage = "An error occurred. Please try again later."
+                        }
+                        
+                        self.isCheckingUserAuth = false
+                        
+                        return
+                        
+                    }
+                    
+                    // on new network
+                    navigateToCreateNetwork()
+                    
+                    
+                    self.isCheckingUserAuth = false
                     
                 }
-                
-                // on new network
-                navigateToCreateNetwork()
-                isCheckingUserAuth = false
                 
             }
             

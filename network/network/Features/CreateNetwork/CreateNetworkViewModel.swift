@@ -43,12 +43,6 @@ extension CreateNetworkView {
         
         private let domain = "CreateNetworkView.ViewModel"
         
-//        @Published var userAuth: String = "" {
-//            didSet {
-//                validateForm()
-//            }
-//        }
-        
         @Published var networkName: String = "" {
             didSet {
                 if oldValue != networkName {
@@ -93,13 +87,8 @@ extension CreateNetworkView {
         // for debouncing calls to check network name availability
         private var networkCheckWorkItem: DispatchWorkItem?
         
-//        func setUserAuth(_ ua: String) {
-//            userAuth = ua
-//        }
-
-        
         private func validateForm() {
-            // formIsValid = ValidationUtils.isValidUserAuth(userAuth) &&
+            // todo - need to update validation to handle jwtAuth too (no password)
             formIsValid = networkNameValidationState == .valid &&
                             password.count >= ViewModel.minPasswordLength &&
                             termsAgreed
@@ -118,36 +107,44 @@ extension CreateNetworkView {
                 return
             }
             
-            networkNameValidationState = .validating
+            DispatchQueue.main.async {
+                self.networkNameValidationState = .validating
+            }
             
             if networkNameValidationVc != nil {
                 
                 let callback = NetworkCheckCallback { [weak self] result, error in
                     
-                    guard let self = self else { return }
-                    
-                    if let error = error {
-                        print("error checking network name: \(error.localizedDescription)")
-                        setNetworkNameSupportingText(ViewModel.networkNameCheckError)
-                        self.networkNameValidationState = .invalid
-                        validateForm()
+                    DispatchQueue.main.async {
                         
-                        return
-                    }
-                    
-                    if let result = result {
-                        print("result checking network name \(networkName): \(result.available)")
-                        self.networkNameValidationState = result.available ? .valid : .invalid
+                        guard let self = self else { return }
                         
-                        
-                        if (result.available) {
-                            setNetworkNameSupportingText(ViewModel.networkNameAvailable)
-                        } else {
-                            setNetworkNameSupportingText(ViewModel.networkNameUnavailable)
+                        if let error = error {
+                            print("error checking network name: \(error.localizedDescription)")
+                            
+                            
+                            self.setNetworkNameSupportingText(ViewModel.networkNameCheckError)
+                            self.networkNameValidationState = .invalid
+                            self.validateForm()
+                            
+                            
+                            return
                         }
+                        
+                        if let result = result {
+                            print("result checking network name \(self.networkName): \(result.available)")
+                            self.networkNameValidationState = result.available ? .valid : .invalid
+                            
+                            
+                            if (result.available) {
+                                self.setNetworkNameSupportingText(ViewModel.networkNameAvailable)
+                            } else {
+                                self.setNetworkNameSupportingText(ViewModel.networkNameUnavailable)
+                            }
+                        }
+                        
+                        self.validateForm()
                     }
-                    
-                    validateForm()
             
                 }
                 

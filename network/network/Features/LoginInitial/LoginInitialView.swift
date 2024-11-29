@@ -72,15 +72,6 @@ struct LoginInitialView: View {
                     Spacer()
                         .frame(height: 24)
                     
-                    
-                    // for testing
-//                    UrButton(
-//                        text: "Test verify view",
-//                        onClick: {
-//                            navigate(.verify("stuart@bringyour.com"))
-//                        }
-//                    )
-                    
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
