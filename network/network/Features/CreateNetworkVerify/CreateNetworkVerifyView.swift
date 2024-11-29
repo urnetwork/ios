@@ -20,6 +20,8 @@ struct CreateNetworkVerifyView: View {
     
     var userAuth: String
     
+    var authJwt: String?
+    
     let codeCount: Int = 6
     
     var body: some View {
@@ -106,8 +108,7 @@ struct CreateNetworkVerifyView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
                 .frame(minHeight: geometry.size.height)
-                .frame(maxWidth: .infinity)
-                
+                .frame(maxWidth: .infinity)                
             }
         }
     }

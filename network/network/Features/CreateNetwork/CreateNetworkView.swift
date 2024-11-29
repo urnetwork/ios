@@ -9,7 +9,9 @@ import SwiftUI
 
 struct CreateNetworkView: View {
     
-    var userAuth: String
+    var userAuth: String?
+    var authJwt: String?
+    var navigate: (LoginInitialNavigationPath) -> Void
     
     @EnvironmentObject var themeManager: ThemeManager
     
@@ -33,16 +35,21 @@ struct CreateNetworkView: View {
                     
                     Spacer().frame(height: 48)
                     
-                    UrTextField(
-                        text: $viewModel.userAuth,
-                        label: "Email or phone number",
-                        placeholder: "Enter your phone number or email",
-                        isEnabled: false,
-                        keyboardType: .emailAddress,
-                        submitLabel: .next
-                    )
-                    
-                    Spacer().frame(height: 24)
+                    if let userAuth = userAuth {
+                        
+                        UrTextField(
+                            // text: $viewModel.userAuth,
+                            text: .constant(userAuth),
+                            label: "Email or phone number",
+                            placeholder: "Enter your phone number or email",
+                            isEnabled: false,
+                            keyboardType: .emailAddress,
+                            submitLabel: .next
+                        )
+                        
+                        Spacer().frame(height: 24)
+                        
+                    }
                     
                     UrTextField(
                         text: $viewModel.networkName,
@@ -55,20 +62,28 @@ struct CreateNetworkView: View {
                     )
                     .focused($focusedField, equals: .networkName)
                     .onSubmit {
-                        focusedField = .password
+                        
+                        if (userAuth != nil) {
+                            focusedField = .password
+                        }
+                        
                     }
                     
-                    Spacer().frame(height: 24)
-                    
-                    UrTextField(
-                        text: $viewModel.password,
-                        label: "Password",
-                        placeholder: "************",
-                        supportingText: "Password must be at least 12 characters long",
-                        submitLabel: .done,
-                        isSecure: true
-                    )
-                    .focused($focusedField, equals: .password)
+                    if (userAuth != nil) {
+                        
+                        Spacer().frame(height: 24)
+                        
+                        UrTextField(
+                            text: $viewModel.password,
+                            label: "Password",
+                            placeholder: "************",
+                            supportingText: "Password must be at least 12 characters long",
+                            submitLabel: .done,
+                            isSecure: true
+                        )
+                        .focused($focusedField, equals: .password)
+                        
+                    }
                     
                     Spacer().frame(height: 32)
                     
@@ -91,8 +106,15 @@ struct CreateNetworkView: View {
                     
                     UrButton(
                         text: "Continue",
-                        onClick: {},
-                        enabled: viewModel.formIsValid
+                        onClick: {
+                            
+                            Task {
+                                let result = await viewModel.createNetwork(userAuth: userAuth, authJwt: authJwt)
+                                handleResult(result)
+                            }
+                            
+                        },
+                        enabled: viewModel.formIsValid && !viewModel.isCreatingNetwork
                     )
                     
                 }
@@ -101,16 +123,32 @@ struct CreateNetworkView: View {
                 .frame(maxWidth: .infinity)
             }
         }
-        .onAppear {
-            viewModel.setUserAuth(userAuth)
+    }
+    
+    private func handleResult(_ result: CreateNetworkResult) {
+        switch result {
+            
+            case .successWithJwt(let jwt):
+                break
+            case .successWithVerificationRequired:
+                if let userAuth = userAuth {
+                    navigate(.verify(userAuth))
+                } else {
+                    print("CreateNetworkView: successWithVerificationRequired: userAuth is nil")
+                }
+                break
+            case .failure(let error):
+                print("CreateNetworkView: handleResult: \(error.localizedDescription)")
+                break
+            
         }
-        
     }
 }
 
 #Preview {
     CreateNetworkView(
-        userAuth: "hello@ur.io"
+        userAuth: "hello@ur.io",
+        navigate: {_ in }
     )
     .environmentObject(ThemeManager.shared)
 }

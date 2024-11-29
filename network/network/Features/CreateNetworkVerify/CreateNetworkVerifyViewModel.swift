@@ -11,32 +11,17 @@ import SwiftUI
 import Combine
 
 // for verifying the OTP
-private class AuthVerifyCallback: NSObject, SdkAuthVerifyCallbackProtocol {
-    private let completion: (SdkAuthVerifyResult?, Error?) -> Void
-    
-    init(completion: @escaping (SdkAuthVerifyResult?, Error?) -> Void) {
-        self.completion = completion
-    }
-    
+private class AuthVerifyCallback: SdkCallback<SdkAuthVerifyResult, SdkAuthVerifyCallbackProtocol>, SdkAuthVerifyCallbackProtocol {
     func result(_ result: SdkAuthVerifyResult?, err: Error?) {
-        DispatchQueue.main.async {
-            self.completion(result, err)
-        }
+        handleResult(result, err: err)
     }
 }
 
+
 // For resending the OTP
-private class AuthVerifySendCallback: NSObject, SdkAuthVerifySendCallbackProtocol {
-    private let completion: (SdkAuthVerifySendResult?, Error?) -> Void
-    
-    init(completion: @escaping (SdkAuthVerifySendResult?, Error?) -> Void) {
-        self.completion = completion
-    }
-    
+private class AuthVerifySendCallback: SdkCallback<SdkAuthVerifySendResult, SdkAuthVerifySendCallbackProtocol>, SdkAuthVerifySendCallbackProtocol {
     func result(_ result: SdkAuthVerifySendResult?, err: Error?) {
-        DispatchQueue.main.async {
-            self.completion(result, err)
-        }
+        handleResult(result, err: err)
     }
 }
 
@@ -73,8 +58,7 @@ extension CreateNetworkVerifyView {
             do {
                 let result: Bool = try await withCheckedThrowingContinuation { continuation in
                     
-                    let callback = AuthVerifySendCallback { [weak self] result, err in
-                        guard let self = self else { return }
+                    let callback = AuthVerifySendCallback { result, err in
                         
                         if let err = err {
                             print(err.localizedDescription)

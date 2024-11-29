@@ -9,21 +9,22 @@ import Foundation
 import URnetworkSdk
 import SwiftUICore
 
+private class NetworkCheckCallback: SdkCallback<SdkNetworkCheckResult, SdkNetworkCheckCallbackProtocol>, SdkNetworkCheckCallbackProtocol {
+    func result(_ result: SdkNetworkCheckResult?, err: Error?) {
+        handleResult(result, err: err)
+    }
+}
 
-private class NetworkCheckCallback: NSObject, SdkNetworkCheckCallbackProtocol {
-    
-    private let completion: (SdkNetworkCheckResult?, Error?) -> Void
-    
-    init(completion: @escaping (SdkNetworkCheckResult?, Error?) -> Void) {
-        self.completion = completion
+private class NetworkCreateCallback: SdkCallback<SdkNetworkCreateResult, SdkNetworkCreateCallbackProtocol>, SdkNetworkCreateCallbackProtocol {
+    func result(_ result: SdkNetworkCreateResult?, err: Error?) {
+        handleResult(result, err: err)
     }
-    
-    func result(_ result: SdkNetworkCheckResult?, err: (any Error)?) {
-        DispatchQueue.main.async {
-            self.completion(result, err)
-        }
-    }
-    
+}
+
+enum CreateNetworkResult {
+    case successWithJwt(String)
+    case successWithVerificationRequired
+    case failure(Error)
 }
 
 extension CreateNetworkView {
@@ -40,11 +41,7 @@ extension CreateNetworkView {
         
         private static let minPasswordLength = 12
         
-        @Published var userAuth: String = "" {
-            didSet {
-                validateForm()
-            }
-        }
+        private let domain = "CreateNetworkView.ViewModel"
         
         @Published var networkName: String = "" {
             didSet {
@@ -73,6 +70,8 @@ extension CreateNetworkView {
             }
         }
         
+        @Published private(set) var isCreatingNetwork: Bool = false
+        
         init() {
             if let api = api {
                 networkNameValidationVc = SdkNetworkNameValidationViewController(api)
@@ -88,14 +87,9 @@ extension CreateNetworkView {
         // for debouncing calls to check network name availability
         private var networkCheckWorkItem: DispatchWorkItem?
         
-        func setUserAuth(_ ua: String) {
-            userAuth = ua
-        }
-
-        
         private func validateForm() {
-            formIsValid = ValidationUtils.isValidUserAuth(userAuth) &&
-                            networkNameValidationState == .valid &&
+            // todo - need to update validation to handle jwtAuth too (no password)
+            formIsValid = networkNameValidationState == .valid &&
                             password.count >= ViewModel.minPasswordLength &&
                             termsAgreed
         }
@@ -113,36 +107,44 @@ extension CreateNetworkView {
                 return
             }
             
-            networkNameValidationState = .validating
+            DispatchQueue.main.async {
+                self.networkNameValidationState = .validating
+            }
             
             if networkNameValidationVc != nil {
                 
                 let callback = NetworkCheckCallback { [weak self] result, error in
                     
-                    guard let self = self else { return }
-                    
-                    if let error = error {
-                        print("error checking network name: \(error.localizedDescription)")
-                        setNetworkNameSupportingText(ViewModel.networkNameCheckError)
-                        self.networkNameValidationState = .invalid
-                        validateForm()
+                    DispatchQueue.main.async {
                         
-                        return
-                    }
-                    
-                    if let result = result {
-                        print("result checking network name \(networkName): \(result.available)")
-                        self.networkNameValidationState = result.available ? .valid : .invalid
+                        guard let self = self else { return }
                         
-                        
-                        if (result.available) {
-                            setNetworkNameSupportingText(ViewModel.networkNameAvailable)
-                        } else {
-                            setNetworkNameSupportingText(ViewModel.networkNameUnavailable)
+                        if let error = error {
+                            print("error checking network name: \(error.localizedDescription)")
+                            
+                            
+                            self.setNetworkNameSupportingText(ViewModel.networkNameCheckError)
+                            self.networkNameValidationState = .invalid
+                            self.validateForm()
+                            
+                            
+                            return
                         }
+                        
+                        if let result = result {
+                            print("result checking network name \(self.networkName): \(result.available)")
+                            self.networkNameValidationState = result.available ? .valid : .invalid
+                            
+                            
+                            if (result.available) {
+                                self.setNetworkNameSupportingText(ViewModel.networkNameAvailable)
+                            } else {
+                                self.setNetworkNameSupportingText(ViewModel.networkNameUnavailable)
+                            }
+                        }
+                        
+                        self.validateForm()
                     }
-                    
-                    validateForm()
             
                 }
                 
@@ -157,6 +159,98 @@ extension CreateNetworkView {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.25, execute: workItem)
                 }
                 
+            }
+            
+        }
+        
+        func createNetwork(userAuth: String?, authJwt: String?) async -> CreateNetworkResult {
+            
+            if !formIsValid {
+                return .failure(NSError(domain: domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Create network form is invalid"]))
+            }
+            
+            if isCreatingNetwork {
+                return .failure(NSError(domain: domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Network creation already in progress"]))
+            }
+                
+            DispatchQueue.main.async {
+                self.isCreatingNetwork = true
+            }
+            
+            do {
+                
+                let result: CreateNetworkResult = try await withCheckedThrowingContinuation { [weak self] continuation in
+                    
+                    guard let self = self else { return }
+                    
+                    let callback = NetworkCreateCallback { result, err in
+                        
+                        if let err = err {
+                            print(err.localizedDescription)
+                            continuation.resume(throwing: err)
+                            return
+                        }
+                        
+                        if let result = result {
+                            
+                            if let resultError = result.error {
+
+                                continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: resultError.message]))
+                                
+                                return
+                                
+                            }
+                            
+                            if result.verificationRequired != nil {
+                                continuation.resume(returning: .successWithVerificationRequired)
+                                return
+                            }
+                            
+                            if let network = result.network {
+                                
+                                continuation.resume(returning: .successWithJwt(network.byJwt))
+                                return
+                                
+                            } else {
+                                continuation.resume(throwing: NSError(domain: self.domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "No network object found in result"]))
+                                return
+                            }
+                            
+                        }
+                        
+                    }
+                    
+                    let args = SdkNetworkCreateArgs()
+                    args.userName = ""
+                    args.networkName = networkName.trimmingCharacters(in: .whitespacesAndNewlines)
+                    args.terms = termsAgreed
+                    
+                    if let userAuth = userAuth {
+                        args.userAuth = userAuth
+                        args.password = password
+                    }
+                    
+                    if let authJwt {
+                        args.authJwt = authJwt
+                        args.authJwtType = "apple"
+                    }
+                    
+                    if let api = api {
+                        
+                        api.networkCreate(args, callback: callback)
+                        
+                    }
+                    
+                }
+                
+                DispatchQueue.main.async {
+                    self.isCreatingNetwork = true
+                }
+                
+                return result
+                
+            } catch {
+                return .failure(error)
             }
             
         }
