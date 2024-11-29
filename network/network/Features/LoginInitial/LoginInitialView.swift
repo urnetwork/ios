@@ -74,12 +74,12 @@ struct LoginInitialView: View {
                     
                     
                     // for testing
-                    UrButton(
-                        text: "Test verify view",
-                        onClick: {
-                            navigate(.verify("stuart@bringyour.com"))
-                        }
-                    )
+//                    UrButton(
+//                        text: "Test verify view",
+//                        onClick: {
+//                            navigate(.verify("stuart@bringyour.com"))
+//                        }
+//                    )
                     
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -8,34 +8,9 @@
 import Foundation
 import URnetworkSdk
 
-
-// this LocationsCallback is for testing API calls are working
-// temporarily keeping for reference
-private class LocationsCallback: NSObject, SdkFindLocationsCallbackProtocol {
-    private let completion: (SdkFindLocationsResult?, Error?) -> Void
-    
-    init(completion: @escaping (SdkFindLocationsResult?, Error?) -> Void) {
-        self.completion = completion
-    }
-    
-    func result(_ result: SdkFindLocationsResult?, err: Error?) {
-        DispatchQueue.main.async {
-            self.completion(result, err)
-        }
-    }
-}
-
-private class AuthLoginCallback: NSObject, SdkAuthLoginCallbackProtocol {
-    private let completion: (SdkAuthLoginResult?, Error?) -> Void
-    
-    init(completion: @escaping (SdkAuthLoginResult?, Error?) -> Void) {
-        self.completion = completion
-    }
-    
+private class AuthLoginCallback: SdkCallback<SdkAuthLoginResult, SdkAuthLoginCallbackProtocol>, SdkAuthLoginCallbackProtocol {
     func result(_ result: SdkAuthLoginResult?, err: Error?) {
-        DispatchQueue.main.async {
-            self.completion(result, err)
-        }
+        handleResult(result, err: err)
     }
 }
 
@@ -116,42 +91,5 @@ extension LoginInitialView {
             api?.authLogin(args, callback: callback)
             
         }
-        
-        // for testing api
-        
-//        init() {
-//            testApiCall()
-//        }
-        
-//        private func testApiCall() {
-//            print("testing api call")
-//            
-//            
-//            let callback = LocationsCallback { [weak self] result, error in
-//                
-//                guard let self = self else { return }
-//                
-//                if let error = error {
-//                    print("Error: \(error)")
-//                    return
-//                }
-//                
-//                guard let result = result else { return }
-//                
-//                print("we got a result! : \(String(describing: result))")
-//                // We can update ViewModel properties from here...
-//                // self.locations = result.locations
-//                
-//            }
-//            
-//            if (api == nil) {
-//                print("api is nil!")
-//                return
-//            }
-//            
-//            api?.getProviderLocations(callback)
-//            
-//        }
-        
     }
 }
