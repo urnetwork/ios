@@ -12,23 +12,10 @@ struct LoginPasswordView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @StateObject private var viewModel = ViewModel()
     
-    let userAuth: String
-    
-    @State private var emailOrPhone: String
-    
-    init(userAuth: String) {
-        print("initialize user auth")
-        self.userAuth = userAuth
-        // Initialize the state with the passed value
-        _emailOrPhone = State(initialValue: userAuth)
-    }
-    
-    private var login = {
-        
-    }
-    
+    var userAuth: String
+    var navigate: (LoginInitialNavigationPath) -> Void
+
     var body: some View {
-        
         
         GeometryReader { geometry in
             ScrollView(.vertical) {
@@ -40,7 +27,7 @@ struct LoginPasswordView: View {
                     Spacer().frame(height: 64)
                     
                     UrTextField(
-                        text: $emailOrPhone,
+                        text: .constant(userAuth),
                         label: "Email or phone number",
                         placeholder: "Enter your phone number or email",
                         isEnabled: false
@@ -53,7 +40,11 @@ struct LoginPasswordView: View {
                         label: "Password",
                         placeholder: "************",
                         submitLabel: .continue,
-                        onSubmit: login,
+                        onSubmit: {
+                            Task {
+                                await viewModel.login(userAuth: self.userAuth)
+                            }
+                        },
                         isSecure: true
                     )
                     
@@ -61,7 +52,11 @@ struct LoginPasswordView: View {
                     
                     UrButton(
                         text: "Continue",
-                        onClick: login
+                        onClick: {
+                            Task {
+                                let result = await viewModel.login(userAuth: self.userAuth)
+                            }
+                        }
                         // todo add icon
                     )
                     
@@ -83,11 +78,28 @@ struct LoginPasswordView: View {
         }
     
     }
+    
+    private func handleLoginResult(_ result: LoginNetworkResult) {
+        switch result {
+            
+            case .successWithJwt(let jwt):
+                break
+            case .successWithVerificationRequired:
+                navigate(.verify(userAuth))
+                break
+            case .failure(let error):
+                print("CreateNetworkView: handleResult: \(error.localizedDescription)")
+                break
+            
+        }
+    }
+    
 }
 
 #Preview {
     LoginPasswordView(
-        userAuth: "hello@ur.io"
+        userAuth: "hello@ur.io",
+        navigate: {_ in }
     )
     .environmentObject(ThemeManager.shared)
 }

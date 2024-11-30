@@ -24,7 +24,10 @@ struct LoginNavigationView: View {
             .navigationDestination(for: LoginInitialNavigationPath.self) { path in
                 switch path {
                     case .password(let userAuth):
-                        LoginPasswordView(userAuth: userAuth)
+                        LoginPasswordView(
+                            userAuth: userAuth,
+                            navigate: viewModel.navigate
+                        )
                             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                     case .createNetwork(let userAuth):
                         CreateNetworkView(

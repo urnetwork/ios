@@ -1,5 +1,5 @@
 //
-//  networkApp.swift
+//  NetworkApp.swift
 //  network
 //
 //  Created by brien on 11/18/24.
@@ -8,14 +8,11 @@
 import SwiftUI
 import URnetworkSdk
 
-class AuthenticationManager: ObservableObject {
-    @Published var isAuthenticated: Bool = false
-}
-
 @main
-struct networkApp: App {
+struct NetworkApp: App {
     
-    @StateObject private var authManager = AuthenticationManager()
+    @StateObject private var viewModel = ViewModel()
+    
     
     init() {
         
@@ -28,12 +25,15 @@ struct networkApp: App {
         
         NetworkSpaceManager.shared.initialize(with: documentsPath.path())
         
+        
+        viewModel.setAsyncLocalState(NetworkSpaceManager.shared.networkSpace?.getAsyncLocalState())
+        
     }
     
     var body: some Scene {
         WindowGroup {
             
-            if authManager.isAuthenticated {
+            if viewModel.isAuthenticated {
                 
                 TabView {
                     

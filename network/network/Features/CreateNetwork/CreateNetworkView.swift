@@ -125,7 +125,7 @@ struct CreateNetworkView: View {
         }
     }
     
-    private func handleResult(_ result: CreateNetworkResult) {
+    private func handleResult(_ result: LoginNetworkResult) {
         switch result {
             
             case .successWithJwt(let jwt):

@@ -21,12 +21,6 @@ private class NetworkCreateCallback: SdkCallback<SdkNetworkCreateResult, SdkNetw
     }
 }
 
-enum CreateNetworkResult {
-    case successWithJwt(String)
-    case successWithVerificationRequired
-    case failure(Error)
-}
-
 extension CreateNetworkView {
     
     class ViewModel: ObservableObject {
@@ -163,7 +157,7 @@ extension CreateNetworkView {
             
         }
         
-        func createNetwork(userAuth: String?, authJwt: String?) async -> CreateNetworkResult {
+        func createNetwork(userAuth: String?, authJwt: String?) async -> LoginNetworkResult {
             
             if !formIsValid {
                 return .failure(NSError(domain: domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Create network form is invalid"]))
@@ -179,14 +173,13 @@ extension CreateNetworkView {
             
             do {
                 
-                let result: CreateNetworkResult = try await withCheckedThrowingContinuation { [weak self] continuation in
+                let result: LoginNetworkResult = try await withCheckedThrowingContinuation { [weak self] continuation in
                     
                     guard let self = self else { return }
                     
                     let callback = NetworkCreateCallback { result, err in
                         
                         if let err = err {
-                            print(err.localizedDescription)
                             continuation.resume(throwing: err)
                             return
                         }
