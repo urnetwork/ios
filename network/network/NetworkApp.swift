@@ -8,49 +8,63 @@
 import SwiftUI
 import URnetworkSdk
 
+//class MainUrNetworkStore: ObservableObject {
+////    @Published var networkSpaceStore: NetworkSpaceStore
+////    
+////    init() {
+////        self.networkSpaceStore = NetworkSpaceStore()
+////    }
+//}
+
+
 @main
 struct NetworkApp: App {
     
-    @StateObject private var viewModel = ViewModel()
-    
-    
-    init() {
-        
-        // Get app's document directory path
-        let documentsPath = FileManager.default.urls(for: .documentDirectory,
-                                                   in: .userDomainMask)[0]
-        
-        // Print for debugging
-        print("📁 Documents path: \(documentsPath.path)")
-        
-        NetworkSpaceManager.shared.initialize(with: documentsPath.path())
-        
-        
-        viewModel.setAsyncLocalState(NetworkSpaceManager.shared.networkSpace?.getAsyncLocalState())
-        
-    }
+    @StateObject var networkStore = NetworkStore()
     
     var body: some Scene {
         WindowGroup {
             
-            if viewModel.isAuthenticated {
+            Group {
                 
-                TabView {
+                if networkStore.device != nil {
                     
-                    ConnectView()
-                        .tabItem {
-                            Label("Account", systemImage: "person.circle")
-                        }
+                    TabView {
                         
+                        ConnectView(
+                            logout: networkStore.logout
+                        )
+                            .tabItem {
+                                Label("Account", systemImage: "person.circle")
+                            }
+                            
+                    }
+                    
+                } else {
+                    
+                    if let api = networkStore.api {
+                        LoginNavigationView(
+                            api: api,
+                            authenticateNetworkClient: networkStore.authenticateNetworkClient
+                        )
+                    }
+//                    else {
+//                        Text("loading api...")
+//                    }
+                    
                 }
-                .environmentObject(ThemeManager.shared)
-                
-            } else {
-                
-                LoginNavigationView()
-                    .environmentObject(ThemeManager.shared)
                 
             }
+            .environmentObject(ThemeManager.shared)
+//            .onAppear {
+//                let documentsPath = FileManager.default.urls(for: .documentDirectory,
+//                                                           in: .userDomainMask)[0]
+//                
+//                print("documentsPath is \(documentsPath.path())")
+//                
+//                networkStore.initializeNetworkSpace(documentsPath.path())
+//            }
+
         }
     }
 }

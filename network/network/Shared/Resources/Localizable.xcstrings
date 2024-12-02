@@ -10,6 +10,9 @@
     " and " : {
 
     },
+    "..." : {
+
+    },
     "[Privacy Policy](https://ur.io/privacy)" : {
 
     },
@@ -20,6 +23,9 @@
 
     },
     "Account" : {
+
+    },
+    "Connect View!!" : {
 
     },
     "Continue" : {
@@ -46,12 +52,6 @@
     "Get started" : {
 
     },
-    "Hello, world!" : {
-
-    },
-    "Hello, World!" : {
-
-    },
     "I agree to URnetwork's " : {
 
     },
@@ -60,6 +60,9 @@
     },
     "Join URnetwork" : {
       "comment" : "URnetwork is the project name and should not be translated"
+    },
+    "Logout" : {
+
     },
     "Network name" : {
 
@@ -95,6 +98,9 @@
 
     },
     "You've got mail" : {
+
+    },
+    "zzz" : {
 
     }
   },

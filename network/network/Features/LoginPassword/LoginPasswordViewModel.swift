@@ -7,6 +7,7 @@
 
 import Foundation
 import URnetworkSdk
+import SwiftUI
 
 private class AuthLoginPasswordCallback: SdkCallback<SdkAuthLoginWithPasswordResult, SdkAuthLoginWithPasswordCallbackProtocol>, SdkAuthLoginWithPasswordCallbackProtocol {
     func result(_ result: SdkAuthLoginWithPasswordResult?, err: Error?) {
@@ -18,7 +19,15 @@ extension LoginPasswordView {
     
     class ViewModel: ObservableObject {
         
-        private let api = NetworkSpaceManager.shared.networkSpace?.getApi()
+        // private let api = NetworkSpaceManager.shared.networkSpace?.getApi()
+        
+//        @EnvironmentObject var networkSpaceStore: NetworkSpaceStore
+//        
+//        private var api: SdkBringYourApi? {
+//            return networkSpaceStore.api
+//        }
+        
+        private var api: SdkBringYourApi?
         
         @Published private(set) var isValid: Bool = false
         
@@ -32,6 +41,14 @@ extension LoginPasswordView {
         
         private let domain = "LoginPassword.ViewModel"
         
+        init(api: SdkBringYourApi?) {
+            self.api = api
+        }
+        
+        func setIsLoggingIn(_ isLoggingIn: Bool) {
+            self.isLoggingIn = isLoggingIn
+        }
+        
         func login(userAuth: String) async -> LoginNetworkResult {
             
             if !isValid {
@@ -43,7 +60,7 @@ extension LoginPasswordView {
             }
             
             DispatchQueue.main.async {
-                self.isLoggingIn = true
+                self.setIsLoggingIn(true)
             }
             
             do {
@@ -105,9 +122,9 @@ extension LoginPasswordView {
                     
                 }
                 
-                DispatchQueue.main.async {
-                    self.isLoggingIn = false
-                }
+//                DispatchQueue.main.async {
+//                    self.isLoggingIn = false
+//                }
                 
                 return result
             } catch {

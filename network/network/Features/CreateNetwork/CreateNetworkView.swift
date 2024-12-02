@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import URnetworkSdk
 
 struct CreateNetworkView: View {
     
@@ -15,9 +16,21 @@ struct CreateNetworkView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     
-    @StateObject private var viewModel = ViewModel()
+    @StateObject private var viewModel: ViewModel
     
     @FocusState private var focusedField: Field?
+    
+    init(
+        userAuth: String?,
+        authJwt: String?,
+        navigate: @escaping (LoginInitialNavigationPath) -> Void,
+        api: SdkBringYourApi
+    ) {
+        _viewModel = StateObject.init(wrappedValue: ViewModel(api: api))
+        self.userAuth = userAuth
+        self.authJwt = authJwt
+        self.navigate = navigate
+    }
 
     enum Field {
         case networkName, password
@@ -148,7 +161,9 @@ struct CreateNetworkView: View {
 #Preview {
     CreateNetworkView(
         userAuth: "hello@ur.io",
-        navigate: {_ in }
+        authJwt: nil,
+        navigate: {_ in },
+        api: SdkBringYourApi()
     )
     .environmentObject(ThemeManager.shared)
 }

@@ -25,17 +25,30 @@ extension CreateNetworkView {
     
     class ViewModel: ObservableObject {
         
-        private let api = NetworkSpaceManager.shared.networkSpace?.getApi()
-        private var networkNameValidationVc: SdkNetworkNameValidationViewController?
+        // private let api = NetworkSpaceManager.shared.networkSpace?.getApi()
         
+//        @EnvironmentObject var networkSpaceStore: NetworkSpaceStore
+//        
+//        private var api: SdkBringYourApi? {
+//            return networkSpaceStore.api
+//        }
+        
+        private var api: SdkBringYourApi
+        private var networkNameValidationVc: SdkNetworkNameValidationViewController?
         private static let networkNameTooShort: LocalizedStringKey = "Network names must be 6 characters or more"
         private static let networkNameUnavailable: LocalizedStringKey = "This network name is already taken"
         private static let networkNameCheckError: LocalizedStringKey = "There was an error checking the network name"
         private static let networkNameAvailable: LocalizedStringKey = "Nice! This network name is available"
-        
         private static let minPasswordLength = 12
-        
         private let domain = "CreateNetworkView.ViewModel"
+        
+        init(api: SdkBringYourApi) {
+            self.api = api
+            
+            networkNameValidationVc = SdkNetworkNameValidationViewController(api)
+            
+            setNetworkNameSupportingText(ViewModel.networkNameTooShort)
+        }
         
         @Published var networkName: String = "" {
             didSet {
@@ -65,14 +78,6 @@ extension CreateNetworkView {
         }
         
         @Published private(set) var isCreatingNetwork: Bool = false
-        
-        init() {
-            if let api = api {
-                networkNameValidationVc = SdkNetworkNameValidationViewController(api)
-            }
-            
-            setNetworkNameSupportingText(ViewModel.networkNameTooShort)
-        }
         
         private func setNetworkNameSupportingText(_ text: LocalizedStringKey) {
             networkNameSupportingText = text
@@ -228,11 +233,13 @@ extension CreateNetworkView {
                         args.authJwtType = "apple"
                     }
                     
-                    if let api = api {
-                        
-                        api.networkCreate(args, callback: callback)
-                        
-                    }
+//                    if let api = api {
+//                        
+//                        api.networkCreate(args, callback: callback)
+//                        
+//                    }
+                    
+                    api.networkCreate(args, callback: callback)
                     
                 }
                 

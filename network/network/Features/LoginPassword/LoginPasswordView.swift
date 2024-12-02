@@ -6,14 +6,29 @@
 //
 
 import SwiftUI
+import URnetworkSdk
 
 struct LoginPasswordView: View {
     
+    @EnvironmentObject var networkSpaceStore: NetworkSpaceStore
     @EnvironmentObject var themeManager: ThemeManager
-    @StateObject private var viewModel = ViewModel()
+    @StateObject private var viewModel: ViewModel
     
     var userAuth: String
     var navigate: (LoginInitialNavigationPath) -> Void
+    var authenticateNetworkClient: (String) async -> Result<Void, Error>
+    
+    init(
+        userAuth: String,
+        navigate: @escaping (LoginInitialNavigationPath) -> Void,
+        authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>,
+        api: SdkBringYourApi?
+    ) {
+        _viewModel = StateObject(wrappedValue: ViewModel(api: api))
+        self.userAuth = userAuth
+        self.navigate = navigate
+        self.authenticateNetworkClient = authenticateNetworkClient
+    }
 
     var body: some View {
         
@@ -55,8 +70,10 @@ struct LoginPasswordView: View {
                         onClick: {
                             Task {
                                 let result = await viewModel.login(userAuth: self.userAuth)
+                                await handleLoginResult(result)
                             }
-                        }
+                        },
+                        enabled: !viewModel.isLoggingIn && viewModel.isValid
                         // todo add icon
                     )
                     
@@ -79,19 +96,37 @@ struct LoginPasswordView: View {
     
     }
     
-    private func handleLoginResult(_ result: LoginNetworkResult) {
+    private func handleLoginResult(_ result: LoginNetworkResult) async {
         switch result {
             
             case .successWithJwt(let jwt):
+                await handleSuccessWithJwt(jwt)
                 break
             case .successWithVerificationRequired:
                 navigate(.verify(userAuth))
+                viewModel.setIsLoggingIn(false)
+            
                 break
             case .failure(let error):
                 print("CreateNetworkView: handleResult: \(error.localizedDescription)")
+                viewModel.setIsLoggingIn(false)
+                // TODO: toast alert
+                // TODO: clear viewmodel loading state
                 break
             
         }
+    }
+    
+    private func handleSuccessWithJwt(_ jwt: String) async {
+        let result = await authenticateNetworkClient(jwt)
+        
+        if case .failure(let error) = result {
+            print("CreateNetworkView: handleSuccessWithJwt: \(error.localizedDescription)")
+            // TODO: toast alert
+            // TODO: clear viewmodel loading state
+        }
+        viewModel.setIsLoggingIn(false)
+        
     }
     
 }
@@ -99,7 +134,11 @@ struct LoginPasswordView: View {
 #Preview {
     LoginPasswordView(
         userAuth: "hello@ur.io",
-        navigate: {_ in }
+        navigate: {_ in },
+        authenticateNetworkClient: {_ in
+            return .success(())
+        },
+        api: nil
     )
     .environmentObject(ThemeManager.shared)
 }

@@ -7,6 +7,7 @@
 
 import Foundation
 import URnetworkSdk
+import SwiftUI
 
 private class AuthLoginCallback: SdkCallback<SdkAuthLoginResult, SdkAuthLoginCallbackProtocol>, SdkAuthLoginCallbackProtocol {
     func result(_ result: SdkAuthLoginResult?, err: Error?) {
@@ -18,7 +19,14 @@ extension LoginInitialView {
     
     class ViewModel: ObservableObject {
         
-        private let api = NetworkSpaceManager.shared.networkSpace?.getApi()
+        // private let api = NetworkSpaceManager.shared.networkSpace?.getApi()
+//        @EnvironmentObject var networkSpaceStore: NetworkSpaceStore
+//        
+//        private var api: SdkBringYourApi? {
+//            return networkSpaceStore.api
+//        }
+        
+        private var api: SdkBringYourApi?
         
         @Published var userAuth: String = "" {
             didSet {
@@ -31,6 +39,10 @@ extension LoginInitialView {
         @Published private(set) var isCheckingUserAuth: Bool = false
         
         @Published private(set) var loginErrorMessage: String?
+        
+        init(api: SdkBringYourApi?) {
+            self.api = api
+        }
         
         func getStarted(
             navigateToLogin: @escaping () -> Void,

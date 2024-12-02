@@ -8,21 +8,29 @@
 //
 
 import SwiftUI
+import URnetworkSdk
 
 struct CreateNetworkVerifyView: View {
     
     
     @EnvironmentObject var themeManager: ThemeManager
-    @StateObject private var viewModel = ViewModel()
+    // @StateObject private var viewModel = ViewModel()
+    @StateObject private var viewModel: ViewModel
     
     // Keyboard state
     @FocusState private var isKeyboardShowing: Bool
     
     var userAuth: String
     
-    var authJwt: String?
+    // var authJwt: String
     
     let codeCount: Int = 6
+    
+    init(userAuth: String, api: SdkBringYourApi) {
+        _viewModel = StateObject(wrappedValue: ViewModel(api: api))
+        self.userAuth = userAuth
+        // self.authJwt = authJwt
+    }
     
     var body: some View {
         
@@ -146,7 +154,8 @@ struct CreateNetworkVerifyView: View {
 
 #Preview {
     CreateNetworkVerifyView(
-        userAuth: ""
+        userAuth: "",
+        api: SdkBringYourApi()
     )
     .environmentObject(ThemeManager.shared)
 }
