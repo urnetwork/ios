@@ -43,13 +43,10 @@ class NetworkStore: ObservableObject {
         let documentsPath = FileManager.default.urls(for: .documentDirectory,
                                                    in: .userDomainMask)[0]
         
-        print("documentsPath is \(documentsPath.path())")
-        
         self.initializeNetworkSpace(documentsPath.path())
         
     }
     
-    // @Published private(set) var asyncLocalState: SdkAsyncLocalState?
     var asyncLocalState: SdkAsyncLocalState? {
         return networkSpace?.getAsyncLocalState()
     }
@@ -169,9 +166,7 @@ extension NetworkStore {
 extension NetworkStore {
     
     func initDevice(
-        // networkSpace: SdkNetworkSpace,
         clientJwt: String,
-        // deviceDescription: String,
         deviceSpec: String
     ) {
         
@@ -181,16 +176,13 @@ extension NetworkStore {
         
         if let networkSpace = networkSpace {
             
-            let localState = networkSpace.getAsyncLocalState()?.getLocalState()
+            let localState = asyncLocalState?.getLocalState()
             
             if let localState = localState {
                 
                 let instanceId = localState.getInstanceId()
-                print("instance id is \(String(describing: instanceId))")
                 let routeLocal = localState.getRouteLocal()
-                print("routeLocal is \(String(describing: routeLocal))")
                 let connectLocation = localState.getConnectLocation()
-                // print("connectLocation is \(String(describing: routeLocal))")
                 let canShowRatingDialog = localState.getCanShowRatingDialog()
                 let provideWhileDisconnected = localState.getProvideWhileDisconnected()
                 let provideMode = provideWhileDisconnected ? SdkProvideModePublic : localState.getProvideMode()
@@ -199,38 +191,48 @@ extension NetworkStore {
                 
                 print("aaa")
                 
-                device = SdkNewBringYourDeviceWithDefaults(
-                    networkSpace,
-                    clientJwt,
-                    deviceDescription,
-                    deviceSpec,
-                    getAppVersion(),
-                    instanceId,
-                    nil
-                )
+                var newDeviceError: NSError?
                 
-                print("bbb")
-                
-                guard let device = device else {
-                    print("device is nil")
-                    return
+                DispatchQueue.main.async {
+                    self.device = SdkNewBringYourDeviceWithDefaults(
+                        networkSpace,
+                        clientJwt,
+                        self.deviceDescription,
+                        deviceSpec,
+                        self.getAppVersion(),
+                        instanceId,
+                        &newDeviceError
+                    )
+                    
+                    if let error = newDeviceError {
+                        print("Error occurred: \(error.localizedDescription)")
+                    } else {
+                        print("Device created successfully")
+                    }
+                    
+                    print("bbb")
+                    
+                    guard let device = self.device else {
+                        print("device is nil")
+                        return
+                    }
+                    
+                    if let providerSecretKeys = localState.getProvideSecretKeys() {
+                        device.loadProvideSecretKeys(providerSecretKeys)
+                    } else {
+                        device.initProvideSecretKeys()
+                        device.loadProvideSecretKeys(device.getProvideSecretKeys())
+                    }
+                    
+                    device.setProvidePaused(true)
+                    device.setRouteLocal(routeLocal)
+                    device.setProvideMode(provideMode)
+                    device.setConnectLocation(connectLocation)
+                    device.setCanShowRatingDialog(canShowRatingDialog)
+                    device.setProvideWhileDisconnected(provideWhileDisconnected)
+                    device.setVpnInterfaceWhileOffline(vpnInterfaceWhileOffline)
+                    device.setCanRefer(canRefer)
                 }
-                
-                if let providerSecretKeys = localState.getProvideSecretKeys() {
-                    device.loadProvideSecretKeys(providerSecretKeys)
-                } else {
-                    device.initProvideSecretKeys()
-                    device.loadProvideSecretKeys(device.getProvideSecretKeys())
-                }
-                
-                device.setProvidePaused(true)
-                device.setRouteLocal(routeLocal)
-                device.setProvideMode(provideMode)
-                device.setConnectLocation(connectLocation)
-                device.setCanShowRatingDialog(canShowRatingDialog)
-                device.setProvideWhileDisconnected(provideWhileDisconnected)
-                device.setVpnInterfaceWhileOffline(vpnInterfaceWhileOffline)
-                device.setCanRefer(canRefer)
                 
             } else {
                 print("local state is nil")
@@ -273,10 +275,68 @@ private class AuthNetworkClientCallback: SdkCallback<SdkAuthNetworkClientResult,
     }
 }
 
+private class SetJWTLocalStateCallback: NSObject, SdkCommitCallbackProtocol {
+    
+    let continuation: CheckedContinuation<Void, Error>
+    let clientJwt: String
+    let deviceSpecs: String
+    let initDevice: (_ clientJwt: String, _ deviceSpecs: String) -> Void
+    
+    init(
+        continuation: CheckedContinuation<Void, Error>,
+        clientJwt: String,
+        deviceSpecs: String,
+        initDevice: @escaping (_ clientJwt: String, _ deviceSpecs: String) -> Void
+    ) {
+        self.continuation = continuation
+        
+        self.initDevice = initDevice
+        
+        self.clientJwt = clientJwt
+        self.deviceSpecs = deviceSpecs
+    }
+    
+    func complete(_ success: Bool) {
+        
+        if success {
+            
+            self.initDevice(clientJwt, deviceSpecs)
+            
+            continuation.resume(returning: ())
+        } else {
+            continuation.resume(throwing: NSError(domain: "SetJWTLocalStateCallback", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to set client JWT"]))
+        }
+        
+    }
+}
+
+
 // MARK: login/logout
 extension NetworkStore {
     
-    // func login(_ jwt: String) async -> Result<Void, Error> {
+    private class LogoutCallback: NSObject, SdkCommitCallbackProtocol {
+        
+        weak var networkStore: NetworkStore?
+        
+        init(networkStore: NetworkStore) {
+            self.networkStore = networkStore
+        }
+        
+        func complete(_ success: Bool) {
+            
+            guard let networkStore = networkStore else {
+                print("LogoutCallback: complete: network store is nil")
+                return
+            }
+            
+            networkStore.api?.setByJwt(nil)
+            DispatchQueue.main.async {
+                networkStore.setDevice(nil)
+            }
+            
+        }
+    }
+    
     func authenticateNetworkClient(_ jwt: String) async -> Result<Void, Error> {
         
         do {
@@ -297,8 +357,6 @@ extension NetworkStore {
         do {
             
             let deviceSpecs = await getDeviceSpecs()
-            
-            print("deviceSpecs are \(deviceSpecs)")
             
             let result: Void = try await withCheckedThrowingContinuation { continuation in
                 
@@ -328,11 +386,14 @@ extension NetworkStore {
 
                     let clientJwt = result.byClientJwt
                     
-                    self.asyncLocalState?.setByClientJwt(clientJwt, callback: nil)
+                    let callback = SetJWTLocalStateCallback(
+                        continuation: continuation,
+                        clientJwt: clientJwt,
+                        deviceSpecs: deviceSpecs,
+                        initDevice: self.initDevice(clientJwt:deviceSpec:)
+                    )
                     
-                    self.initDevice(clientJwt: clientJwt, deviceSpec: deviceSpecs)
-                    
-                    continuation.resume(returning: ())
+                    self.asyncLocalState?.setByClientJwt(clientJwt, callback: callback)
                     
                 }
                 
@@ -349,8 +410,15 @@ extension NetworkStore {
     }
     
     func logout() {
-        asyncLocalState?.logout(nil)
-        api?.setByJwt(nil)
+        
+        guard let asyncLocalState = asyncLocalState else {
+            print("asyncLocalState is nil")
+            return
+        }
+        
+        let logoutCallback = LogoutCallback(networkStore: self)
+        
+        asyncLocalState.logout(logoutCallback)
     }
     
     private func getDeviceSpecs() async -> String {
