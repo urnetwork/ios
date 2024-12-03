@@ -30,7 +30,15 @@ extension CreateNetworkVerifyView {
     
     class ViewModel: ObservableObject {
         
-        private let api = NetworkSpaceManager.shared.networkSpace?.getApi()
+        // private let api = NetworkSpaceManager.shared.networkSpace?.getApi()
+        
+        // @EnvironmentObject var networkSpaceStore: NetworkSpaceStore
+        
+//        private var api: SdkBringYourApi? {
+//            return networkSpaceStore.api
+//        }
+        
+        private var api: SdkBringYourApi?
         
         @Published var otp: String = ""
         
@@ -43,6 +51,10 @@ extension CreateNetworkVerifyView {
         private var cancellables = Set<AnyCancellable>()
         
         private let domain = "CraeteNetworkVerifyViewModel"
+        
+        init(api: SdkBringYourApi?) {
+            self.api = api
+        }
         
         func resendOtp(userAuth: String) async -> Result<Bool, Error> {
             
@@ -139,8 +151,6 @@ extension CreateNetworkVerifyView {
                         if let result = result {
                             
                             if let resultError = result.error {
-                                print(result.error?.message ?? "error unwrapping result.error?.message")
-
                                 continuation.resume(throwing: NSError(domain: domain, code: -1, userInfo: [NSLocalizedDescriptionKey: resultError.message]))
                                 
                                 return

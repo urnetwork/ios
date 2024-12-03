@@ -8,11 +8,24 @@
 import SwiftUI
 
 struct ConnectView: View {
+    
+    var logout: () -> Void
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            Text("Connect View!!")
+            
+            Spacer().frame(height: 32)
+            
+            Button(action: logout) {
+                Text("Logout")
+            }
+        }
     }
 }
 
 #Preview {
-    ConnectView()
+    ConnectView(
+        logout: {}
+    )
 }

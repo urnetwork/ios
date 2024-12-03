@@ -6,23 +6,21 @@
 //
 
 import SwiftUI
+import URnetworkSdk
 
 struct LoginInitialView: View {
     
-    @StateObject private var viewModel = ViewModel()
     @EnvironmentObject var themeManager: ThemeManager
+    // @EnvironmentObject var networkSpaceStore: NetworkSpaceStore
+    // @StateObject private var viewModel = ViewModel()
+    @StateObject private var viewModel: ViewModel
     
+    var api: SdkBringYourApi?
     var navigate: (LoginInitialNavigationPath) -> Void
     
-    private func getStarted() {
-        viewModel.getStarted(
-            navigateToLogin: {
-                navigate(.password(viewModel.userAuth))
-            },
-            navigateToCreateNetwork: {
-                navigate(.createNetwork(viewModel.userAuth))
-            }
-        )
+    init(api: SdkBringYourApi?, navigate: @escaping (LoginInitialNavigationPath) -> Void) {
+        _viewModel = StateObject(wrappedValue: ViewModel(api: api))
+        self.navigate = navigate
     }
     
     // todo - login with apple
@@ -80,10 +78,22 @@ struct LoginInitialView: View {
             }
         }
     }
+    
+    private func getStarted() {
+        viewModel.getStarted(
+            navigateToLogin: {
+                navigate(.password(viewModel.userAuth))
+            },
+            navigateToCreateNetwork: {
+                navigate(.createNetwork(viewModel.userAuth))
+            }
+        )
+    }
 }
 
 #Preview {
     LoginInitialView(
+        api: nil,
         navigate: {_ in }
     )
         .environmentObject(ThemeManager.shared)

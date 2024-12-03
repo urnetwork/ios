@@ -6,29 +6,31 @@
 //
 
 import SwiftUI
+import URnetworkSdk
 
 struct LoginPasswordView: View {
     
+    @EnvironmentObject var networkSpaceStore: NetworkSpaceStore
     @EnvironmentObject var themeManager: ThemeManager
-    @StateObject private var viewModel = ViewModel()
+    @StateObject private var viewModel: ViewModel
     
-    let userAuth: String
+    var userAuth: String
+    var navigate: (LoginInitialNavigationPath) -> Void
+    var authenticateNetworkClient: (String) async -> Result<Void, Error>
     
-    @State private var emailOrPhone: String
-    
-    init(userAuth: String) {
-        print("initialize user auth")
+    init(
+        userAuth: String,
+        navigate: @escaping (LoginInitialNavigationPath) -> Void,
+        authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>,
+        api: SdkBringYourApi?
+    ) {
+        _viewModel = StateObject(wrappedValue: ViewModel(api: api))
         self.userAuth = userAuth
-        // Initialize the state with the passed value
-        _emailOrPhone = State(initialValue: userAuth)
+        self.navigate = navigate
+        self.authenticateNetworkClient = authenticateNetworkClient
     }
-    
-    private var login = {
-        
-    }
-    
+
     var body: some View {
-        
         
         GeometryReader { geometry in
             ScrollView(.vertical) {
@@ -40,7 +42,7 @@ struct LoginPasswordView: View {
                     Spacer().frame(height: 64)
                     
                     UrTextField(
-                        text: $emailOrPhone,
+                        text: .constant(userAuth),
                         label: "Email or phone number",
                         placeholder: "Enter your phone number or email",
                         isEnabled: false
@@ -53,7 +55,11 @@ struct LoginPasswordView: View {
                         label: "Password",
                         placeholder: "************",
                         submitLabel: .continue,
-                        onSubmit: login,
+                        onSubmit: {
+                            Task {
+                                await viewModel.login(userAuth: self.userAuth)
+                            }
+                        },
                         isSecure: true
                     )
                     
@@ -61,7 +67,13 @@ struct LoginPasswordView: View {
                     
                     UrButton(
                         text: "Continue",
-                        onClick: login
+                        onClick: {
+                            Task {
+                                let result = await viewModel.login(userAuth: self.userAuth)
+                                await handleLoginResult(result)
+                            }
+                        },
+                        enabled: !viewModel.isLoggingIn && viewModel.isValid
                         // todo add icon
                     )
                     
@@ -83,11 +95,50 @@ struct LoginPasswordView: View {
         }
     
     }
+    
+    private func handleLoginResult(_ result: LoginNetworkResult) async {
+        switch result {
+            
+            case .successWithJwt(let jwt):
+                await handleSuccessWithJwt(jwt)
+                break
+            case .successWithVerificationRequired:
+                navigate(.verify(userAuth))
+                viewModel.setIsLoggingIn(false)
+            
+                break
+            case .failure(let error):
+                print("CreateNetworkView: handleResult: \(error.localizedDescription)")
+                viewModel.setIsLoggingIn(false)
+                // TODO: toast alert
+                // TODO: clear viewmodel loading state
+                break
+            
+        }
+    }
+    
+    private func handleSuccessWithJwt(_ jwt: String) async {
+        let result = await authenticateNetworkClient(jwt)
+        
+        if case .failure(let error) = result {
+            print("CreateNetworkView: handleSuccessWithJwt: \(error.localizedDescription)")
+            // TODO: toast alert
+            // TODO: clear viewmodel loading state
+        }
+        viewModel.setIsLoggingIn(false)
+        
+    }
+    
 }
 
 #Preview {
     LoginPasswordView(
-        userAuth: "hello@ur.io"
+        userAuth: "hello@ur.io",
+        navigate: {_ in },
+        authenticateNetworkClient: {_ in
+            return .success(())
+        },
+        api: nil
     )
     .environmentObject(ThemeManager.shared)
 }
