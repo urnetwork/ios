@@ -9,30 +9,30 @@ import Foundation
 import URnetworkSdk
 
 
-extension ContentView {
-    
-    class ViewModel: ObservableObject {
-        
-        // for testing
-        @Published var isAuthenticated: Bool = false
-        
-        @Published private(set) var networkSpace: SdkNetworkSpace? {
-            didSet {
-                print("network space set: get api url: \(networkSpace?.getApiUrl() ?? "none")")
-                setApi(networkSpace?.getApi())
-            }
-        }
-        
-        @Published private(set) var api: SdkBringYourApi?
-        
-        func setApi(_ api: SdkBringYourApi?) {
-            print("should set api as: \(api)")
-            self.api = api
-        }
-        
-    }
-    
-}
+//extension ContentView {
+//    
+//    class ViewModel: ObservableObject {
+//        
+//        // for testing
+//        @Published var isAuthenticated: Bool = false
+//        
+//        @Published private(set) var networkSpace: SdkNetworkSpace? {
+//            didSet {
+//                print("network space set: get api url: \(networkSpace?.getApiUrl() ?? "none")")
+//                setApi(networkSpace?.getApi())
+//            }
+//        }
+//        
+//        @Published private(set) var api: SdkBringYourApi?
+//        
+//        func setApi(_ api: SdkBringYourApi?) {
+//            print("should set api as: \(api)")
+//            self.api = api
+//        }
+//        
+//    }
+//    
+//}
 
 //private class TestNetworkSpaceUpdateCallback: NSObject, URnetworkSdk.SdkNetworkSpaceUpdateProtocol {
 //    func update(_ values: URnetworkSdk.SdkNetworkSpaceValues?) {

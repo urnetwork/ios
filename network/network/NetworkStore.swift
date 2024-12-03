@@ -43,7 +43,9 @@ class NetworkStore: ObservableObject {
         let documentsPath = FileManager.default.urls(for: .documentDirectory,
                                                    in: .userDomainMask)[0]
         
-        self.initializeNetworkSpace(documentsPath.path())
+        Task {
+            await self.initializeNetworkSpace(documentsPath.path())
+        }
         
     }
     
@@ -115,7 +117,7 @@ class NetworkStore: ObservableObject {
     
 }
 
-private class TestNetworkSpaceUpdateCallback: NSObject, URnetworkSdk.SdkNetworkSpaceUpdateProtocol {
+private class NetworkSpaceUpdateCallback: NSObject, URnetworkSdk.SdkNetworkSpaceUpdateProtocol {
     func update(_ values: URnetworkSdk.SdkNetworkSpaceValues?) {
         guard let values = values else {
             return
@@ -123,17 +125,49 @@ private class TestNetworkSpaceUpdateCallback: NSObject, URnetworkSdk.SdkNetworkS
     }
 }
 
+private class GetJwtInitDeviceCallback: NSObject, SdkGetByClientJwtCallbackProtocol {
+    
+    weak var networkStore: NetworkStore?
+    var deviceSpecs: String
+    
+    init(networkStore: NetworkStore?, deviceSpecs: String) {
+        self.networkStore = networkStore
+        self.deviceSpecs = deviceSpecs
+    }
+    
+    func result(_ result: String?, ok: Bool) {
+        
+        guard let networkStore = networkStore else {
+            print("[GetByClientJwtCallback] no network store found")
+            return
+        }
+        
+        if ok {
+            
+            guard let result else {
+                print("[GetByClientJwtCallback] result is nil")
+                networkStore.logout()
+                return
+            }
+            
+            if result == "" {
+                networkStore.logout()
+            } else {
+                networkStore.initDevice(clientJwt: result, deviceSpec: self.deviceSpecs)
+            }
+            
+        }
+    }
+}
+
 // MARK: Network space handlers
 extension NetworkStore {
     
-    func initializeNetworkSpace(_ storagePath: String) {
+    func initializeNetworkSpace(_ storagePath: String) async {
         
-        print("initializing network space")
-        
+        let deviceSpecs = await self.getDeviceSpecs()
         let networkSpaceManager = URnetworkSdk.SdkNewNetworkSpaceManager(storagePath)
-        
-        
-        let callback = TestNetworkSpaceUpdateCallback()
+        let networkSpaceUpdateCallback = NetworkSpaceUpdateCallback()
         
         let networkSpaceValues = SdkNetworkSpaceValues()
         
@@ -148,15 +182,21 @@ extension NetworkStore {
         networkSpaceValues.wallet = "circle"
         networkSpaceValues.ssoGoogle = false
         
-        callback.update(networkSpaceValues)
+        networkSpaceUpdateCallback.update(networkSpaceValues)
         
         let hostName = "ur.network"
         let envName = "main"
         let networkSpaceKey = URnetworkSdk.SdkNewNetworkSpaceKey(hostName, envName)
         
-        networkSpaceManager?.updateNetworkSpace(networkSpaceKey, callback: callback)
+        networkSpaceManager?.updateNetworkSpace(networkSpaceKey, callback: networkSpaceUpdateCallback)
         
-        networkSpace = networkSpaceManager?.getNetworkSpace(networkSpaceKey)
+        DispatchQueue.main.async {
+            
+            self.networkSpace = networkSpaceManager?.getNetworkSpace(networkSpaceKey)
+            
+            let getJwtCallback = GetJwtInitDeviceCallback(networkStore: self, deviceSpecs: deviceSpecs)
+            self.asyncLocalState?.getByClientJwt(getJwtCallback)
+        }
         
     }
     
@@ -209,8 +249,6 @@ extension NetworkStore {
                     } else {
                         print("Device created successfully")
                     }
-                    
-                    print("bbb")
                     
                     guard let device = self.device else {
                         print("device is nil")
@@ -325,7 +363,7 @@ extension NetworkStore {
         func complete(_ success: Bool) {
             
             guard let networkStore = networkStore else {
-                print("LogoutCallback: complete: network store is nil")
+                print("[LogoutCallback:complete] network store is nil")
                 return
             }
             
@@ -412,7 +450,7 @@ extension NetworkStore {
     func logout() {
         
         guard let asyncLocalState = asyncLocalState else {
-            print("asyncLocalState is nil")
+            print("[logout] asyncLocalState is nil")
             return
         }
         
