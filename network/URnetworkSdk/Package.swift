@@ -1,22 +1,23 @@
 // swift-tools-version:5.3
 import PackageDescription
 
+// see https://developer.apple.com/documentation/xcode/distributing-binary-frameworks-as-swift-packages
 let package = Package(
 	name: "URnetworkSdk",
 	products: [
 		.library(
 			name: "URnetworkSdk",
-			targets: ["URnetworkSdk"]
+			targets: ["URnetworkSdkBinary"]
 		),
 	],
 	targets: [
 		.binaryTarget(
-			name: "URnetworkSdk",
+			name: "URnetworkSdkBinary",
 			path: "../../../sdk/build/ios/URnetworkSdk.xcframework"
 		),
-        .testTarget(
-            name: "URnetworkSdkTest",
-            dependencies: ["URnetworkSdk"]
-        ),
+		.testTarget(
+			name: "URnetworkSdkTests",
+			dependencies: ["URnetworkSdkBinary"]
+		),
 	]
 )
