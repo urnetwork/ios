@@ -8,23 +8,20 @@
 import Foundation
 import URnetworkSdk
 import SwiftUI
+import AuthenticationServices
 
 private class AuthLoginCallback: SdkCallback<SdkAuthLoginResult, SdkAuthLoginCallbackProtocol>, SdkAuthLoginCallbackProtocol {
     func result(_ result: SdkAuthLoginResult?, err: Error?) {
         handleResult(result, err: err)
     }
 }
+enum LoginError: Error {
+    case appleLoginFailed
+}
 
 extension LoginInitialView {
     
     class ViewModel: ObservableObject {
-        
-        // private let api = NetworkSpaceManager.shared.networkSpace?.getApi()
-//        @EnvironmentObject var networkSpaceStore: NetworkSpaceStore
-//        
-//        private var api: SdkBringYourApi? {
-//            return networkSpaceStore.api
-//        }
         
         private var api: SdkBringYourApi?
         
@@ -38,76 +35,165 @@ extension LoginInitialView {
         
         @Published private(set) var isCheckingUserAuth: Bool = false
         
+        // TODO: deprecate this
         @Published private(set) var loginErrorMessage: String?
+        
+        let domain = "LoginInitialViewModel"
         
         init(api: SdkBringYourApi?) {
             self.api = api
         }
         
-        func getStarted(
-            navigateToLogin: @escaping () -> Void,
-            navigateToCreateNetwork: @escaping () -> Void
-        ) {
+        private func authLogin(args: SdkAuthLoginArgs) async -> AuthLoginResult {
             
-            if !isValidUserAuth || isCheckingUserAuth {
-                return
-            }
+            print("auth login hit")
             
-            isCheckingUserAuth = true
-            
-            let args = SdkAuthLoginArgs()
-            args.userAuth = userAuth
-            
-            let callback = AuthLoginCallback { [weak self] result, error in
-                
-                guard let self = self else { return }
-                
-                DispatchQueue.main.async {
-                 
-                    if let error {
-                        self.loginErrorMessage = error.localizedDescription
-                        self.isCheckingUserAuth = false
-                        return
-                    }
+            do {
+                let result: AuthLoginResult = try await withCheckedThrowingContinuation { [weak self] continuation in
                     
-                    if let resultError = result?.error {
-                        self.loginErrorMessage = resultError.message
-                        self.isCheckingUserAuth = false
-                        return
-                    }
+                    guard let self = self else { return }
                     
-                    if let authAllowed = result?.authAllowed {
+                    let callback = AuthLoginCallback { [weak self] result, error in
                         
-                        if authAllowed.contains("password") {
-                            self.loginErrorMessage = nil
+                        print("inside auth login callback")
+                        
+                        guard let self = self else { return }
+                        
+                        
+                         
+                        if let error {
+
+                            continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "error exists \(error)"]))
                             
-                            // login
-                            navigateToLogin()
-                        } else {
-                            print("authAllowed missing password: \(authAllowed)")
-                            
-                            // todo - localize this
-                            self.loginErrorMessage = "An error occurred. Please try again later."
+                            return
                         }
                         
-                        self.isCheckingUserAuth = false
+                        guard let result else {
+                            
+                            continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "No result found"]))
+                            
+                            return
+                        }
                         
-                        return
+                        if let resultError = result.error {
+                            
+                            continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "result.error exists \(resultError.message)"]))
+                            
+                            return
+                        }
+                        
+                        if let authAllowed = result.authAllowed {
+                            
+                            if authAllowed.contains("password") {
+                                
+                                /**
+                                 * Login
+                                 */
+                                print("should login")
+                                
+                                continuation.resume(returning: .login(result))
+                                
+                            } else {
+                                
+                                continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "authAllowed missing password: \(authAllowed)"]))
+                                
+                            }
+                            
+                            return
+                            
+                        }
+                        
+                        print("should create new network")
+                                       
+                        /**
+                         * Create new network
+                         */
+                        continuation.resume(returning: .create(args))
                         
                     }
                     
-                    // on new network
-                    navigateToCreateNetwork()
+                    print("auth jwt is: \(args.authJwt)")
+                    print("auth jwt type is: \(args.authJwtType)")
                     
-                    
-                    self.isCheckingUserAuth = false
+                    api?.authLogin(args, callback: callback)
                     
                 }
                 
+                DispatchQueue.main.async {
+                    self.isCheckingUserAuth = false
+                }
+                
+                return result
+                
+            } catch {
+                return .failure(error)
             }
-            
-            api?.authLogin(args, callback: callback)
             
         }
     }
+}
+
+// MARK: Handle UserAuth Login
+extension LoginInitialView.ViewModel {
+    
+    func getStarted() async -> AuthLoginResult {
+        
+        if isCheckingUserAuth {
+            return .failure(NSError(domain: domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Auth login already in progress"]))
+        }
+        
+        if !isValidUserAuth {
+            return .failure(NSError(domain: domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Form invalid"]))
+        }
+        
+        isCheckingUserAuth = true
+        
+        let args = SdkAuthLoginArgs()
+        args.userAuth = userAuth
+        
+        return await authLogin(args: args)
+    }
+    
+}
+
+// MARK: Handle Apple Login
+extension LoginInitialView.ViewModel {
+    
+    func handleAppleLoginResult(_ result: Result<ASAuthorization, any Error>) async -> AuthLoginResult {
+        
+        print("handleAppleLoginResult hit")
+        
+        switch result {
+            
+            case .success(let authResults):
+                
+                // get the id token to use as authJWT
+                switch authResults.credential {
+                    case let credential as ASAuthorizationAppleIDCredential:
+                    
+                        guard let idToken = credential.identityToken else {
+                            return .failure(LoginError.appleLoginFailed)
+                        }
+                        
+                        let args = SdkAuthLoginArgs()
+                    
+                        args.authJwt = idToken.base64EncodedString()
+                        args.authJwtType = "apple"
+                        
+                    
+                        return await authLogin(args: args)
+
+                    default:
+                        return .failure(LoginError.appleLoginFailed)
+                }
+                
+            
+            case .failure(let error):
+                print("Authorisation failed: \(error.localizedDescription)")
+                return .failure(error)
+            
+        }
+        
+    }
+    
 }

@@ -7,12 +7,11 @@
 
 import SwiftUI
 import URnetworkSdk
+import AuthenticationServices
 
 struct LoginInitialView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
-    // @EnvironmentObject var networkSpaceStore: NetworkSpaceStore
-    // @StateObject private var viewModel = ViewModel()
     @StateObject private var viewModel: ViewModel
     
     var api: SdkBringYourApi?
@@ -22,8 +21,6 @@ struct LoginInitialView: View {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api))
         self.navigate = navigate
     }
-    
-    // todo - login with apple
     
     var body: some View {
         
@@ -49,7 +46,13 @@ struct LoginInitialView: View {
                         },
                         keyboardType: .emailAddress,
                         submitLabel: .continue,
-                        onSubmit: getStarted
+                        onSubmit: {
+                         
+                            Task {
+                                await getStarted()
+                            }
+                            
+                        }
                     )
                     
                     Spacer()
@@ -57,7 +60,11 @@ struct LoginInitialView: View {
                     
                     UrButton(
                         text: "Get started",
-                        onClick: getStarted,
+                        onClick: {
+                            Task {
+                                await getStarted()
+                            }
+                        },
                         enabled: viewModel.isValidUserAuth && !viewModel.isCheckingUserAuth
                     )
                     
@@ -70,6 +77,20 @@ struct LoginInitialView: View {
                     Spacer()
                         .frame(height: 24)
                     
+                    SignInWithAppleButton(.signIn) { request in
+                        request.requestedScopes = [.email]
+                    } onCompletion: { result in
+                        
+                        print("SignInWithAppleButton: onCompletion")
+                        
+                        Task {
+                            await handleAppleLoginResult(result)
+                        }
+                    }
+                    .frame(height: 48)
+                    .clipShape(Capsule())
+                    .signInWithAppleButtonStyle(.white)
+                    
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
@@ -77,24 +98,53 @@ struct LoginInitialView: View {
                 .frame(maxWidth: .infinity)
             }
         }
+        
+        
     }
     
-    private func getStarted() {
-        viewModel.getStarted(
-            navigateToLogin: {
-                navigate(.password(viewModel.userAuth))
-            },
-            navigateToCreateNetwork: {
+    private func handleAppleLoginResult(_ result: Result<ASAuthorization, any Error>) async {
+        let result = await viewModel.handleAppleLoginResult(result)
+        handleAuthLoginResult(result)
+    }
+    
+    private func getStarted() async {
+        let result = await viewModel.getStarted()
+        handleAuthLoginResult(result)
+    }
+    
+    private func handleAuthLoginResult(_ authLoginResult: AuthLoginResult) {
+        
+        print("handleAuthLoginResult")
+        
+        switch authLoginResult {
+            
+            case .login(let loginResult):
+                print("navigate to login")
+                // navigate(.password(viewModel.userAuth))
+                navigate(.password(loginResult.userAuth))
+                break
+            
+            case .create:
+                print("navigate to create")
+                // TODO: params need to be changed to SdkAuthLoginArgs
                 navigate(.createNetwork(viewModel.userAuth))
-            }
-        )
+                break
+            
+            case .failure(let error):
+                print("auth login error: \(error.localizedDescription)")
+                break
+            
+        }
     }
 }
 
 #Preview {
-    LoginInitialView(
-        api: nil,
-        navigate: {_ in }
-    )
-        .environmentObject(ThemeManager.shared)
+    ZStack {
+        LoginInitialView(
+            api: nil,
+            navigate: {_ in }
+        )
+    }
+    .environmentObject(ThemeManager.shared)
+    .background(ThemeManager.shared.currentTheme.backgroundColor)
 }
