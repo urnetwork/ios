@@ -15,9 +15,9 @@ let package = Package(
 			name: "URnetworkSdkBinary",
 			path: "../../../sdk/build/ios/URnetworkSdk.xcframework"
 		),
-
-        .testTarget(
-            name: "URnetworkSdkTests",
-            dependencies: ["URnetworkSdkBinary"]),
+		.testTarget(
+			name: "URnetworkSdkTests",
+			dependencies: ["URnetworkSdkBinary"]
+		),
 	]
 )
