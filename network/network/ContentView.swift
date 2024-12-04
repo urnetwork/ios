@@ -6,19 +6,40 @@
 //
 
 import SwiftUI
+import URnetworkSdk
 
-struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
-    }
-}
+// TODO: either deprecate or move content of NetworkApp into this component
 
-#Preview {
-    ContentView()
-}
+//struct ContentView: View {
+//    
+//    var api: SdkBringYourApi?
+//    
+//    @StateObject var viewModel = ViewModel()
+//    
+//    @EnvironmentObject var themeManager: ThemeManager
+//    
+//    var body: some View {
+//        VStack {
+//            Image(systemName: "globe")
+//                .imageScale(.large)
+//                .foregroundStyle(.tint)
+//            Text(
+//                "Hello, world!"
+//            )
+//            .foregroundStyle(.white)
+//            .font(themeManager.currentTheme.titleCondensedFont)
+//        }
+//        .frame(maxWidth: .infinity, maxHeight: .infinity)
+//        .padding()
+//        .background(themeManager.currentTheme.backgroundColor)
+//        
+//    }
+//    
+//}
+//
+//#Preview {
+//    ContentView(
+//        api: SdkBringYourApi()
+//    )
+//        .environmentObject(ThemeManager.shared)
+//}

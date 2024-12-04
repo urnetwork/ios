@@ -52,6 +52,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		178F47EA2CEDA80A00CD9C3D /* URnetwork-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "URnetwork-Info.plist"; sourceTree = "<group>"; };
 		D1B95A4F2CEBDD6900542E0E /* URnetwork.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = URnetwork.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1B95A602CEBDD6A00542E0E /* networkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = networkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1B95A6A2CEBDD6A00542E0E /* networkUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = networkUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -133,6 +134,7 @@
 		D1B95A462CEBDD6900542E0E = {
 			isa = PBXGroup;
 			children = (
+				178F47EA2CEDA80A00CD9C3D /* URnetwork-Info.plist */,
 				D1B95A512CEBDD6900542E0E /* network */,
 				D1B95A632CEBDD6A00542E0E /* networkTests */,
 				D1B95A6D2CEBDD6A00542E0E /* networkUITests */,
@@ -292,6 +294,28 @@
 			knownRegions = (
 				en,
 				Base,
+				ar,
+				fr,
+				de,
+				el,
+				hi,
+				he,
+				id,
+				it,
+				ja,
+				ko,
+				pl,
+				ru,
+				es,
+				"es-419",
+				sv,
+				th,
+				uk,
+				vi,
+				"zh-HK",
+				"zh-Hans",
+				"pt-BR",
+				"pt-PT",
 			);
 			mainGroup = D1B95A462CEBDD6900542E0E;
 			minimizedProjectReferenceProxies = 1;
@@ -362,7 +386,7 @@
 		};
 		D1B95A922CEBE7D200542E0E /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -373,7 +397,7 @@
 			);
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/bash;
 			shellScript = "export BRINGYOUR_HOME=`realpath ../..`\nexport WARP_HOME=\"$BRINGYOUR_HOME\"\nexport WARP_VERSION_HOME=\"$BRINGYOUR_HOME/version\"\nexport PATH=\"$PATH:$BRINGYOUR_HOME/warp/warpctl/build/darwin/arm64\"\nexport PATH=\"$PATH:/usr/local/go/bin:$HOME/go/bin\"\ncd ../../sdk\nmake init\nmake build_ios\n";
 		};
@@ -486,6 +510,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -540,6 +565,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Release;
 		};
@@ -556,6 +582,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "URnetwork-Info.plist";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -566,7 +593,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.1;
@@ -596,6 +623,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "URnetwork-Info.plist";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -606,7 +634,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.1;
@@ -641,7 +669,6 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/network.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/network";
 				XROS_DEPLOYMENT_TARGET = 2.1;
 			};
 			name = Debug;
@@ -664,7 +691,6 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/network.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/network";
 				XROS_DEPLOYMENT_TARGET = 2.1;
 			};
 			name = Release;

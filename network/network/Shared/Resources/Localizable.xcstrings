@@ -1,0 +1,102 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    " " : {
+
+    },
+    " and " : {
+
+    },
+    "[Privacy Policy](https://ur.io/privacy)" : {
+
+    },
+    "[Terms and Services](https://ur.io/terms)" : {
+
+    },
+    "************" : {
+
+    },
+    "Account" : {
+
+    },
+    "Connect View!!" : {
+
+    },
+    "Continue" : {
+
+    },
+    "Don't see it? " : {
+      "comment" : "Referring to the OTP code"
+    },
+    "Email or phone" : {
+
+    },
+    "Email or phone number" : {
+
+    },
+    "Enter a name for your network" : {
+
+    },
+    "Enter your phone number or email" : {
+
+    },
+    "Forgot your password?" : {
+
+    },
+    "Get started" : {
+
+    },
+    "I agree to URnetwork's " : {
+
+    },
+    "It's nice to see you again" : {
+
+    },
+    "Join URnetwork" : {
+      "comment" : "URnetwork is the project name and should not be translated"
+    },
+    "Logout" : {
+
+    },
+    "Network name" : {
+
+    },
+    "Network names must be 6 characters or more" : {
+
+    },
+    "Nice! This network name is available" : {
+
+    },
+    "or" : {
+      "comment" : "Referring to the two options 'Get started' *or* 'Login with Apple'"
+    },
+    "Password" : {
+
+    },
+    "Password must be at least 12 characters long" : {
+
+    },
+    "Resend code" : {
+
+    },
+    "Reset it." : {
+      "comment" : "Referring to resetting the password"
+    },
+    "Tell us who you really are. Enter the code we sent you to verify your identity." : {
+
+    },
+    "There was an error checking the network name" : {
+
+    },
+    "This network name is already taken" : {
+
+    },
+    "You've got mail" : {
+
+    }
+  },
+  "version" : "1.0"
+}
