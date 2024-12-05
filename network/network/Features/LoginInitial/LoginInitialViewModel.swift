@@ -46,8 +46,6 @@ extension LoginInitialView {
         
         private func authLogin(args: SdkAuthLoginArgs) async -> AuthLoginResult {
             
-            print("auth login hit")
-            
             do {
                 let result: AuthLoginResult = try await withCheckedThrowingContinuation { [weak self] continuation in
                     
@@ -55,11 +53,7 @@ extension LoginInitialView {
                     
                     let callback = AuthLoginCallback { [weak self] result, error in
                         
-                        print("inside auth login callback")
-                        
                         guard let self = self else { return }
-                        
-                        
                          
                         if let error {
 
@@ -82,6 +76,12 @@ extension LoginInitialView {
                             return
                         }
                         
+                        // JWT exists, proceed to authenticate network
+                        if let jwt = result.network?.byJwt {
+                            continuation.resume(returning: .login(jwt))
+                            return
+                        }
+                        
                         if let authAllowed = result.authAllowed {
                             
                             if authAllowed.contains("password") {
@@ -89,9 +89,7 @@ extension LoginInitialView {
                                 /**
                                  * Login
                                  */
-                                print("should login")
-                                
-                                continuation.resume(returning: .login(result))
+                                continuation.resume(returning: .promptPassword(result))
                                 
                             } else {
                                 
@@ -102,8 +100,6 @@ extension LoginInitialView {
                             return
                             
                         }
-                        
-                        print("should create new network")
                                        
                         /**
                          * Create new network
@@ -111,9 +107,6 @@ extension LoginInitialView {
                         continuation.resume(returning: .create(args))
                         
                     }
-                    
-                    print("auth jwt is: \(args.authJwt)")
-                    print("auth jwt type is: \(args.authJwtType)")
                     
                     api?.authLogin(args, callback: callback)
                     
@@ -171,20 +164,23 @@ extension LoginInitialView.ViewModel {
                 switch authResults.credential {
                     case let credential as ASAuthorizationAppleIDCredential:
                     
-                        guard let idToken = credential.identityToken else {
-                            return .failure(LoginError.appleLoginFailed)
-                        }
-                        
-                        let args = SdkAuthLoginArgs()
-                    
-                        args.authJwt = idToken.base64EncodedString()
-                        args.authJwtType = "apple"
-                        
-                    
-                        return await authLogin(args: args)
-
-                    default:
+                    guard let idToken = credential.identityToken else {
                         return .failure(LoginError.appleLoginFailed)
+                    }
+                    
+                    guard let idTokenString = String(data: idToken, encoding: .utf8) else {
+                        return .failure(LoginError.appleLoginFailed)
+                    }
+                        
+                    let args = SdkAuthLoginArgs()
+                    args.authJwt = idTokenString
+                    args.authJwtType = "apple"
+                    
+                    return await authLogin(args: args)
+
+                default:
+                        
+                    return .failure(LoginError.appleLoginFailed)
                 }
                 
             

@@ -28,7 +28,8 @@ struct LoginNavigationView: View {
         ) {
             LoginInitialView(
                 api: api,
-                navigate: viewModel.navigate
+                navigate: viewModel.navigate,
+                authenticateNetworkClient: authenticateNetworkClient
             )
             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
             .navigationDestination(for: LoginInitialNavigationPath.self) { path in

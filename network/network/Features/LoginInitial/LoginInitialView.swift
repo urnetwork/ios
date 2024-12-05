@@ -16,10 +16,16 @@ struct LoginInitialView: View {
     
     var api: SdkBringYourApi?
     var navigate: (LoginInitialNavigationPath) -> Void
+    var authenticateNetworkClient: (String) async -> Result<Void, Error>
     
-    init(api: SdkBringYourApi?, navigate: @escaping (LoginInitialNavigationPath) -> Void) {
+    init(
+        api: SdkBringYourApi?,
+        navigate: @escaping (LoginInitialNavigationPath) -> Void,
+        authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>
+    ) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api))
         self.navigate = navigate
+        self.authenticateNetworkClient = authenticateNetworkClient
     }
     
     var body: some View {
@@ -99,50 +105,65 @@ struct LoginInitialView: View {
             }
         }
         
-        
     }
     
     private func handleAppleLoginResult(_ result: Result<ASAuthorization, any Error>) async {
         let result = await viewModel.handleAppleLoginResult(result)
-        handleAuthLoginResult(result)
+        await handleAuthLoginResult(result)
     }
     
     private func getStarted() async {
         let result = await viewModel.getStarted()
-        handleAuthLoginResult(result)
+        await handleAuthLoginResult(result)
     }
     
-    private func handleAuthLoginResult(_ authLoginResult: AuthLoginResult) {
-        
-        print("handleAuthLoginResult")
+    private func handleAuthLoginResult(_ authLoginResult: AuthLoginResult) async {
         
         switch authLoginResult {
             
-            case .login(let loginResult):
-                print("navigate to login")
-                // navigate(.password(viewModel.userAuth))
-                navigate(.password(loginResult.userAuth))
-                break
+        case .login(let authJwt):
+            await handleSuccessWithJwt(authJwt)
             
-            case .create:
-                print("navigate to create")
-                // TODO: params need to be changed to SdkAuthLoginArgs
-                navigate(.createNetwork(viewModel.userAuth))
-                break
+            break
             
-            case .failure(let error):
-                print("auth login error: \(error.localizedDescription)")
-                break
+        case .promptPassword(let loginResult):
+            navigate(.password(loginResult.userAuth))
+            break
+            
+        case .create:
+            print("navigate to create")
+            // TODO: params need to be changed to SdkAuthLoginArgs
+            navigate(.createNetwork(viewModel.userAuth))
+            break
+        
+        case .failure(let error):
+            print("auth login error: \(error.localizedDescription)")
+            break
             
         }
     }
+    
+    private func handleSuccessWithJwt(_ jwt: String) async {
+        let result = await authenticateNetworkClient(jwt)
+        
+        if case .failure(let error) = result {
+            print("[LoginInitialView] handleSuccessWithJwt: \(error.localizedDescription)")
+            // TODO: toast alert
+            // TODO: clear viewmodel loading state
+        }
+        
+    }
+    
 }
 
 #Preview {
     ZStack {
         LoginInitialView(
             api: nil,
-            navigate: {_ in }
+            navigate: {_ in },
+            authenticateNetworkClient: {_ in
+                return .success(())
+            }
         )
     }
     .environmentObject(ThemeManager.shared)
