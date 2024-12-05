@@ -28,7 +28,8 @@ struct LoginNavigationView: View {
         ) {
             LoginInitialView(
                 api: api,
-                navigate: viewModel.navigate
+                navigate: viewModel.navigate,
+                authenticateNetworkClient: authenticateNetworkClient
             )
             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
             .navigationDestination(for: LoginInitialNavigationPath.self) { path in
@@ -41,11 +42,11 @@ struct LoginNavigationView: View {
                             api: api
                         )
                             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
-                    case .createNetwork(let userAuth):
+                    case .createNetwork(let authLoginArgs):
                         CreateNetworkView(
-                            userAuth: userAuth,
-                            authJwt: "", // TODO: track in ViewModel
+                            authLoginArgs: authLoginArgs,
                             navigate: viewModel.navigate,
+                            authenticateNetworkClient: authenticateNetworkClient,
                             api: api
                         )
                             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())

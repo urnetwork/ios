@@ -7,23 +7,26 @@
 
 import SwiftUI
 import URnetworkSdk
+import AuthenticationServices
 
 struct LoginInitialView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
-    // @EnvironmentObject var networkSpaceStore: NetworkSpaceStore
-    // @StateObject private var viewModel = ViewModel()
     @StateObject private var viewModel: ViewModel
     
     var api: SdkBringYourApi?
     var navigate: (LoginInitialNavigationPath) -> Void
+    var authenticateNetworkClient: (String) async -> Result<Void, Error>
     
-    init(api: SdkBringYourApi?, navigate: @escaping (LoginInitialNavigationPath) -> Void) {
+    init(
+        api: SdkBringYourApi?,
+        navigate: @escaping (LoginInitialNavigationPath) -> Void,
+        authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>
+    ) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api))
         self.navigate = navigate
+        self.authenticateNetworkClient = authenticateNetworkClient
     }
-    
-    // todo - login with apple
     
     var body: some View {
         
@@ -49,7 +52,13 @@ struct LoginInitialView: View {
                         },
                         keyboardType: .emailAddress,
                         submitLabel: .continue,
-                        onSubmit: getStarted
+                        onSubmit: {
+                         
+                            Task {
+                                await getStarted()
+                            }
+                            
+                        }
                     )
                     
                     Spacer()
@@ -57,7 +66,11 @@ struct LoginInitialView: View {
                     
                     UrButton(
                         text: "Get started",
-                        onClick: getStarted,
+                        onClick: {
+                            Task {
+                                await getStarted()
+                            }
+                        },
                         enabled: viewModel.isValidUserAuth && !viewModel.isCheckingUserAuth
                     )
                     
@@ -70,6 +83,20 @@ struct LoginInitialView: View {
                     Spacer()
                         .frame(height: 24)
                     
+                    SignInWithAppleButton(.signIn) { request in
+                        request.requestedScopes = [.email]
+                    } onCompletion: { result in
+                        
+                        print("SignInWithAppleButton: onCompletion")
+                        
+                        Task {
+                            await handleAppleLoginResult(result)
+                        }
+                    }
+                    .frame(height: 48)
+                    .clipShape(Capsule())
+                    .signInWithAppleButtonStyle(.white)
+                    
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
@@ -77,24 +104,66 @@ struct LoginInitialView: View {
                 .frame(maxWidth: .infinity)
             }
         }
+        
     }
     
-    private func getStarted() {
-        viewModel.getStarted(
-            navigateToLogin: {
-                navigate(.password(viewModel.userAuth))
-            },
-            navigateToCreateNetwork: {
-                navigate(.createNetwork(viewModel.userAuth))
-            }
-        )
+    private func handleAppleLoginResult(_ result: Result<ASAuthorization, any Error>) async {
+        let result = await viewModel.handleAppleLoginResult(result)
+        await handleAuthLoginResult(result)
     }
+    
+    private func getStarted() async {
+        let result = await viewModel.getStarted()
+        await handleAuthLoginResult(result)
+    }
+    
+    private func handleAuthLoginResult(_ authLoginResult: AuthLoginResult) async {
+        
+        switch authLoginResult {
+            
+        case .login(let authJwt):
+            await handleSuccessWithJwt(authJwt)
+            
+            break
+            
+        case .promptPassword(let loginResult):
+            navigate(.password(loginResult.userAuth))
+            break
+            
+        case .create(let authLoginArgs):
+            navigate(.createNetwork(authLoginArgs))
+            break
+        
+        case .failure(let error):
+            print("auth login error: \(error.localizedDescription)")
+            break
+            
+        }
+    }
+    
+    private func handleSuccessWithJwt(_ jwt: String) async {
+        let result = await authenticateNetworkClient(jwt)
+        
+        if case .failure(let error) = result {
+            print("[LoginInitialView] handleSuccessWithJwt: \(error.localizedDescription)")
+            // TODO: toast alert
+            // TODO: clear viewmodel loading state
+        }
+        
+    }
+    
 }
 
 #Preview {
-    LoginInitialView(
-        api: nil,
-        navigate: {_ in }
-    )
-        .environmentObject(ThemeManager.shared)
+    ZStack {
+        LoginInitialView(
+            api: nil,
+            navigate: {_ in },
+            authenticateNetworkClient: {_ in
+                return .success(())
+            }
+        )
+    }
+    .environmentObject(ThemeManager.shared)
+    .background(ThemeManager.shared.currentTheme.backgroundColor)
 }

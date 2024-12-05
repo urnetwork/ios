@@ -9,10 +9,13 @@ import SwiftUI
 import URnetworkSdk
 
 struct CreateNetworkView: View {
+
+    var authLoginArgs: SdkAuthLoginArgs
+    var navigate: (LoginInitialNavigationPath) -> Void
+    var authenticateNetworkClient: (String) async -> Result<Void, Error>
     
     var userAuth: String?
     var authJwt: String?
-    var navigate: (LoginInitialNavigationPath) -> Void
     
     @EnvironmentObject var themeManager: ThemeManager
     
@@ -21,14 +24,38 @@ struct CreateNetworkView: View {
     @FocusState private var focusedField: Field?
     
     init(
-        userAuth: String?,
-        authJwt: String?,
+        authLoginArgs: SdkAuthLoginArgs,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
+        authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>,
         api: SdkBringYourApi
     ) {
-        _viewModel = StateObject.init(wrappedValue: ViewModel(api: api))
-        self.userAuth = userAuth
-        self.authJwt = authJwt
+        
+        var authType: AuthType = .password
+        
+        if authLoginArgs.authJwtType == "apple" {
+            authType = AuthType.apple
+        }
+        
+        _viewModel = StateObject.init(wrappedValue: ViewModel(
+            api: api,
+            authType: authType
+        ))
+        
+        self.authLoginArgs = authLoginArgs
+        self.authenticateNetworkClient = authenticateNetworkClient
+        
+        if !authLoginArgs.userAuth.isEmpty {
+            self.userAuth = authLoginArgs.userAuth
+        } else {
+            self.userAuth = nil
+        }
+        
+        if authLoginArgs.authJwtType == "apple" && !authLoginArgs.authJwt.isEmpty {
+            self.authJwt = authLoginArgs.authJwt
+        } else {
+            self.authJwt = nil
+        }
+        
         self.navigate = navigate
     }
 
@@ -122,8 +149,11 @@ struct CreateNetworkView: View {
                         onClick: {
                             
                             Task {
-                                let result = await viewModel.createNetwork(userAuth: userAuth, authJwt: authJwt)
-                                handleResult(result)
+                                let result = await viewModel.createNetwork(
+                                    userAuth: userAuth,
+                                    authJwt: authLoginArgs.authJwt
+                                )
+                                await handleResult(result)
                             }
                             
                         },
@@ -138,31 +168,56 @@ struct CreateNetworkView: View {
         }
     }
     
-    private func handleResult(_ result: LoginNetworkResult) {
+    private func handleResult(_ result: LoginNetworkResult) async {
         switch result {
             
-            case .successWithJwt(let jwt):
-                break
-            case .successWithVerificationRequired:
-                if let userAuth = userAuth {
-                    navigate(.verify(userAuth))
-                } else {
-                    print("CreateNetworkView: successWithVerificationRequired: userAuth is nil")
-                }
-                break
-            case .failure(let error):
-                print("CreateNetworkView: handleResult: \(error.localizedDescription)")
-                break
+        case .successWithJwt(let jwt):
+            await handleSuccessWithJwt(jwt)
+            break
+        case .successWithVerificationRequired:
+            if let userAuth = userAuth {
+                navigate(.verify(userAuth))
+            } else {
+                print("CreateNetworkView: successWithVerificationRequired: userAuth is nil")
+            }
+            break
+        case .failure(let error):
+            print("CreateNetworkView: handleResult: \(error.localizedDescription)")
+            break
             
         }
     }
+    
+    private func handleSuccessWithJwt(_ jwt: String) async {
+        let result = await authenticateNetworkClient(jwt)
+        
+        if case .failure(let error) = result {
+            print("[CreateNetworkView] handleSuccessWithJwt: \(error.localizedDescription)")
+            // TODO: toast alert
+            // TODO: clear viewmodel loading state
+        }
+        
+    }
+    
+    private func getAuthTypeFromArgs(_ args: SdkAuthLoginArgs) -> AuthType {
+        
+        if args.authJwtType == "apple" {
+            return AuthType.apple
+        } else {
+            return AuthType.password
+        }
+        
+    }
+    
 }
 
 #Preview {
     CreateNetworkView(
-        userAuth: "hello@ur.io",
-        authJwt: nil,
+        authLoginArgs: SdkAuthLoginArgs(),
         navigate: {_ in },
+        authenticateNetworkClient: {_ in
+            return .success(())
+        },
         api: SdkBringYourApi()
     )
     .environmentObject(ThemeManager.shared)

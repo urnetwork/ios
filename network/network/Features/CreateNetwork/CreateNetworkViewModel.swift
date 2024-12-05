@@ -21,6 +21,11 @@ private class NetworkCreateCallback: SdkCallback<SdkNetworkCreateResult, SdkNetw
     }
 }
 
+enum AuthType {
+    case password
+    case apple
+}
+
 extension CreateNetworkView {
     
     class ViewModel: ObservableObject {
@@ -42,8 +47,11 @@ extension CreateNetworkView {
         private static let minPasswordLength = 12
         private let domain = "CreateNetworkView.ViewModel"
         
-        init(api: SdkBringYourApi) {
+        private var authType: AuthType
+        
+        init(api: SdkBringYourApi, authType: AuthType) {
             self.api = api
+            self.authType = authType
             
             networkNameValidationVc = SdkNetworkNameValidationViewController(api)
             
@@ -89,7 +97,12 @@ extension CreateNetworkView {
         private func validateForm() {
             // todo - need to update validation to handle jwtAuth too (no password)
             formIsValid = networkNameValidationState == .valid &&
-                            password.count >= ViewModel.minPasswordLength &&
+                            (
+                                // if auth type is password, check password length
+                                (authType == .password && password.count >= ViewModel.minPasswordLength)
+                                // otherwise, no need to check password length
+                                || authType == .apple
+                            ) &&
                             termsAgreed
         }
         
