@@ -139,7 +139,9 @@ extension LoginInitialView.ViewModel {
             return .failure(NSError(domain: domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Form invalid"]))
         }
         
-        isCheckingUserAuth = true
+        DispatchQueue.main.async {
+            self.isCheckingUserAuth = true
+        }
         
         let args = SdkAuthLoginArgs()
         args.userAuth = userAuth

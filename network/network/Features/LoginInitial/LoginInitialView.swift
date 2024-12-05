@@ -130,10 +130,8 @@ struct LoginInitialView: View {
             navigate(.password(loginResult.userAuth))
             break
             
-        case .create:
-            print("navigate to create")
-            // TODO: params need to be changed to SdkAuthLoginArgs
-            navigate(.createNetwork(viewModel.userAuth))
+        case .create(let authLoginArgs):
+            navigate(.createNetwork(authLoginArgs))
             break
         
         case .failure(let error):

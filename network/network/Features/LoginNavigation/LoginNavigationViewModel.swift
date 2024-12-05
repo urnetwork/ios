@@ -6,11 +6,12 @@
 //
 
 import Foundation
+import URnetworkSdk
 
 enum LoginInitialNavigationPath: Hashable {
     // case initial
     case password(_ userAuth: String)
-    case createNetwork(_ userAuth: String)
+    case createNetwork(_ authLoginArgs: SdkAuthLoginArgs)
     case verify(_ userAuth: String)
 }
 

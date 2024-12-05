@@ -30,14 +30,6 @@ extension CreateNetworkVerifyView {
     
     class ViewModel: ObservableObject {
         
-        // private let api = NetworkSpaceManager.shared.networkSpace?.getApi()
-        
-        // @EnvironmentObject var networkSpaceStore: NetworkSpaceStore
-        
-//        private var api: SdkBringYourApi? {
-//            return networkSpaceStore.api
-//        }
-        
         private var api: SdkBringYourApi?
         
         @Published var otp: String = ""
