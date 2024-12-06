@@ -211,7 +211,7 @@ struct UrGoogleSignInButton: View {
             .frame(maxWidth: .infinity)
         }
         .frame(height: 48)
-        .background(Color.white)
+        .background(Color.urLightBlue)
         .clipShape(Capsule())
         
     }
