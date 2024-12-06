@@ -34,83 +34,57 @@ struct LoginInitialView: View {
         
         GeometryReader { geometry in
             
+            let isLandscape = geometry.size.width > geometry.size.height
+            let isTablet = UIDevice.current.userInterfaceIdiom == .pad
+      
+            
             ScrollView(.vertical) {
                 
-                VStack {
+                if isLandscape && isTablet {
                     
-                    LoginCarousel()
-                    
-                    Spacer().frame(height: 32)
-                    
-                    UrTextField(
-                        text: $viewModel.userAuth,
-                        label: "Email or phone",
-                        placeholder: "Enter your phone number or email",
-                        onTextChange: { newValue in
-                            // Filter whitespace
-                            if newValue.contains(" ") {
-                                viewModel.userAuth = newValue.filter { !$0.isWhitespace }
-                            }
-                        },
-                        keyboardType: .emailAddress,
-                        submitLabel: .continue,
-                        onSubmit: {
-                         
-                            Task {
-                                await getStarted()
-                            }
-                            
-                        }
-                    )
-                    
-                    Spacer()
-                        .frame(height: 32)
-                    
-                    UrButton(
-                        text: "Get started",
-                        onClick: {
-                            Task {
-                                await getStarted()
-                            }
-                        },
-                        enabled: viewModel.isValidUserAuth && !viewModel.isCheckingUserAuth
-                    )
-                    
-                    Spacer()
-                        .frame(height: 24)
-                    
-                    Text("or", comment: "Referring to the two options 'Get started' *or* 'Login with Apple'")
-                        .foregroundColor(themeManager.currentTheme.textMutedColor)
-                    
-                    Spacer()
-                        .frame(height: 24)
-                    
-                    SignInWithAppleButton(.signIn) { request in
-                        request.requestedScopes = [.email]
-                    } onCompletion: { result in
+                    HStack(alignment: .center) {
                         
-                        print("SignInWithAppleButton: onCompletion")
+                        LoginCarousel()
+                            .frame(width: geometry.size.width / 2)
                         
-                        Task {
-                            await handleAppleLoginResult(result)
-                        }
+                        LoginInitialFormView(
+                            userAuth: $viewModel.userAuth,
+                            handleUserAuth: handleUserAuth,
+                            handleAppleLoginResult: handleAppleLoginResult,
+                            handleGoogleSignInButton: handleGoogleSignInButton,
+                            isValidUserAuth: viewModel.isValidUserAuth,
+                            isCheckingUserAuth: viewModel.isCheckingUserAuth
+                        )
+                        .frame(width: geometry.size.width / 2, alignment: .leading)
+                        
                     }
-                    .frame(height: 48)
-                    .clipShape(Capsule())
-                    .signInWithAppleButtonStyle(.white)
+                    .frame(width: geometry.size.width, height: geometry.size.height, alignment: .center) // Fill the height and center content
                     
-                    Spacer()
-                        .frame(height: 24)
-                    
-                    UrGoogleSignInButton(
-                        action: handleGoogleSignInButton
-                    )
+                } else {
+                
+                    VStack {
+                        
+                        LoginCarousel()
+                        
+                        Spacer().frame(height: 64)
+                        
+                        LoginInitialFormView(
+                            userAuth: $viewModel.userAuth,
+                            handleUserAuth: handleUserAuth,
+                            handleAppleLoginResult: handleAppleLoginResult,
+                            handleGoogleSignInButton: handleGoogleSignInButton,
+                            isValidUserAuth: viewModel.isValidUserAuth,
+                            isCheckingUserAuth: viewModel.isCheckingUserAuth
+                        )
+                        
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding()
+                    .frame(minHeight: geometry.size.height)
+                    .frame(maxWidth: .infinity)
                     
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding()
-                .frame(minHeight: geometry.size.height)
-                .frame(maxWidth: .infinity)
+                
             }
         }
         
@@ -121,7 +95,7 @@ struct LoginInitialView: View {
         await handleAuthLoginResult(result)
     }
     
-    private func getStarted() async {
+    private func handleUserAuth() async {
         let result = await viewModel.getStarted()
         await handleAuthLoginResult(result)
     }
@@ -177,42 +151,6 @@ struct LoginInitialView: View {
          } catch {
              print("Error signing in: \(error.localizedDescription)")
          }
-        
-    }
-    
-}
-
-struct UrGoogleSignInButton: View {
-    
-    @EnvironmentObject var themeManager: ThemeManager
-    
-    var action: () async -> Void
-    
-    var body: some View {
-        
-        return Button(action: {
-            Task {
-                await action()
-            }
-        }) {
-            HStack(alignment: .center) {
-                
-                Image("GoogleIcon")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 18, height: 18)
-                
-                Text("Sign in with Google")
-                    .foregroundColor(themeManager.currentTheme.inverseTextColor)
-                        .font(
-                            Font.system(size: 19, weight: .medium)
-                        )
-            }
-            .frame(maxWidth: .infinity)
-        }
-        .frame(height: 48)
-        .background(Color.urLightBlue)
-        .clipShape(Capsule())
         
     }
     
