@@ -52,7 +52,6 @@ struct LoginCarousel: View {
     
     var body: some View {
         
-        
         ZStack {
         
             ZStack {
