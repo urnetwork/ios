@@ -210,8 +210,6 @@ extension NetworkStore {
         deviceSpec: String
     ) {
         
-        print("init device hit")
-        
         device?.close()
         
         if let networkSpace = networkSpace {
@@ -228,8 +226,6 @@ extension NetworkStore {
                 let provideMode = provideWhileDisconnected ? SdkProvideModePublic : localState.getProvideMode()
                 let vpnInterfaceWhileOffline = localState.getVpnInterfaceWhileOffline()
                 let canRefer = localState.getCanRefer()
-                
-                print("aaa")
                 
                 var newDeviceError: NSError?
                 
