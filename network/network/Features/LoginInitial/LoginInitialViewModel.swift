@@ -9,6 +9,7 @@ import Foundation
 import URnetworkSdk
 import SwiftUI
 import AuthenticationServices
+import GoogleSignIn
 
 private class AuthLoginCallback: SdkCallback<SdkAuthLoginResult, SdkAuthLoginCallbackProtocol>, SdkAuthLoginCallbackProtocol {
     func result(_ result: SdkAuthLoginResult?, err: Error?) {
@@ -17,6 +18,9 @@ private class AuthLoginCallback: SdkCallback<SdkAuthLoginResult, SdkAuthLoginCal
 }
 enum LoginError: Error {
     case appleLoginFailed
+    case googleLoginFailed
+    case googleNoResult
+    case googleNoIdToken
 }
 
 extension LoginInitialView {
@@ -82,6 +86,7 @@ extension LoginInitialView {
                             return
                         }
                         
+                        // user auth requires password
                         if let authAllowed = result.authAllowed {
                             
                             if authAllowed.contains("password") {
@@ -191,6 +196,29 @@ extension LoginInitialView.ViewModel {
                 return .failure(error)
             
         }
+        
+    }
+    
+}
+
+// MARK: handle Google login result
+extension LoginInitialView.ViewModel {
+    
+    func handleGoogleLoginResult(_ result: GIDSignInResult?) async -> AuthLoginResult {
+        
+        guard let result = result else {
+            return .failure(LoginError.googleNoResult)
+        }
+        
+        guard let idTokenString = result.user.idToken?.tokenString else {
+            return .failure(LoginError.googleNoIdToken)
+        }
+        
+        let args = SdkAuthLoginArgs()
+        args.authJwt = idTokenString
+        args.authJwtType = "google"
+        
+        return await authLogin(args: args)
         
     }
     

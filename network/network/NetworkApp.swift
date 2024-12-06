@@ -7,6 +7,7 @@
 
 import SwiftUI
 import URnetworkSdk
+import GoogleSignIn
 
 //class MainUrNetworkStore: ObservableObject {
 ////    @Published var networkSpaceStore: NetworkSpaceStore
@@ -48,23 +49,14 @@ struct NetworkApp: App {
                             authenticateNetworkClient: networkStore.authenticateNetworkClient
                         )
                     }
-//                    else {
-//                        Text("loading api...")
-//                    }
                     
                 }
                 
             }
             .environmentObject(ThemeManager.shared)
-//            .onAppear {
-//                let documentsPath = FileManager.default.urls(for: .documentDirectory,
-//                                                           in: .userDomainMask)[0]
-//                
-//                print("documentsPath is \(documentsPath.path())")
-//                
-//                networkStore.initializeNetworkSpace(documentsPath.path())
-//            }
-
+            .onOpenURL { url in
+                GIDSignIn.sharedInstance.handle(url)
+            }
         }
     }
 }

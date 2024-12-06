@@ -8,6 +8,8 @@
 import SwiftUI
 import URnetworkSdk
 import AuthenticationServices
+import GoogleSignInSwift
+import GoogleSignIn
 
 struct LoginInitialView: View {
     
@@ -97,6 +99,13 @@ struct LoginInitialView: View {
                     .clipShape(Capsule())
                     .signInWithAppleButtonStyle(.white)
                     
+                    Spacer()
+                        .frame(height: 24)
+                    
+                    UrGoogleSignInButton(
+                        action: handleGoogleSignInButton
+                    )
+                    
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
@@ -149,6 +158,61 @@ struct LoginInitialView: View {
             // TODO: toast alert
             // TODO: clear viewmodel loading state
         }
+        
+    }
+    
+    private func handleGoogleSignInButton() async {
+        
+        guard let rootViewController = getRootViewController() else {
+            print("no root view controller found")
+            return
+        }
+        
+        do {
+            let signInResult = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController)
+
+            let result = await viewModel.handleGoogleLoginResult(signInResult)
+            await handleAuthLoginResult(result)
+            
+         } catch {
+             print("Error signing in: \(error.localizedDescription)")
+         }
+        
+    }
+    
+}
+
+struct UrGoogleSignInButton: View {
+    
+    @EnvironmentObject var themeManager: ThemeManager
+    
+    var action: () async -> Void
+    
+    var body: some View {
+        
+        return Button(action: {
+            Task {
+                await action()
+            }
+        }) {
+            HStack(alignment: .center) {
+                
+                Image("GoogleIcon")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+                
+                Text("Sign in with Google")
+                    .foregroundColor(themeManager.currentTheme.inverseTextColor)
+                        .font(
+                            Font.system(size: 19, weight: .medium)
+                        )
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .frame(height: 48)
+        .background(Color.urLightBlue)
+        .clipShape(Capsule())
         
     }
     

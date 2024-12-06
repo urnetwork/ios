@@ -9,5 +9,16 @@
 		<string>ABCGravity-ExtraCondensed.otf</string>
 		<string>ABCGravity-Extended.otf</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.338638865390-tdgpupo59durdck5es80iukafh0or4uq</string>
+			</array>
+		</dict>
+	</array>
+	<key>GIDClientID</key>
+	<string>338638865390-tdgpupo59durdck5es80iukafh0or4uq.apps.googleusercontent.com</string>
 </dict>
 </plist>
