@@ -68,7 +68,7 @@ struct CreateNetworkView: View {
         GeometryReader { geometry in
             
             ScrollView(.vertical) {
-                VStack {
+                VStack(alignment: .center) {
                     Text("Join URnetwork", comment: "URnetwork is the project name and should not be translated")
                         .foregroundColor(.urWhite)
                         .font(themeManager.currentTheme.titleFont)
@@ -163,6 +163,7 @@ struct CreateNetworkView: View {
                 }
                 .padding()
                 .frame(minHeight: geometry.size.height)
+                .frame(maxWidth: 400)
                 .frame(maxWidth: .infinity)
             }
         }
@@ -212,13 +213,16 @@ struct CreateNetworkView: View {
 }
 
 #Preview {
-    CreateNetworkView(
-        authLoginArgs: SdkAuthLoginArgs(),
-        navigate: {_ in },
-        authenticateNetworkClient: {_ in
-            return .success(())
-        },
-        api: SdkBringYourApi()
-    )
+    ZStack {
+        CreateNetworkView(
+            authLoginArgs: SdkAuthLoginArgs(),
+            navigate: {_ in },
+            authenticateNetworkClient: {_ in
+                return .success(())
+            },
+            api: SdkBringYourApi()
+        )
+    }
     .environmentObject(ThemeManager.shared)
+    .background(ThemeManager.shared.currentTheme.backgroundColor)
 }
