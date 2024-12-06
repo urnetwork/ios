@@ -88,6 +88,7 @@ struct LoginCarousel: View {
                     .opacity(textOpacity)
                     .animation(.easeOut(duration: 0.5), value: textOffset)
                     .animation(.easeOut(duration: 0.3), value: textOpacity)
+                    .foregroundColor(themeManager.currentTheme.textColor)
                 
                 // "with URnetwork"
                 Text(LoginCarousel.slideBottomText)
@@ -97,6 +98,7 @@ struct LoginCarousel: View {
                     .opacity(bottomTextOpacity)
                     .animation(.easeOut(duration: 0.4), value: bottomTextOffset)
                     .animation(.easeOut(duration: 0.2), value: bottomTextOpacity)
+                    .foregroundColor(themeManager.currentTheme.textColor)
             }
             
         }
