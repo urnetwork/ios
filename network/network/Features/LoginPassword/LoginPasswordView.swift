@@ -90,6 +90,7 @@ struct LoginPasswordView: View {
                 }
                 .padding()
                 .frame(minHeight: geometry.size.height)
+                .frame(maxWidth: 400)
                 .frame(maxWidth: .infinity)
             }
         }
@@ -132,13 +133,20 @@ struct LoginPasswordView: View {
 }
 
 #Preview {
-    LoginPasswordView(
-        userAuth: "hello@ur.io",
-        navigate: {_ in },
-        authenticateNetworkClient: {_ in
-            return .success(())
-        },
-        api: nil
-    )
+    
+    ZStack {
+    
+        LoginPasswordView(
+            userAuth: "hello@ur.io",
+            navigate: {_ in },
+            authenticateNetworkClient: {_ in
+                return .success(())
+            },
+            api: nil
+        )
+        
+    }
     .environmentObject(ThemeManager.shared)
+    .background(ThemeManager.shared.currentTheme.backgroundColor)
+    
 }
