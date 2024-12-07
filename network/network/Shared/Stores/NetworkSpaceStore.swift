@@ -9,6 +9,9 @@ import Foundation
 import SwiftUI
 import URnetworkSdk
 
+// TODO: deprecate this file
+// network space has been moved to NetworkStore
+
 private class TestNetworkSpaceUpdateCallback: NSObject, URnetworkSdk.SdkNetworkSpaceUpdateProtocol {
     func update(_ values: URnetworkSdk.SdkNetworkSpaceValues?) {
         print("⭐️ Update callback triggered")

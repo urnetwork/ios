@@ -56,6 +56,12 @@ struct LoginNavigationView: View {
                             api: api
                         )
                             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
+                case .resetPassword(let userAuth):
+                    ResetPasswordView(
+                        userAuth: userAuth,
+                        popNavigationStack: viewModel.back,
+                        api: api
+                    )
                 }
             }
         }

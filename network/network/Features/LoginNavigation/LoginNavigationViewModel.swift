@@ -13,6 +13,7 @@ enum LoginInitialNavigationPath: Hashable {
     case password(_ userAuth: String)
     case createNetwork(_ authLoginArgs: SdkAuthLoginArgs)
     case verify(_ userAuth: String)
+    case resetPassword(_ userAuth: String)
 }
 
 extension LoginNavigationView {
@@ -26,10 +27,10 @@ extension LoginNavigationView {
         }
 
         // can be used in custom back button        
-        // func back() {
-        //     if !navigationPath.isEmpty {
-        //         navigationPath.removeLast()
-        //     }
-        // }
+         func back() {
+             if !navigationPath.isEmpty {
+                 navigationPath.removeLast()
+             }
+         }
     }
 }

@@ -10,7 +10,7 @@ import URnetworkSdk
 
 struct LoginPasswordView: View {
     
-    @EnvironmentObject var networkSpaceStore: NetworkSpaceStore
+    // @EnvironmentObject var networkSpaceStore: NetworkSpaceStore
     @EnvironmentObject var themeManager: ThemeManager
     @StateObject private var viewModel: ViewModel
     
@@ -67,7 +67,7 @@ struct LoginPasswordView: View {
                     
                     UrButton(
                         text: "Continue",
-                        onClick: {
+                        action: {
                             Task {
                                 let result = await viewModel.login(userAuth: self.userAuth)
                                 await handleLoginResult(result)
@@ -82,11 +82,17 @@ struct LoginPasswordView: View {
                     HStack {
                         Text("Forgot your password?")
                             .foregroundColor(themeManager.currentTheme.textMutedColor)
-                        Text("Reset it.", comment: "Referring to resetting the password")
-                            .foregroundColor(themeManager.currentTheme.textColor)
+                        
+                        Button(action: {
+                            navigate(.resetPassword(userAuth))
+                        }) {
+                            Text(
+                                "Reset it.",
+                                comment: "Referring to resetting the password"
+                            )
+                                .foregroundColor(themeManager.currentTheme.textColor)
+                        }
                     }
-                    
-                    
                 }
                 .padding()
                 .frame(minHeight: geometry.size.height)
