@@ -42,6 +42,7 @@ struct CreateNetworkVerifyView: View {
                     
                     Text("You've got mail")
                         .font(themeManager.currentTheme.titleFont)
+                        .foregroundColor(themeManager.currentTheme.textColor)
                     
                     Spacer().frame(height: 32)
                     
@@ -113,10 +114,10 @@ struct CreateNetworkVerifyView: View {
                     }
                     
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
                 .frame(minHeight: geometry.size.height)
-                .frame(maxWidth: .infinity)                
+                .frame(maxWidth: 400)
+                .frame(maxWidth: .infinity)
             }
         }
     }
@@ -153,9 +154,12 @@ struct CreateNetworkVerifyView: View {
 }
 
 #Preview {
-    CreateNetworkVerifyView(
-        userAuth: "",
-        api: SdkBringYourApi()
-    )
+    ZStack {
+        CreateNetworkVerifyView(
+            userAuth: "",
+            api: SdkBringYourApi()
+        )
+    }
     .environmentObject(ThemeManager.shared)
+    .background(ThemeManager.shared.currentTheme.backgroundColor)
 }
