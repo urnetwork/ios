@@ -146,7 +146,7 @@ struct CreateNetworkView: View {
                     
                     UrButton(
                         text: "Continue",
-                        onClick: {
+                        action: {
                             
                             Task {
                                 let result = await viewModel.createNetwork(

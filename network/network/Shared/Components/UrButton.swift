@@ -19,7 +19,7 @@ struct UrButton: View {
     @EnvironmentObject var themeManager: ThemeManager
     
     var text: LocalizedStringKey
-    var onClick: () -> Void
+    var action: () -> Void
     var style: UrButtonStyle = .primary
     var enabled: Bool = true
     var isFullWidth: Bool = true
@@ -28,7 +28,7 @@ struct UrButton: View {
     var body: some View {
         
         Button(action: {
-            onClick()
+            action()
         }) {
             HStack {
                 Text(text)
@@ -116,7 +116,8 @@ struct UrButton: View {
     VStack {
         // primary
         UrButton(
-            text: "Primary button", onClick: {}
+            text: "Primary button",
+            action: {}
         )
         
         Spacer()
@@ -125,7 +126,7 @@ struct UrButton: View {
         // primary disabled
         UrButton(
             text: "Primary button disabled",
-            onClick: {},
+            action: {},
             enabled: false
         )
         
@@ -135,7 +136,7 @@ struct UrButton: View {
         // secondary
         UrButton(
             text: "Secondary button",
-            onClick: {},
+            action: {},
             style: UrButtonStyle.secondary
         )
         
@@ -147,7 +148,7 @@ struct UrButton: View {
             // has a black border, so we add a background color for visibility
             UrButton(
                 text: "Outline primary",
-                onClick: {},
+                action: {},
                 style: UrButtonStyle.outlinePrimary
             )
             
@@ -157,7 +158,7 @@ struct UrButton: View {
             // disabled outline primary
             UrButton(
                 text: "Outline primary disabled",
-                onClick: {},
+                action: {},
                 style: UrButtonStyle.outlinePrimary,
                 enabled: false
             )
@@ -172,7 +173,7 @@ struct UrButton: View {
         // outline secondary
         UrButton(
             text: "Outline secondary",
-            onClick: {},
+            action: {},
             style: UrButtonStyle.outlineSecondary
         )
         
@@ -182,7 +183,7 @@ struct UrButton: View {
         // outline secondary - full width false
         UrButton(
             text: "Outline secondary",
-            onClick: {},
+            action: {},
             style: UrButtonStyle.outlineSecondary,
             isFullWidth: false
         )

@@ -197,7 +197,7 @@ private struct LoginInitialFormView: View {
             
             UrButton(
                 text: "Get started",
-                onClick: {
+                action: {
                     Task {
                         await handleUserAuth()
                     }

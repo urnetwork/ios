@@ -101,7 +101,9 @@ struct CreateNetworkVerifyView: View {
                                     } else {
                                         
                                     }
-                                case .failure(let error): break
+                                case .failure(let error):
+                                    print("error resending OTP \(error.localizedDescription)")
+                                    break
                                     
                                 }
                             }

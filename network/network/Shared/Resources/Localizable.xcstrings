@@ -85,6 +85,9 @@
     "Reset it." : {
       "comment" : "Referring to resetting the password"
     },
+    "Send reset link" : {
+
+    },
     "Sign in with Google" : {
 
     },
@@ -95,6 +98,9 @@
 
     },
     "This network name is already taken" : {
+
+    },
+    "You may need to your check spam folder or unblock no-reply@ur.io" : {
 
     },
     "You've got mail" : {
