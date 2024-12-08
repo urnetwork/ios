@@ -14,6 +14,7 @@ import GoogleSignIn
 struct LoginInitialView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var snackbarManager: UrSnackbarManager
     @StateObject private var viewModel: ViewModel
     
     var api: SdkBringYourApi?
@@ -129,8 +130,11 @@ struct LoginInitialView: View {
         
         if case .failure(let error) = result {
             print("[LoginInitialView] handleSuccessWithJwt: \(error.localizedDescription)")
-            // TODO: toast alert
+            
+            snackbarManager.showSnackbar(message: "There was an error authenticating, please try again later.")
+            
             // TODO: clear viewmodel loading state
+            
         }
         
     }

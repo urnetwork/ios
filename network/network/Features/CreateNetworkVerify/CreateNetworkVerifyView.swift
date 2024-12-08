@@ -14,7 +14,7 @@ struct CreateNetworkVerifyView: View {
     
     
     @EnvironmentObject var themeManager: ThemeManager
-    // @StateObject private var viewModel = ViewModel()
+    @EnvironmentObject var snackbarManager: UrSnackbarManager
     @StateObject private var viewModel: ViewModel
     
     // Keyboard state
@@ -93,16 +93,15 @@ struct CreateNetworkVerifyView: View {
                             Task {
                                 let result = await viewModel.resendOtp(userAuth: userAuth)
                                 
-                                // todo - prompt toast alert on resend
                                 switch result {
-                                case .success(let success):
-                                    if success {
-                                        
-                                    } else {
-                                        
-                                    }
+                                case .success:
+                                    snackbarManager.showSnackbar(message: "Verification code sent to \(userAuth)")
+                                    break
                                 case .failure(let error):
                                     print("error resending OTP \(error.localizedDescription)")
+                                    
+                                    snackbarManager.showSnackbar(message: "There was an error sending the verification code.")
+                                    
                                     break
                                     
                                 }

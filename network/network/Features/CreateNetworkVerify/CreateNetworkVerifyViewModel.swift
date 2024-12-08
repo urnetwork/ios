@@ -48,7 +48,7 @@ extension CreateNetworkVerifyView {
             self.api = api
         }
         
-        func resendOtp(userAuth: String) async -> Result<Bool, Error> {
+        func resendOtp(userAuth: String) async -> Result<Void, Error> {
             
             if isSendingOtp {
                 return .failure(NSError(domain: domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "OTP is already being sent"]))
@@ -60,7 +60,7 @@ extension CreateNetworkVerifyView {
             }
             
             do {
-                let result: Bool = try await withCheckedThrowingContinuation { continuation in
+                let result: Void = try await withCheckedThrowingContinuation { continuation in
                     
                     let callback = AuthVerifySendCallback { result, err in
                         
@@ -70,7 +70,7 @@ extension CreateNetworkVerifyView {
                             return
                         }
                         
-                        continuation.resume(returning: true)
+                        continuation.resume(returning: ())
                         
                     }
                     

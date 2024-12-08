@@ -9,24 +9,16 @@ import SwiftUI
 import URnetworkSdk
 import GoogleSignIn
 
-//class MainUrNetworkStore: ObservableObject {
-////    @Published var networkSpaceStore: NetworkSpaceStore
-////    
-////    init() {
-////        self.networkSpaceStore = NetworkSpaceStore()
-////    }
-//}
-
-
 @main
 struct NetworkApp: App {
     
     @StateObject var networkStore = NetworkStore()
+    @StateObject private var snackbarManager = UrSnackbarManager()
     
     var body: some Scene {
         WindowGroup {
             
-            Group {
+            ZStack {
                 
                 if networkStore.device != nil {
                     
@@ -52,8 +44,12 @@ struct NetworkApp: App {
                     
                 }
                 
+                UrSnackBar(message: snackbarManager.message, isVisible: snackbarManager.isVisible)
+                    .padding(.bottom, 50)
+                
             }
             .environmentObject(ThemeManager.shared)
+            .environmentObject(snackbarManager)
             .onOpenURL { url in
                 GIDSignIn.sharedInstance.handle(url)
             }
