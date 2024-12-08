@@ -11,6 +11,8 @@ import URnetworkSdk
 struct ResetPasswordView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var snackbarManager: UrSnackbarManager
+    
     @StateObject private var viewModel: ViewModel
     
     var userAuth: String
@@ -81,13 +83,16 @@ struct ResetPasswordView: View {
             
         case .success:
             
-            // TODO: toast success
+            snackbarManager.showSnackbar(message: "Password reset link sent to \(userAuth).")
             
             self.popNavigationStack()
             break
             
         case .failure(let error):
             print("error sending reset link: \(error.localizedDescription)")
+            
+            snackbarManager.showSnackbar(message: "There was an error sending a password reset link to \(userAuth).")
+            
             break
         }
         

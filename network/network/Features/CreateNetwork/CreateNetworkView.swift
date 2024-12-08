@@ -18,6 +18,7 @@ struct CreateNetworkView: View {
     var authJwt: String?
     
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var snackbarManager: UrSnackbarManager
     
     @StateObject private var viewModel: ViewModel
     
@@ -194,7 +195,9 @@ struct CreateNetworkView: View {
         
         if case .failure(let error) = result {
             print("[CreateNetworkView] handleSuccessWithJwt: \(error.localizedDescription)")
-            // TODO: toast alert
+            
+            snackbarManager.showSnackbar(message: "There was an error creating your network. Please try again later.")
+            
             // TODO: clear viewmodel loading state
         }
         

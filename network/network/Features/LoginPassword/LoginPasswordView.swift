@@ -10,13 +10,15 @@ import URnetworkSdk
 
 struct LoginPasswordView: View {
     
-    // @EnvironmentObject var networkSpaceStore: NetworkSpaceStore
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var snackbarManager: UrSnackbarManager
     @StateObject private var viewModel: ViewModel
     
     var userAuth: String
     var navigate: (LoginInitialNavigationPath) -> Void
     var authenticateNetworkClient: (String) async -> Result<Void, Error>
+    
+    let snackbarErrorMessage = "There was an error authenticating. Please try again."
     
     init(
         userAuth: String,
@@ -106,20 +108,23 @@ struct LoginPasswordView: View {
     private func handleLoginResult(_ result: LoginNetworkResult) async {
         switch result {
             
-            case .successWithJwt(let jwt):
-                await handleSuccessWithJwt(jwt)
-                break
-            case .successWithVerificationRequired:
-                navigate(.verify(userAuth))
-                viewModel.setIsLoggingIn(false)
+        case .successWithJwt(let jwt):
+            await handleSuccessWithJwt(jwt)
+            break
             
-                break
-            case .failure(let error):
-                print("CreateNetworkView: handleResult: \(error.localizedDescription)")
-                viewModel.setIsLoggingIn(false)
-                // TODO: toast alert
-                // TODO: clear viewmodel loading state
-                break
+        case .successWithVerificationRequired:
+            navigate(.verify(userAuth))
+            viewModel.setIsLoggingIn(false)
+            break
+            
+        case .failure(let error):
+            print("LoginPasswordView: handleResult: \(error.localizedDescription)")
+            
+            viewModel.setIsLoggingIn(false)
+            snackbarManager.showSnackbar(message: snackbarErrorMessage)
+            
+            // TODO: clear viewmodel loading state
+            break
             
         }
     }
@@ -128,8 +133,10 @@ struct LoginPasswordView: View {
         let result = await authenticateNetworkClient(jwt)
         
         if case .failure(let error) = result {
-            print("CreateNetworkView: handleSuccessWithJwt: \(error.localizedDescription)")
-            // TODO: toast alert
+            print("LoginPasswordView: handleSuccessWithJwt: \(error.localizedDescription)")
+            
+            snackbarManager.showSnackbar(message: snackbarErrorMessage)
+            
             // TODO: clear viewmodel loading state
         }
         viewModel.setIsLoggingIn(false)

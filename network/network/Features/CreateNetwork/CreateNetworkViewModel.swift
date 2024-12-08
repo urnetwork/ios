@@ -30,14 +30,6 @@ extension CreateNetworkView {
     
     class ViewModel: ObservableObject {
         
-        // private let api = NetworkSpaceManager.shared.networkSpace?.getApi()
-        
-//        @EnvironmentObject var networkSpaceStore: NetworkSpaceStore
-//        
-//        private var api: SdkBringYourApi? {
-//            return networkSpaceStore.api
-//        }
-        
         private var api: SdkBringYourApi
         private var networkNameValidationVc: SdkNetworkNameValidationViewController?
         private static let networkNameTooShort: LocalizedStringKey = "Network names must be 6 characters or more"
