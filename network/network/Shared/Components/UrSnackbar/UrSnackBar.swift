@@ -28,7 +28,7 @@ struct UrSnackBar: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
-                    .offset(y: isVisible ? 48 : 156)
+                    .offset(y: isVisible ? 48 : 180)
                     .animation(.easeInOut(duration: 0.3), value: isVisible)
             }
             .padding()

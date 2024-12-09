@@ -53,7 +53,9 @@ struct LoginNavigationView: View {
                     case .verify(let userAuth):
                         CreateNetworkVerifyView(
                             userAuth: userAuth,
-                            api: api
+                            api: api,
+                            navigate: viewModel.navigate,
+                            authenticateNetworkClient: authenticateNetworkClient
                         )
                             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                 case .resetPassword(let userAuth):

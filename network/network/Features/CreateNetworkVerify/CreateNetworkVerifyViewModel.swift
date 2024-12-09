@@ -32,6 +32,10 @@ extension CreateNetworkVerifyView {
         
         private var api: SdkBringYourApi?
         
+        private var userAuth: String
+        
+        let codeCount = 6
+        
         @Published var otp: String = ""
         
         @Published private(set) var isSubmitting: Bool = false
@@ -44,11 +48,12 @@ extension CreateNetworkVerifyView {
         
         private let domain = "CraeteNetworkVerifyViewModel"
         
-        init(api: SdkBringYourApi?) {
+        init(api: SdkBringYourApi?, userAuth: String) {
             self.api = api
+            self.userAuth = userAuth
         }
         
-        func resendOtp(userAuth: String) async -> Result<Void, Error> {
+        func resendOtp() async -> Result<Void, Error> {
             
             if isSendingOtp {
                 return .failure(NSError(domain: domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "OTP is already being sent"]))
@@ -77,7 +82,7 @@ extension CreateNetworkVerifyView {
                     if let api = api {
                         
                         let args = SdkAuthVerifySendArgs()
-                        args.userAuth = userAuth
+                        args.userAuth = self.userAuth
                         args.useNumeric = true
                         
                         api.authVerifySend(args, callback: callback)
@@ -117,14 +122,15 @@ extension CreateNetworkVerifyView {
             cancellables.removeAll()
         }
         
-        func submit(userAuth: String) async -> Result<String, Error> {
-            
-            
+        func submit() async -> Result<String, Error> {
+      
             if isSubmitting {
                 return .failure(NSError(domain: domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "OTP is already being sent"]))
             }
             
-            isSubmitting = true
+            DispatchQueue.main.async {
+                self.isSubmitting = true
+            }
             
             do {
                 
@@ -140,29 +146,27 @@ extension CreateNetworkVerifyView {
                             return
                         }
                         
-                        if let result = result {
+                        guard let result = result else {
+                            continuation.resume(throwing: NSError(domain: domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "verify result is nil"]))
+                            return
+                        }
+                        
+                        if let resultError = result.error {
+                            continuation.resume(throwing: NSError(domain: domain, code: -1, userInfo: [NSLocalizedDescriptionKey: resultError.message]))
                             
-                            if let resultError = result.error {
-                                continuation.resume(throwing: NSError(domain: domain, code: -1, userInfo: [NSLocalizedDescriptionKey: resultError.message]))
-                                
-                                return
-                            }
+                            return
+                        }
+                        
+                        if let network = result.network {
                             
-                            if let network = result.network {
-                                
-                                if network.byJwt.isEmpty == false {
-                                    continuation.resume(returning: network.byJwt)
-                                } else {
-                                    continuation.resume(throwing: NSError(domain: domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "byJWT is empty"]))
-                                }
-                                
+                            if network.byJwt.isEmpty == false {
+                                continuation.resume(returning: network.byJwt)
                             } else {
-                                continuation.resume(throwing: NSError(domain: domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "network is nil"]))
+                                continuation.resume(throwing: NSError(domain: domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "byJWT is empty"]))
                             }
-                            
                             
                         } else {
-                            continuation.resume(throwing: NSError(domain: domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "verify result is nil"]))
+                            continuation.resume(throwing: NSError(domain: domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "network is nil"]))
                         }
                         
                     }
@@ -185,7 +189,12 @@ extension CreateNetworkVerifyView {
                 return .success(result)
                 
             } catch {
-                self.isSubmitting = false
+                
+                
+                DispatchQueue.main.async {
+                    self.isSubmitting = false
+                }
+                
                 return .failure(error)
             }
         }
