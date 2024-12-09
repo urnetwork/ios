@@ -20,16 +20,19 @@ struct CreateNetworkVerifyView: View {
     // Keyboard state
     @FocusState private var isKeyboardShowing: Bool
     
-    var userAuth: String
+    var navigate: (LoginInitialNavigationPath) -> Void
     
-    // var authJwt: String
+    var authenticateNetworkClient: (String) async -> Result<Void, Error>
     
-    let codeCount: Int = 6
-    
-    init(userAuth: String, api: SdkBringYourApi) {
-        _viewModel = StateObject(wrappedValue: ViewModel(api: api))
-        self.userAuth = userAuth
-        // self.authJwt = authJwt
+    init(
+        userAuth: String,
+        api: SdkBringYourApi,
+        navigate: @escaping (LoginInitialNavigationPath) -> Void,
+        authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>
+    ) {
+        _viewModel = StateObject(wrappedValue: ViewModel(api: api, userAuth: userAuth))
+        self.navigate = navigate
+        self.authenticateNetworkClient = authenticateNetworkClient
     }
     
     var body: some View {
@@ -55,16 +58,26 @@ struct CreateNetworkVerifyView: View {
                     // OTP Text field
                     
                     HStack(spacing: 0) {
-                        ForEach(0..<codeCount, id: \.self) { index in
+                        ForEach(0..<viewModel.codeCount, id: \.self) { index in
                             OTPTextBox(index)
                         }
                     }.background {
                         // hidden textfield which holds the otp value
                         TextField("", text: $viewModel.otp)
                             .onChange(of: viewModel.otp) { newValue in
-                                if newValue.count > codeCount {
-                                    viewModel.otp = String(newValue.prefix(codeCount))
+                                
+                                if newValue.count > viewModel.codeCount {
+                                    viewModel.otp = String(newValue.prefix(viewModel.codeCount))
                                 }
+                                
+                                if viewModel.otp.count == viewModel.codeCount && !viewModel.isSubmitting {
+                                    
+                                    Task {
+                                        let result = await viewModel.submit()
+                                        await self.handleOptSubmitResult(result)
+                                    }
+                                }
+                                
                             }
                             .keyboardType(.numberPad)
                             .frame(width: 1, height: 1)
@@ -91,11 +104,11 @@ struct CreateNetworkVerifyView: View {
                         
                         Button(action: {
                             Task {
-                                let result = await viewModel.resendOtp(userAuth: userAuth)
+                                let result = await viewModel.resendOtp()
                                 
                                 switch result {
                                 case .success:
-                                    snackbarManager.showSnackbar(message: "Verification code sent to \(userAuth)")
+                                    snackbarManager.showSnackbar(message: "Verification code sent.")
                                     break
                                 case .failure(let error):
                                     print("error resending OTP \(error.localizedDescription)")
@@ -121,6 +134,41 @@ struct CreateNetworkVerifyView: View {
                 .frame(maxWidth: .infinity)
             }
         }
+        
+    }
+    
+    private func handleOptSubmitResult(_ result: Result<String, Error>) async {
+        
+        switch result {
+            
+        case .success(let jwt):
+            await handleSuccessWithJwt(jwt)
+            break
+         
+        case .failure(let error):
+            print("[CreateNetworkVerifyView] handleOptSubmitResult: \(error.localizedDescription)")
+            
+            snackbarManager.showSnackbar(message: "There was an error authenticating, please try again later.")
+            
+            // TODO: clear viewmodel loading state
+            
+        }
+        
+    }
+    
+    private func handleSuccessWithJwt(_ jwt: String) async {
+        
+        let result = await authenticateNetworkClient(jwt)
+        
+        if case .failure(let error) = result {
+            print("[CreateNetworkVerifyView] handleSuccessWithJwt: \(error.localizedDescription)")
+            
+            snackbarManager.showSnackbar(message: "There was an error authenticating, please try again later.")
+            
+            // TODO: clear viewmodel loading state
+            
+        }
+        
     }
     
     @ViewBuilder
@@ -158,7 +206,11 @@ struct CreateNetworkVerifyView: View {
     ZStack {
         CreateNetworkVerifyView(
             userAuth: "",
-            api: SdkBringYourApi()
+            api: SdkBringYourApi(),
+            navigate: {_ in },
+            authenticateNetworkClient: {_ in
+                return .success(())
+            }
         )
     }
     .environmentObject(ThemeManager.shared)
