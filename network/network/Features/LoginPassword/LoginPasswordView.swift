@@ -58,8 +58,11 @@ struct LoginPasswordView: View {
                         placeholder: "************",
                         submitLabel: .continue,
                         onSubmit: {
-                            Task {
-                                await viewModel.login(userAuth: self.userAuth)
+                            if !viewModel.password.isEmpty {
+                                Task {
+                                    let result = await viewModel.login(userAuth: self.userAuth)
+                                    await handleLoginResult(result)
+                                }
                             }
                         },
                         isSecure: true
@@ -70,9 +73,11 @@ struct LoginPasswordView: View {
                     UrButton(
                         text: "Continue",
                         action: {
-                            Task {
-                                let result = await viewModel.login(userAuth: self.userAuth)
-                                await handleLoginResult(result)
+                            if !viewModel.password.isEmpty {
+                                Task {
+                                    let result = await viewModel.login(userAuth: self.userAuth)
+                                    await handleLoginResult(result)
+                                }
                             }
                         },
                         enabled: !viewModel.isLoggingIn && viewModel.isValid
