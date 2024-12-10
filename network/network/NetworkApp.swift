@@ -24,17 +24,6 @@ struct NetworkApp: App {
                     
                     if networkStore.device != nil {
                         
-                        //                    TabView {
-                        //
-                        //                        ConnectView(
-                        //                            logout: networkStore.logout
-                        //                        )
-                        //                            .tabItem {
-                        //                                Label("Account", systemImage: "person.circle")
-                        //                            }
-                        //
-                        //                    }
-                        
                         MainTabView(api: api, logout: networkStore.logout)
                         
                     } else {
