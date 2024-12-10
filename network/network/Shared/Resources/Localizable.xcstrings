@@ -19,7 +19,7 @@
     "************" : {
 
     },
-    "Account" : {
+    "Account View" : {
 
     },
     "Connect View!!" : {
@@ -47,6 +47,9 @@
 
     },
     "Get started" : {
+
+    },
+    "Hello, World!" : {
 
     },
     "I agree to URnetwork's " : {
@@ -89,6 +92,9 @@
 
     },
     "Sign in with Google" : {
+
+    },
+    "Support View" : {
 
     },
     "Tell us who you really are. Enter the code we sent you to verify your identity." : {
