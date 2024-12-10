@@ -20,28 +20,24 @@ struct NetworkApp: App {
             
             ZStack {
                 
-                if networkStore.device != nil {
+                if let api = networkStore.api {
                     
-                    TabView {
+                    if networkStore.device != nil {
                         
-                        ConnectView(
-                            logout: networkStore.logout
-                        )
-                            .tabItem {
-                                Label("Account", systemImage: "person.circle")
-                            }
-                            
-                    }
-                    
-                } else {
-                    
-                    if let api = networkStore.api {
+                        MainTabView(api: api, logout: networkStore.logout)
+                        
+                    } else {
+                        
+                        
                         LoginNavigationView(
                             api: api,
                             authenticateNetworkClient: networkStore.authenticateNetworkClient
                         )
+                        
+                        
                     }
-                    
+                } else {
+                    // loading indicator?
                 }
                 
                 UrSnackBar(message: snackbarManager.message, isVisible: snackbarManager.isVisible)
