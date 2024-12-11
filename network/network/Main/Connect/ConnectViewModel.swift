@@ -23,6 +23,11 @@ extension ConnectView {
     class ViewModel: ObservableObject {
         
         /**
+         * Bottom sheet
+         */
+        @Published var isPresentingProvidersList: Bool = false
+        
+        /**
          * Provider groups
          */
         @Published private(set) var providerCountries: [SdkConnectLocation] = []

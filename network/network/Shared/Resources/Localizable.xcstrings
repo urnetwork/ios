@@ -100,7 +100,13 @@
     "Tell us who you really are. Enter the code we sent you to verify your identity." : {
 
     },
+    "Testing" : {
+
+    },
     "There was an error checking the network name" : {
+
+    },
+    "This app was brought to you by Hacking with Swift" : {
 
     },
     "This network name is already taken" : {
