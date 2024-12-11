@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+// for UI Kit Colors
 extension UIColor {
     convenience init?(hex: String) {
         var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)

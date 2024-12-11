@@ -7,14 +7,19 @@
 
 import SwiftUI
 import URnetworkSdk
+import BottomSheet
 
 struct ConnectView: View {
     
+    @EnvironmentObject var themeManager: ThemeManager
+    
     @StateObject private var viewModel: ViewModel
+    
+    @State private var singleSelection: SdkId?
     
     var logout: () -> Void
     
-    // let heights = stride(from: 0.3, through: 1.0, by: 0.1).map { PresentationDetent.fraction($0) }
+    @State var bottomSheetPosition: BottomSheetPosition = .relativeBottom(0.2)
     
     init(api: SdkBringYourApi, logout: @escaping () -> Void) {
         _viewModel = StateObject.init(wrappedValue: ViewModel(
@@ -25,7 +30,7 @@ struct ConnectView: View {
     
     var body: some View {
         
-        ZStack {
+        // ZStack {
             
             VStack {
                 Text("Connect View!!")
@@ -45,40 +50,33 @@ struct ConnectView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .sheet(isPresented: $viewModel.isPresentingProvidersList) {
-                Text("This app was brought to you by Hacking with Swift")
-                    // .presentationDetents(Set(heights))
-                    .presentationDetents([.large])
-                    .presentationDragIndicator(.visible)
-                    .interactiveDismissDisabled()
+            .bottomSheet(
+                bottomSheetPosition: $bottomSheetPosition,
+                switchablePositions: [.relativeBottom(0.2), .relativeTop(0.95)],
+                headerContent: {
+                    HStack {
+                        Text("hello world")
+                    }
+                }
+            ) {
+                
+                ProviderListSheetView(
+                    providerCountries: viewModel.providerCountries,
+                    providerPromoted: viewModel.providerPromoted,
+                    providerDevices: viewModel.providerDevices,
+                    providerRegions: viewModel.providerRegions,
+                    providerCities: viewModel.providerCities,
+                    providerBestSearchMatches: viewModel.providerBestSearchMatches
+                )
+                
             }
-            //        .background(Color(red: 0.06, green: 0.06, blue: 0.06))
-            
-            
-            
-            // Persistent Bottom Sheet
-//            UrBottomSheet(isExpanded: $viewModel.isPresentingProvidersList) {
-//                ScrollView {
-//                    VStack(alignment: .leading, spacing: 10) {
-//                        Text("News & Updates")
-//                            .font(.headline)
-//                        
-//                        // Example news items
-//                        ForEach(0..<10) { index in
-//                            VStack(alignment: .leading) {
-//                                Text("News Item \(index + 1)")
-//                                    .font(.subheadline)
-//                                Text("Details about the news...")
-//                                    .font(.caption)
-//                            }
-//                            .padding(.vertical, 4)
-//                        }
-//                    }
-//                    .padding()
-//                }
-//            }
-            
-        }
+            .dragIndicatorColor(themeManager.currentTheme.textFaintColor)
+            .customBackground(
+                themeManager.currentTheme.backgroundColor
+                    .cornerRadius(12)
+                    .shadow(color: themeManager.currentTheme.borderBaseColor, radius: 1, x: 0, y: 0)
+            )
+            .enableAppleScrollBehavior()
     }
 }
 

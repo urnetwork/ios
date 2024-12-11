@@ -19,6 +19,9 @@
     "************" : {
 
     },
+    "%d providers" : {
+
+    },
     "Account View" : {
 
     },
@@ -47,6 +50,9 @@
 
     },
     "Get started" : {
+
+    },
+    "hello world" : {
 
     },
     "Hello, World!" : {
@@ -104,9 +110,6 @@
 
     },
     "There was an error checking the network name" : {
-
-    },
-    "This app was brought to you by Hacking with Swift" : {
 
     },
     "This network name is already taken" : {

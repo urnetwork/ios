@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		17041CF72D026BE4003F4D5A /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 17041CF62D026BE4003F4D5A /* GoogleSignIn */; };
 		17041CF92D026BE4003F4D5A /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 17041CF82D026BE4003F4D5A /* GoogleSignInSwift */; };
+		178F612E2D09672000A18C0A /* BottomSheet in Frameworks */ = {isa = PBXBuildFile; productRef = 178F612D2D09672000A18C0A /* BottomSheet */; };
 		D1829C222CEBF0D700920833 /* URnetworkSdk in Frameworks */ = {isa = PBXBuildFile; productRef = D1829C212CEBF0D700920833 /* URnetworkSdk */; };
 		D1829C242CEBF0E300920833 /* URnetworkSdk in Frameworks */ = {isa = PBXBuildFile; productRef = D1829C232CEBF0E300920833 /* URnetworkSdk */; };
 		D1B95A842CEBE76400542E0E /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1B95A832CEBE76400542E0E /* NetworkExtension.framework */; };
@@ -104,6 +105,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				17041CF92D026BE4003F4D5A /* GoogleSignInSwift in Frameworks */,
+				178F612E2D09672000A18C0A /* BottomSheet in Frameworks */,
 				D1829C222CEBF0D700920833 /* URnetworkSdk in Frameworks */,
 				17041CF72D026BE4003F4D5A /* GoogleSignIn in Frameworks */,
 			);
@@ -193,6 +195,7 @@
 				D1829C212CEBF0D700920833 /* URnetworkSdk */,
 				17041CF62D026BE4003F4D5A /* GoogleSignIn */,
 				17041CF82D026BE4003F4D5A /* GoogleSignInSwift */,
+				178F612D2D09672000A18C0A /* BottomSheet */,
 			);
 			productName = network;
 			productReference = D1B95A4F2CEBDD6900542E0E /* URnetwork.app */;
@@ -328,6 +331,7 @@
 			packageReferences = (
 				D1829C202CEBF08F00920833 /* XCLocalSwiftPackageReference "URnetworkSdk" */,
 				17041CF52D026BE4003F4D5A /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				178F612C2D09671F00A18C0A /* XCRemoteSwiftPackageReference "BottomSheet" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D1B95A502CEBDD6900542E0E /* Products */;
@@ -869,6 +873,14 @@
 				minimumVersion = 8.0.0;
 			};
 		};
+		178F612C2D09671F00A18C0A /* XCRemoteSwiftPackageReference "BottomSheet" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/lucaszischka/BottomSheet";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -881,6 +893,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 17041CF52D026BE4003F4D5A /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignInSwift;
+		};
+		178F612D2D09672000A18C0A /* BottomSheet */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 178F612C2D09671F00A18C0A /* XCRemoteSwiftPackageReference "BottomSheet" */;
+			productName = BottomSheet;
 		};
 		D1829C212CEBF0D700920833 /* URnetworkSdk */ = {
 			isa = XCSwiftPackageProductDependency;
