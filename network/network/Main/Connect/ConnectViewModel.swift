@@ -9,6 +9,7 @@ import Foundation
 import URnetworkSdk
 import BottomSheet
 import SwiftUI
+import Combine
 
 private class FindLocationsCallback: SdkCallback<SdkFindLocationsResult, SdkFindLocationsCallbackProtocol>, SdkFindLocationsCallbackProtocol {
     func result(_ result: SdkFindLocationsResult?, err: Error?) {
@@ -27,8 +28,8 @@ extension ConnectView {
         /**
          * Bottom sheet
          */
-        @Published var bottomSheetPosition: BottomSheetPosition = .absoluteBottom(168)
-        let bottomSheetSwitchablePositions: [BottomSheetPosition] = [.absoluteBottom(168), .relativeTop(0.95)]
+        @Published var bottomSheetPosition: BottomSheetPosition = .absoluteBottom(164)
+        let bottomSheetSwitchablePositions: [BottomSheetPosition] = [.absoluteBottom(164), .relativeTop(0.95)]
         
         /**
          * Provider groups
@@ -47,26 +48,40 @@ extension ConnectView {
         
         func setSelectedProvider(_ provider: SdkConnectLocation?) {
             selectedProvider = provider
-            bottomSheetPosition = .relativeBottom(0.2)
+            bottomSheetPosition = .absoluteBottom(164)
         }
+        
+        /**
+         * Search
+         */
+        private var cancellables = Set<AnyCancellable>()
+        private var debounceTimer: AnyCancellable?
+        @Published var searchQuery: String = ""
         
         
         var api: SdkBringYourApi
         
         init(api: SdkBringYourApi) {
             self.api = api
-            self.initLocations()
+            
+            // when search changes
+            // debounce and fire search
+            $searchQuery
+                .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+                .sink { [weak self] query in
+                    self?.performSearch(query)
+                }
+                .store(in: &cancellables)
+            
         }
         
-        func initLocations() {
+        private func performSearch(_ query: String) {
             Task {
-                await filterLocations("")
+                await filterLocations(query)
             }
         }
         
-        func filterLocations(_ query: String) async -> Result<Void, Error> {
-            
-            // TODO: debounce
+        private func filterLocations(_ query: String) async -> Result<Void, Error> {
             
             if query.isEmpty {
                 return await self.getAllProviders()

@@ -24,6 +24,10 @@ struct ConnectView: View {
             api: api
         ))
         self.logout = logout
+        
+        
+        // adds clear button to search providers text field
+        UITextField.appearance().clearButtonMode = .whileEditing
     }
     
     var body: some View {
@@ -38,14 +42,7 @@ struct ConnectView: View {
                 Button(action: logout) {
                     Text("Logout")
                 }
-                
-                Spacer().frame(height: 32)
-                
-//                Button(action: {
-//                    viewModel.isPresentingProvidersList = true
-//                }) {
-//                    Text("Testing")
-//                }
+
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .bottomSheet(
@@ -53,24 +50,45 @@ struct ConnectView: View {
                 switchablePositions: viewModel.bottomSheetSwitchablePositions,
                 headerContent: {
                     
-                    if let selectedProvider = viewModel.selectedProvider {
-                        ProviderListItemView(
-                            name: selectedProvider.name,
-                            providerCount: selectedProvider.providerCount,
-                            color: viewModel.getProviderColor(selectedProvider),
-                            isSelected: false,
-                            setSelectedProvider: {}
-                        )
-                    } else {
-                        ProviderListItemView(
-                            name: "Best available provider",
-                            providerCount: nil,
-                            color: Color.urCoral,
-                            isSelected: false,
-                            setSelectedProvider: {
-                                viewModel.setSelectedProvider(nil)
-                            }
-                        )
+                    VStack {
+                     
+                        if let selectedProvider = viewModel.selectedProvider {
+                            ProviderListItemView(
+                                name: selectedProvider.name,
+                                providerCount: selectedProvider.providerCount,
+                                color: viewModel.getProviderColor(selectedProvider),
+                                isSelected: false,
+                                setSelectedProvider: {}
+                            )
+                        } else {
+                            ProviderListItemView(
+                                name: "Best available provider",
+                                providerCount: nil,
+                                color: Color.urCoral,
+                                isSelected: false,
+                                setSelectedProvider: {
+                                    viewModel.setSelectedProvider(nil)
+                                }
+                            )
+                        }
+                        
+                        HStack {
+                            Image(systemName: "magnifyingglass")
+                                .foregroundColor(themeManager.currentTheme.textFaintColor)
+                            TextField("", text: $viewModel.searchQuery, prompt: Text("Search")
+                                      // placeholder color
+                                .foregroundColor(themeManager.currentTheme.textFaintColor)
+                            )
+                            // color of entered text
+                            .foregroundColor(themeManager.currentTheme.textMutedColor)
+                        }
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 5)
+                        .background(RoundedRectangle(cornerRadius: 10).fill(themeManager.currentTheme.tintedBackgroundBase))
+                        .padding(.horizontal, 16)
+                        
+                        Spacer().frame(height: 16)
+                        
                     }
                     
                 }

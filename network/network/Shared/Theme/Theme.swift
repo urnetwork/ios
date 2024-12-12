@@ -9,6 +9,7 @@ import SwiftUI
 
 struct Theme {
     let backgroundColor: Color
+    let tintedBackgroundBase: Color
 
     let accentColor: Color
     let dangerColor: Color
