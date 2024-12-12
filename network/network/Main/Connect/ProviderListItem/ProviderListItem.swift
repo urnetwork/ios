@@ -13,6 +13,8 @@ struct ProviderListItem: View {
     @EnvironmentObject var themeManager: ThemeManager
     
     var provider: SdkConnectLocation
+    var isSelected: Bool
+    var setSelectedProvider: (SdkConnectLocation) -> Void
     
     var color: Color {
         if provider.locationType == SdkLocationTypeCountry {
@@ -27,7 +29,7 @@ struct ProviderListItem: View {
             
             Circle()
                 .frame(width: 40, height: 40)
-                .foregroundColor(color) // or any color you want
+                .foregroundColor(color)
             
             Spacer().frame(width: 16)
             
@@ -43,9 +45,24 @@ struct ProviderListItem: View {
             
             Spacer()
             
+            if isSelected {
+                Image(systemName: "checkmark")
+                    .foregroundColor(.blue)
+                    .font(.system(size: 20))
+            }
+            
         }
+//        .onTapGesture {
+//            setSelectedProvider(provider)
+//        }
+        // .background(Color.clear)
         .padding(.vertical, 8)
         .padding(.horizontal, 16)
+        .frame(maxWidth: .infinity)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            setSelectedProvider(provider)
+        }
     }
 }
 
@@ -63,7 +80,9 @@ struct ProviderListItem: View {
     
     return VStack {
         ProviderListItem(
-            provider: provider
+            provider: provider,
+            isSelected: true,
+            setSelectedProvider: {_ in }
         )
     }
     .environmentObject(themeManager)

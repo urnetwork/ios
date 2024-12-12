@@ -12,6 +12,12 @@ struct ProviderListSheetView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     
+    var selectedProvider: SdkConnectLocation?
+    var setSelectedProvider: (SdkConnectLocation?) -> Void
+    
+    /**
+     * Provider lists
+     */
     var providerCountries: [SdkConnectLocation]
     var providerPromoted: [SdkConnectLocation]
     var providerDevices: [SdkConnectLocation]
@@ -24,13 +30,42 @@ struct ProviderListSheetView: View {
         // using a VStack instead of list due to https://github.com/lucaszischka/BottomSheet/issues/169#issuecomment-2526693338
         VStack {
             
-            ProviderListGroup(groupName: "Best Search Matches", providers: providerBestSearchMatches)
-            ProviderListGroup(groupName: "Promoted Locations", providers: providerPromoted)
-            ProviderListGroup(groupName: "Countries", providers: providerCountries)
-            ProviderListGroup(groupName: "Regions", providers: providerRegions)
-            ProviderListGroup(groupName: "Cities", providers: providerCities)
-            ProviderListGroup(groupName: "Devices", providers: providerDevices)
-            
+            ProviderListGroup(
+                groupName: "Best Search Matches",
+                providers: providerBestSearchMatches,
+                selectedProvider: selectedProvider,
+                setSelectedProvider: setSelectedProvider
+            )
+            ProviderListGroup(
+                groupName: "Promoted Locations",
+                providers: providerPromoted,
+                selectedProvider: selectedProvider,
+                setSelectedProvider: setSelectedProvider
+            )
+            ProviderListGroup(
+                groupName: "Countries",
+                providers: providerCountries,
+                selectedProvider: selectedProvider,
+                setSelectedProvider: setSelectedProvider
+            )
+            ProviderListGroup(
+                groupName: "Regions",
+                providers: providerRegions,
+                selectedProvider: selectedProvider,
+                setSelectedProvider: setSelectedProvider
+            )
+            ProviderListGroup(
+                groupName: "Cities",
+                providers: providerCities,
+                selectedProvider: selectedProvider,
+                setSelectedProvider: setSelectedProvider
+            )
+            ProviderListGroup(
+                groupName: "Devices",
+                providers: providerDevices,
+                selectedProvider: selectedProvider,
+                setSelectedProvider: setSelectedProvider
+            )
         }
     }
 }
@@ -41,6 +76,8 @@ private struct ProviderListGroup: View {
     
     var groupName: String
     var providers: [SdkConnectLocation]
+    var selectedProvider: SdkConnectLocation?
+    var setSelectedProvider: (SdkConnectLocation) -> Void
     
     var body: some View {
         if !providers.isEmpty {
@@ -56,7 +93,15 @@ private struct ProviderListGroup: View {
                     .padding(.top, 8)
             ) {
                 ForEach(providers, id: \.connectLocationId) { provider in
-                    ProviderListItem(provider: provider)
+                    ProviderListItem(
+                        provider: provider,
+//                        isSelected: ((provider.connectLocationId?.isEqual(selectedProvider?.connectLocationId)) != nil),
+                        
+                        isSelected: selectedProvider != nil && selectedProvider?.connectLocationId?.cmp(provider.connectLocationId) == 0,
+                        
+                        // isSelected: provider.connectLocationId?.isEqual(<#T##object: Any?##Any?#>)
+                        setSelectedProvider: setSelectedProvider
+                    )
                 }
             }
             
@@ -128,6 +173,8 @@ private struct ProviderListGroup: View {
     
     return VStack {
         ProviderListSheetView(
+            selectedProvider: nil,
+            setSelectedProvider: {_ in },
             providerCountries: providerCountries,
             providerPromoted: [],
             providerDevices: [],

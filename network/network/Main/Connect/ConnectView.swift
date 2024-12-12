@@ -15,11 +15,9 @@ struct ConnectView: View {
     
     @StateObject private var viewModel: ViewModel
     
-    @State private var singleSelection: SdkId?
-    
     var logout: () -> Void
     
-    @State var bottomSheetPosition: BottomSheetPosition = .relativeBottom(0.2)
+    // @State var bottomSheetPosition: BottomSheetPosition = .relativeBottom(0.2)
     
     init(api: SdkBringYourApi, logout: @escaping () -> Void) {
         _viewModel = StateObject.init(wrappedValue: ViewModel(
@@ -43,15 +41,15 @@ struct ConnectView: View {
                 
                 Spacer().frame(height: 32)
                 
-                Button(action: {
-                    viewModel.isPresentingProvidersList = true
-                }) {
-                    Text("Testing")
-                }
+//                Button(action: {
+//                    viewModel.isPresentingProvidersList = true
+//                }) {
+//                    Text("Testing")
+//                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .bottomSheet(
-                bottomSheetPosition: $bottomSheetPosition,
+                bottomSheetPosition: $viewModel.bottomSheetPosition,
                 switchablePositions: [.relativeBottom(0.2), .relativeTop(0.95)],
                 headerContent: {
                     HStack {
@@ -61,6 +59,8 @@ struct ConnectView: View {
             ) {
                 
                 ProviderListSheetView(
+                    selectedProvider: viewModel.selectedProvider,
+                    setSelectedProvider: viewModel.setSelectedProvider,
                     providerCountries: viewModel.providerCountries,
                     providerPromoted: viewModel.providerPromoted,
                     providerDevices: viewModel.providerDevices,

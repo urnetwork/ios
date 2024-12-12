@@ -7,6 +7,7 @@
 
 import Foundation
 import URnetworkSdk
+import BottomSheet
 
 private class FindLocationsCallback: SdkCallback<SdkFindLocationsResult, SdkFindLocationsCallbackProtocol>, SdkFindLocationsCallbackProtocol {
     func result(_ result: SdkFindLocationsResult?, err: Error?) {
@@ -25,7 +26,7 @@ extension ConnectView {
         /**
          * Bottom sheet
          */
-        @Published var isPresentingProvidersList: Bool = false
+        @Published var bottomSheetPosition: BottomSheetPosition = .relativeBottom(0.2)
         
         /**
          * Provider groups
@@ -36,6 +37,16 @@ extension ConnectView {
         @Published private(set) var providerRegions: [SdkConnectLocation] = []
         @Published private(set) var providerCities: [SdkConnectLocation] = []
         @Published private(set) var providerBestSearchMatches: [SdkConnectLocation] = []
+        
+        /**
+         * Selected Provider
+         */
+        @Published private(set) var selectedProvider: SdkConnectLocation?
+        
+        func setSelectedProvider(_ provider: SdkConnectLocation?) {
+            selectedProvider = provider
+            bottomSheetPosition = .relativeBottom(0.2)
+        }
         
         
         var api: SdkBringYourApi
