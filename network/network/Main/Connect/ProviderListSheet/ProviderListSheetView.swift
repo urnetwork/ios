@@ -93,14 +93,14 @@ private struct ProviderListGroup: View {
                     .padding(.top, 8)
             ) {
                 ForEach(providers, id: \.connectLocationId) { provider in
-                    ProviderListItem(
-                        provider: provider,
-//                        isSelected: ((provider.connectLocationId?.isEqual(selectedProvider?.connectLocationId)) != nil),
-                        
+                    ProviderListItemView(
+                        name: provider.name,
+                        providerCount: provider.providerCount,
+                        color: getProviderColor(provider),
                         isSelected: selectedProvider != nil && selectedProvider?.connectLocationId?.cmp(provider.connectLocationId) == 0,
-                        
-                        // isSelected: provider.connectLocationId?.isEqual(<#T##object: Any?##Any?#>)
-                        setSelectedProvider: setSelectedProvider
+                        setSelectedProvider: {
+                            setSelectedProvider(provider)
+                        }
                     )
                 }
             }

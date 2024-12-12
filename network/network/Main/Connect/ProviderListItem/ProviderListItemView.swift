@@ -8,21 +8,15 @@
 import SwiftUI
 import URnetworkSdk
 
-struct ProviderListItem: View {
+struct ProviderListItemView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     
-    var provider: SdkConnectLocation
+    var name: String
+    var providerCount: Int32?
+    var color: Color
     var isSelected: Bool
-    var setSelectedProvider: (SdkConnectLocation) -> Void
-    
-    var color: Color {
-        if provider.locationType == SdkLocationTypeCountry {
-            return Color(hex: SdkGetColorHex(provider.countryCode))
-        } else {
-            return Color(hex: SdkGetColorHex(provider.connectLocationId?.string()))
-        }
-    }
+    var setSelectedProvider: () -> Void
     
     var body: some View {
         HStack {
@@ -34,13 +28,15 @@ struct ProviderListItem: View {
             Spacer().frame(width: 16)
             
             VStack(alignment: .leading) {
-                Text(provider.name)
+                Text(name)
                     .font(themeManager.currentTheme.bodyFont)
                     .foregroundColor(themeManager.currentTheme.textColor)
                 
-                Text("\(provider.providerCount) providers")
-                    .font(themeManager.currentTheme.secondaryBodyFont)
-                    .foregroundColor(themeManager.currentTheme.textMutedColor)
+                if let providerCount = providerCount {
+                    Text("\(providerCount) providers")
+                        .font(themeManager.currentTheme.secondaryBodyFont)
+                        .foregroundColor(themeManager.currentTheme.textMutedColor)
+                }
             }
             
             Spacer()
@@ -52,37 +48,27 @@ struct ProviderListItem: View {
             }
             
         }
-//        .onTapGesture {
-//            setSelectedProvider(provider)
-//        }
-        // .background(Color.clear)
         .padding(.vertical, 8)
         .padding(.horizontal, 16)
         .frame(maxWidth: .infinity)
         .contentShape(Rectangle())
         .onTapGesture {
-            setSelectedProvider(provider)
+            setSelectedProvider()
         }
     }
 }
 
 #Preview {
     
-    let provider: SdkConnectLocation = {
-        let p = SdkConnectLocation()
-        p.name = "Tokyo"
-        p.providerCount = 1000
-        p.countryCode = "JP"
-        return p
-    }()
-    
     let themeManager = ThemeManager.shared
     
-    return VStack {
-        ProviderListItem(
-            provider: provider,
+    VStack {
+        ProviderListItemView(
+            name: "Tokyo",
+            providerCount: 1000,
+            color: Color (hex: "CC3363"),
             isSelected: true,
-            setSelectedProvider: {_ in }
+            setSelectedProvider: {}
         )
     }
     .environmentObject(themeManager)

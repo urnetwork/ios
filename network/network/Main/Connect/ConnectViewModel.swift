@@ -8,6 +8,7 @@
 import Foundation
 import URnetworkSdk
 import BottomSheet
+import SwiftUI
 
 private class FindLocationsCallback: SdkCallback<SdkFindLocationsResult, SdkFindLocationsCallbackProtocol>, SdkFindLocationsCallbackProtocol {
     func result(_ result: SdkFindLocationsResult?, err: Error?) {
@@ -26,7 +27,8 @@ extension ConnectView {
         /**
          * Bottom sheet
          */
-        @Published var bottomSheetPosition: BottomSheetPosition = .relativeBottom(0.2)
+        @Published var bottomSheetPosition: BottomSheetPosition = .absoluteBottom(168)
+        let bottomSheetSwitchablePositions: [BottomSheetPosition] = [.absoluteBottom(168), .relativeTop(0.95)]
         
         /**
          * Provider groups
@@ -212,6 +214,12 @@ extension ConnectView {
             
             return locations
             
+        }
+        
+        func getProviderColor(_ provider: SdkConnectLocation) -> Color {
+            return Color(hex: SdkGetColorHex(
+                provider.locationType == SdkLocationTypeCountry ? provider.countryCode : provider.connectLocationId?.string()
+            ))
         }
         
     }

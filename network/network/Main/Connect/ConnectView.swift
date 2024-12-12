@@ -50,11 +50,29 @@ struct ConnectView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .bottomSheet(
                 bottomSheetPosition: $viewModel.bottomSheetPosition,
-                switchablePositions: [.relativeBottom(0.2), .relativeTop(0.95)],
+                switchablePositions: viewModel.bottomSheetSwitchablePositions,
                 headerContent: {
-                    HStack {
-                        Text("hello world")
+                    
+                    if let selectedProvider = viewModel.selectedProvider {
+                        ProviderListItemView(
+                            name: selectedProvider.name,
+                            providerCount: selectedProvider.providerCount,
+                            color: viewModel.getProviderColor(selectedProvider),
+                            isSelected: false,
+                            setSelectedProvider: {}
+                        )
+                    } else {
+                        ProviderListItemView(
+                            name: "Best available provider",
+                            providerCount: nil,
+                            color: Color.urCoral,
+                            isSelected: false,
+                            setSelectedProvider: {
+                                viewModel.setSelectedProvider(nil)
+                            }
+                        )
                     }
+                    
                 }
             ) {
                 
