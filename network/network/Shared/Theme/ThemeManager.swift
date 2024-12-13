@@ -21,6 +21,7 @@ final class ThemeManager: ObservableObject {
 extension Theme {
     static let dark = Theme(
         backgroundColor: Color("UrBlack"),
+        tintedBackgroundBase: Color(red: 0.11, green: 0.11, blue: 0.11),
 
         accentColor: Color("UrElectricBlue"),
         dangerColor: Color("UrCoral"),
