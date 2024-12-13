@@ -34,13 +34,11 @@ struct UrButton: View {
                 Text(text)
                     .foregroundColor(foregroundColor)
                     .font(
-                        Font.custom("PP NeueBit", size: 24)
-                        .weight(.bold)
+                        themeManager.currentTheme.toolbarTitleFont.bold()
                     )
                 
                 if let trailingIcon {
                     Image(trailingIcon)
-                    // UrImage(path: trailingIconPath)
                 }
             }
             .frame(maxWidth: isFullWidth ? .infinity : nil)

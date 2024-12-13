@@ -38,7 +38,6 @@ struct LoginInitialView: View {
             let isLandscape = geometry.size.width > geometry.size.height
             let isTablet = UIDevice.current.userInterfaceIdiom == .pad
       
-            
             ScrollView(.vertical) {
                 
                 if isLandscape && isTablet {

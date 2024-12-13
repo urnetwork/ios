@@ -25,9 +25,9 @@ extension AccountNavStackView {
 //            self.api = api
 //        }
         
-        @Published var navigationPath: [LoginInitialNavigationPath] = []
+        @Published var navigationPath: [AccountNavigationPath] = []
         
-        func navigate(_ path: LoginInitialNavigationPath) {
+        func navigate(_ path: AccountNavigationPath) {
             navigationPath.append(path)
         }
 

@@ -12,9 +12,12 @@ extension SettingsView {
     
     class ViewModel: ObservableObject {
         
-        var api: SdkBringYourApi
+        @Published var canReceiveNotifications: Bool = false
+        @Published var canReceiveProductUpdates: Bool = false
         
-        init(api: SdkBringYourApi) {
+        var api: SdkBringYourApi?
+        
+        init(api: SdkBringYourApi?) {
             self.api = api
         }
         

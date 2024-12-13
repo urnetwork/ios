@@ -8,7 +8,7 @@
 import Foundation
 import URnetworkSdk
 
-extension AccountView {
+extension AccountRootView {
     
     class ViewModel: ObservableObject {
         var api: SdkBringYourApi

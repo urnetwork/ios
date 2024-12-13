@@ -10,6 +10,9 @@
     " and " : {
 
     },
+    "[Discord](https://discord.com/invite/RUNZXMwPRK)" : {
+
+    },
     "[Privacy Policy](https://ur.io/privacy)" : {
 
     },
@@ -22,7 +25,13 @@
     "%d providers" : {
 
     },
-    "Account View" : {
+    "0" : {
+
+    },
+    "Account" : {
+
+    },
+    "Change" : {
 
     },
     "Connect View!!" : {
@@ -31,8 +40,17 @@
     "Continue" : {
 
     },
+    "Create account" : {
+
+    },
+    "Create an account" : {
+
+    },
     "Don't see it? " : {
       "comment" : "Referring to the OTP code"
+    },
+    "Earnings" : {
+
     },
     "Email or phone" : {
 
@@ -52,6 +70,9 @@
     "Get started" : {
 
     },
+    "Guest" : {
+
+    },
     "Hello, World!" : {
 
     },
@@ -59,6 +80,9 @@
 
     },
     "It's nice to see you again" : {
+
+    },
+    "Join the community on " : {
 
     },
     "Join URnetwork" : {
@@ -76,6 +100,9 @@
     "Nice! This network name is available" : {
 
     },
+    "Notifications" : {
+
+    },
     "or" : {
       "comment" : "Referring to the two options 'Get started' *or* 'Login with Apple'"
     },
@@ -83,6 +110,15 @@
 
     },
     "Password must be at least 12 characters long" : {
+
+    },
+    "Plan" : {
+
+    },
+    "Profile" : {
+
+    },
+    "Receive connection notifications" : {
 
     },
     "Resend code" : {
@@ -94,10 +130,22 @@
     "Search" : {
 
     },
+    "Send me product updates" : {
+
+    },
     "Send reset link" : {
 
     },
+    "Settings" : {
+
+    },
     "Sign in with Google" : {
+
+    },
+    "Start earning" : {
+
+    },
+    "Stay in touch" : {
 
     },
     "Support View" : {
@@ -110,6 +158,15 @@
 
     },
     "This network name is already taken" : {
+
+    },
+    "URnetwork Member" : {
+
+    },
+    "USDC" : {
+
+    },
+    "Wallet" : {
 
     },
     "You may need to your check spam folder or unblock no-reply@ur.io" : {
