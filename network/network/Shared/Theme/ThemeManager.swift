@@ -40,6 +40,7 @@ extension Theme {
         // bodyFont: Font.custom("PP Neue Montreal", size: 16),
         bodyFont: Font.custom("PPNeueMontreal-Regular", size: 16),
         // secondaryBodyFont: Font.custom("PP Neue Montreal", size: 14)
-        secondaryBodyFont: Font.custom("PPNeueMontreal-Regular", size: 14)
+        secondaryBodyFont: Font.custom("PPNeueMontreal-Regular", size: 14),
+        toolbarTitleFont: Font.custom("PP NeueBit", size: 24)
     )
 }

@@ -44,7 +44,7 @@ struct MainTabView: View {
             /**
              * Account View
              */
-            AccountView(
+            AccountNavStackView(
                 api: api
             )
             .background(themeManager.currentTheme.backgroundColor)

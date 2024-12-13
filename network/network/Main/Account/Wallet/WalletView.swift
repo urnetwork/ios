@@ -12,10 +12,13 @@ struct WalletView: View {
     
     @StateObject private var viewModel: ViewModel
     
-    init(api: SdkBringYourApi) {
+    var back: () -> Void
+    
+    init(api: SdkBringYourApi, back: @escaping () -> Void) {
         _viewModel = StateObject.init(wrappedValue: ViewModel(
             api: api
         ))
+        self.back = back
     }
     
     var body: some View {
@@ -25,6 +28,7 @@ struct WalletView: View {
 
 #Preview {
     WalletView(
-        api: SdkBringYourApi()
+        api: SdkBringYourApi(),
+        back: {}
     )
 }

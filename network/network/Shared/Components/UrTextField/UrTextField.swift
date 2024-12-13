@@ -87,10 +87,10 @@ struct UrTextField: View {
     var body: some View {
         VStack(alignment: .leading) {
             
-            // label
-            Text(label)
-                .font(themeManager.currentTheme.secondaryBodyFont)
-                .foregroundColor(foregroundSupportColor)
+            UrLabel(
+                text: label,
+                foregroundColor: foregroundSupportColor
+            )
             
             // textfield row
             HStack {
