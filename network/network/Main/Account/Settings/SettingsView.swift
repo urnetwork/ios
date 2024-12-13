@@ -12,11 +12,20 @@ struct SettingsView: View {
     
     @StateObject private var viewModel: ViewModel
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var snackbarManager: UrSnackbarManager
     
-    init(api: SdkBringYourApi?) {
+    var clientId: SdkId?
+    
+    var clientUrl: String {
+        guard let clientId = clientId?.idStr else { return "" }
+        return "https://ur.io/c?\(clientId)"
+    }
+    
+    init(clientId: SdkId?, api: SdkBringYourApi?) {
         _viewModel = StateObject.init(wrappedValue: ViewModel(
             api: api
         ))
+        self.clientId = clientId
     }
     
     var body: some View {
@@ -58,6 +67,95 @@ struct SettingsView: View {
                     }
                     
                     Spacer().frame(height: 32)
+                    
+                    HStack {
+                        UrLabel(text: "URid")
+                        
+                        Spacer()
+                    }
+                    
+                    /**
+                     * Copy URid
+                     */
+                    // TODO: copy URid
+                    Button(action: {
+                        if let clientId = clientId?.idStr {
+                            UIPasteboard.general.string = clientId
+                            
+                            snackbarManager.showSnackbar(message: "URid copied to clipboard")
+                        }
+                    }) {
+                        HStack {
+                            Text(clientId?.idStr ?? "")
+                                .font(themeManager.currentTheme.secondaryBodyFont)
+                            Spacer()
+                            Image(systemName: "document.on.document")
+                        }
+                        .foregroundColor(themeManager.currentTheme.textMutedColor)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
+                    }
+                    .background(themeManager.currentTheme.tintedBackgroundBase)
+                    .cornerRadius(8)
+                    
+                    Spacer().frame(height: 32)
+                    
+                    /**
+                     * Copy URnetwork link
+                     */
+                    HStack {
+                        UrLabel(text: "Share URnetwork")
+                        
+                        Spacer()
+                    }
+                    
+                    Button(action: {
+                        if let clientId = clientId?.idStr {
+                            UIPasteboard.general.string = "https://ur.io/c?\(clientId)"
+                            
+                            snackbarManager.showSnackbar(message: "URnetwork link copied to clipboard")
+                            
+                        }
+                    }) {
+                        HStack {
+                            Text(clientUrl)
+                                .font(themeManager.currentTheme.secondaryBodyFont)
+                                .foregroundColor(themeManager.currentTheme.textMutedColor)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                            Spacer()
+                            Image(systemName: "document.on.document")
+                        }
+                        .foregroundColor(themeManager.currentTheme.textMutedColor)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
+                    }
+                    .background(themeManager.currentTheme.tintedBackgroundBase)
+                    .cornerRadius(8)
+
+                    Spacer().frame(height: 32)
+                    
+                    /**
+                     * Connections
+                     */
+                    HStack {
+                        UrLabel(text: "Connections")
+                        
+                        Spacer()
+                    }
+                    
+                    UrSwitchToggle(isOn: $viewModel.canProvideWhileDisconnected) {
+                        Text("Provide while disconnected")
+                            .font(themeManager.currentTheme.bodyFont)
+                            .foregroundColor(themeManager.currentTheme.textColor)
+                        
+                    }
+                    
+                    Spacer().frame(height: 32)
+                    
+                    /**
+                     * Notifications
+                     */
                     
                     HStack {
                         UrLabel(text: "Notifications")
@@ -124,8 +222,13 @@ struct SettingsView: View {
 }
 
 #Preview {
+    
+    let themeManager = ThemeManager.shared
+    
     SettingsView(
+        clientId: nil,
         api: nil
     )
-    .environmentObject(ThemeManager.shared)
+    .environmentObject(themeManager)
+    .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
 }

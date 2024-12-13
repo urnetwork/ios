@@ -14,6 +14,7 @@ struct AccountNavStackView: View {
     @StateObject private var viewModel: ViewModel = ViewModel()
     
     var api: SdkBringYourApi
+    var device: SdkBringYourDevice
     
 //    init(api: SdkBringYourApi) {
 ////        _viewModel = StateObject.init(wrappedValue: ViewModel(
@@ -46,6 +47,7 @@ struct AccountNavStackView: View {
                     
                 case .settings:
                     SettingsView(
+                        clientId: device.clientId(),
                         api: api
                     )
                     .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
@@ -75,7 +77,8 @@ struct AccountNavStackView: View {
 
 #Preview {
     AccountNavStackView(
-        api: SdkBringYourApi()
+        api: SdkBringYourApi(),
+        device: SdkBringYourDevice()
     )
     .environmentObject(ThemeManager.shared)
 }

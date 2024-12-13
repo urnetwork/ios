@@ -37,6 +37,9 @@
     "Connect View!!" : {
 
     },
+    "Connections" : {
+
+    },
     "Continue" : {
 
     },
@@ -118,6 +121,9 @@
     "Profile" : {
 
     },
+    "Provide while disconnected" : {
+
+    },
     "Receive connection notifications" : {
 
     },
@@ -139,6 +145,9 @@
     "Settings" : {
 
     },
+    "Share URnetwork" : {
+
+    },
     "Sign in with Google" : {
 
     },
@@ -158,6 +167,9 @@
 
     },
     "This network name is already taken" : {
+
+    },
+    "URid" : {
 
     },
     "URnetwork Member" : {

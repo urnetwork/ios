@@ -22,18 +22,20 @@ struct NetworkApp: App {
                 
                 if let api = networkStore.api {
                     
-                    if networkStore.device != nil {
+                    if let device = networkStore.device {
                         
-                        MainTabView(api: api, logout: networkStore.logout)
+                        MainTabView(
+                            api: api,
+                            device: device,
+                            logout: networkStore.logout
+                        )
                         
                     } else {
-                        
                         
                         LoginNavigationView(
                             api: api,
                             authenticateNetworkClient: networkStore.authenticateNetworkClient
                         )
-                        
                         
                     }
                 } else {

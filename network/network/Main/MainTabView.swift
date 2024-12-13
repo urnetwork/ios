@@ -11,14 +11,16 @@ import URnetworkSdk
 struct MainTabView: View {
     
     var api: SdkBringYourApi
+    var device: SdkBringYourDevice
     var logout: () -> Void
     
     @EnvironmentObject var themeManager: ThemeManager
     @State private var selectedTab = 0
     
-    init(api: SdkBringYourApi, logout: @escaping () -> Void) {
+    init(api: SdkBringYourApi, device: SdkBringYourDevice, logout: @escaping () -> Void) {
         self.api = api
         self.logout = logout
+        self.device = device
         setupTabBar()
     }
     
@@ -45,7 +47,8 @@ struct MainTabView: View {
              * Account View
              */
             AccountNavStackView(
-                api: api
+                api: api,
+                device: device
             )
             .background(themeManager.currentTheme.backgroundColor)
             .tabItem {
@@ -88,10 +91,11 @@ struct MainTabView: View {
     
 }
 
-#Preview {
-    MainTabView(
-        api: SdkBringYourApi(),
-        logout: {}
-    )
-    .environmentObject(ThemeManager.shared)
-}
+//#Preview {
+//    MainTabView(
+//        api: SdkBringYourApi(), // TODO: need to mock this
+//        device: SdkBringYourDevice(), // TODO: need to mock
+//        logout: {}
+//    )
+//    .environmentObject(ThemeManager.shared)
+//}
