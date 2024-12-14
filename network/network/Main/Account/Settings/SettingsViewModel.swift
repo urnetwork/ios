@@ -10,10 +10,12 @@ import URnetworkSdk
 
 extension SettingsView {
     
+    @MainActor
     class ViewModel: ObservableObject {
         
         @Published var canReceiveNotifications: Bool = false
-        @Published var canReceiveProductUpdates: Bool = false
+        
+        let domain = "SettingsViewModel"
         
         var api: SdkBringYourApi?
         

@@ -11,6 +11,7 @@ import URnetworkSdk
 struct SettingsView: View {
     
     @StateObject private var viewModel: ViewModel
+    @StateObject var accountPreferencesViewModel: AccountPreferencesViewModel
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var snackbarManager: UrSnackbarManager
     
@@ -22,12 +23,18 @@ struct SettingsView: View {
         return "https://ur.io/c?\(clientId)"
     }
     
-    init(clientId: SdkId?, provideWhileDisconnected: Binding<Bool>, api: SdkBringYourApi?) {
+    init(
+        clientId: SdkId?,
+        provideWhileDisconnected: Binding<Bool>,
+        accountPreferencesViewModel: AccountPreferencesViewModel,
+        api: SdkBringYourApi?
+    ) {
         _viewModel = StateObject.init(wrappedValue: ViewModel(
             api: api
         ))
         self.clientId = clientId
         self._provideWhileDisconnected = provideWhileDisconnected
+        self._accountPreferencesViewModel = StateObject(wrappedValue: accountPreferencesViewModel)
     }
     
     var body: some View {
@@ -150,7 +157,6 @@ struct SettingsView: View {
                         Text("Provide while disconnected")
                             .font(themeManager.currentTheme.bodyFont)
                             .foregroundColor(themeManager.currentTheme.textColor)
-                        
                     }
                     
                     Spacer().frame(height: 32)
@@ -180,7 +186,10 @@ struct SettingsView: View {
                         Spacer()
                     }
                     
-                    UrSwitchToggle(isOn: $viewModel.canReceiveProductUpdates) {
+                    UrSwitchToggle(
+                        isOn: $accountPreferencesViewModel.canReceiveProductUpdates,
+                        isEnabled: !accountPreferencesViewModel.isUpdatingAccountPreferences
+                    ) {
                         Text("Send me product updates")
                             .font(themeManager.currentTheme.bodyFont)
                             .foregroundColor(themeManager.currentTheme.textColor)
@@ -226,10 +235,12 @@ struct SettingsView: View {
 #Preview {
     
     let themeManager = ThemeManager.shared
+    let accountPreferenceViewModel = AccountPreferencesViewModel(api: SdkBringYourApi())
     
     SettingsView(
         clientId: nil,
         provideWhileDisconnected: .constant(true),
+        accountPreferencesViewModel: accountPreferenceViewModel,
         api: nil
     )
     .environmentObject(themeManager)

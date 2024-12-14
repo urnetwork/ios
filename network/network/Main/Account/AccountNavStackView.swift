@@ -13,15 +13,25 @@ struct AccountNavStackView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @StateObject private var viewModel: ViewModel = ViewModel()
     
+    @StateObject var accountPreferencesViewModel: AccountPreferencesViewModel
+    
     var api: SdkBringYourApi
     var device: SdkBringYourDevice
     @Binding var provideWhileDisconnected: Bool
     
-//    init(api: SdkBringYourApi) {
-////        _viewModel = StateObject.init(wrappedValue: ViewModel(
-////            api: api
-////        ))
-//    }
+    init(
+        api: SdkBringYourApi,
+        device: SdkBringYourDevice,
+        provideWhileDisconnected: Binding<Bool>
+    ) {
+        self.api = api
+        _accountPreferencesViewModel = StateObject.init(wrappedValue: AccountPreferencesViewModel(
+                api: api
+            )
+        )
+        self.device = device
+        self._provideWhileDisconnected = provideWhileDisconnected
+    }
     
     var body: some View {
         NavigationStack(
@@ -50,6 +60,7 @@ struct AccountNavStackView: View {
                     SettingsView(
                         clientId: device.clientId(),
                         provideWhileDisconnected: $provideWhileDisconnected,
+                        accountPreferencesViewModel: accountPreferencesViewModel,
                         api: api
                     )
                     .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
