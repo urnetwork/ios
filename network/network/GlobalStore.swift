@@ -1,5 +1,5 @@
 //
-//  NetworkStore.swift
+//  GlobalStore.swift
 //  URnetwork
 //
 //  Created by Stuart Kuentzel on 2024/12/01.
@@ -9,12 +9,10 @@ import Foundation
 import URnetworkSdk
 import UIKit
 
-class NetworkStore: ObservableObject {
+@MainActor
+class GlobalStore: ObservableObject {
     
-    let domain = "NetworkStore"
-    
-    // for testing
-    @Published var isAuthenticated: Bool = false
+    let domain = "GlobalStore"
     
     @Published private(set) var networkSpace: SdkNetworkSpace? {
         didSet {
@@ -25,7 +23,34 @@ class NetworkStore: ObservableObject {
     
     @Published private(set) var api: SdkBringYourApi?
     
-    @Published private(set) var device: SdkBringYourDevice?
+    @Published private(set) var device: SdkBringYourDevice? {
+        didSet {
+            provideWhileDisconnected = device?.getProvideWhileDisconnected() ?? false
+        }
+    }
+    
+    @Published var provideWhileDisconnected: Bool = false {
+        didSet {
+            handleProvideWhileDisconnectedUpdate(provideWhileDisconnected)
+        }
+    }
+    
+    private func handleProvideWhileDisconnectedUpdate(_ canProvideWhileDisconnected: Bool) {
+        device?.setProvideWhileDisconnected(canProvideWhileDisconnected)
+        
+        if let localState = asyncLocalState?.getLocalState() {
+            
+            do {
+                try localState.setProvideWhileDisconnected(canProvideWhileDisconnected)
+            } catch(let error) {
+                print("[\(domain)] Error setting provide while disconnected: \(error)")
+            }
+            
+        } else {
+            print("[\(domain)] No local state found when updating provide while disconnected")
+        }
+        
+    }
     
     // TODO: check how this is used or set
     let deviceDescription = "New device"
@@ -119,7 +144,7 @@ class NetworkStore: ObservableObject {
 
 private class NetworkSpaceUpdateCallback: NSObject, URnetworkSdk.SdkNetworkSpaceUpdateProtocol {
     func update(_ values: URnetworkSdk.SdkNetworkSpaceValues?) {
-        guard let values = values else {
+        guard let _ = values else {
             return
         }
     }
@@ -127,17 +152,17 @@ private class NetworkSpaceUpdateCallback: NSObject, URnetworkSdk.SdkNetworkSpace
 
 private class GetJwtInitDeviceCallback: NSObject, SdkGetByClientJwtCallbackProtocol {
     
-    weak var networkStore: NetworkStore?
+    weak var globalStore: GlobalStore?
     var deviceSpecs: String
     
-    init(networkStore: NetworkStore?, deviceSpecs: String) {
-        self.networkStore = networkStore
+    init(networkStore: GlobalStore?, deviceSpecs: String) {
+        self.globalStore = networkStore
         self.deviceSpecs = deviceSpecs
     }
     
     func result(_ result: String?, ok: Bool) {
         
-        guard let networkStore = networkStore else {
+        guard let globalStore = globalStore else {
             print("[GetByClientJwtCallback] no network store found")
             return
         }
@@ -146,14 +171,22 @@ private class GetJwtInitDeviceCallback: NSObject, SdkGetByClientJwtCallbackProto
             
             guard let result else {
                 print("[GetByClientJwtCallback] result is nil")
-                networkStore.logout()
+                
+                Task { @MainActor in
+                    globalStore.logout()
+                }
+                
                 return
             }
             
             if result == "" {
-                networkStore.logout()
+                Task { @MainActor in
+                    globalStore.logout()
+                }
             } else {
-                networkStore.initDevice(clientJwt: result, deviceSpec: self.deviceSpecs)
+                Task { @MainActor in
+                    globalStore.initDevice(clientJwt: result, deviceSpec: self.deviceSpecs)
+                }
             }
             
         }
@@ -161,11 +194,11 @@ private class GetJwtInitDeviceCallback: NSObject, SdkGetByClientJwtCallbackProto
 }
 
 // MARK: Network space handlers
-extension NetworkStore {
+extension GlobalStore {
     
     func initializeNetworkSpace(_ storagePath: String) async {
         
-        let deviceSpecs = await self.getDeviceSpecs()
+        let deviceSpecs = self.getDeviceSpecs()
         let networkSpaceManager = URnetworkSdk.SdkNewNetworkSpaceManager(storagePath)
         let networkSpaceUpdateCallback = NetworkSpaceUpdateCallback()
         
@@ -189,21 +222,18 @@ extension NetworkStore {
         let networkSpaceKey = URnetworkSdk.SdkNewNetworkSpaceKey(hostName, envName)
         
         networkSpaceManager?.updateNetworkSpace(networkSpaceKey, callback: networkSpaceUpdateCallback)
+            
+        self.networkSpace = networkSpaceManager?.getNetworkSpace(networkSpaceKey)
         
-        DispatchQueue.main.async {
-            
-            self.networkSpace = networkSpaceManager?.getNetworkSpace(networkSpaceKey)
-            
-            let getJwtCallback = GetJwtInitDeviceCallback(networkStore: self, deviceSpecs: deviceSpecs)
-            self.asyncLocalState?.getByClientJwt(getJwtCallback)
-        }
+        let getJwtCallback = GetJwtInitDeviceCallback(networkStore: self, deviceSpecs: deviceSpecs)
+        self.asyncLocalState?.getByClientJwt(getJwtCallback)
         
     }
     
 }
 
 // MARK: Device handlers
-extension NetworkStore {
+extension GlobalStore {
     
     func initDevice(
         clientJwt: String,
@@ -229,44 +259,45 @@ extension NetworkStore {
                 
                 var newDeviceError: NSError?
                 
-                DispatchQueue.main.async {
-                    self.device = SdkNewBringYourDeviceWithDefaults(
-                        networkSpace,
-                        clientJwt,
-                        self.deviceDescription,
-                        deviceSpec,
-                        self.getAppVersion(),
-                        instanceId,
-                        &newDeviceError
-                    )
-                    
-                    if let error = newDeviceError {
-                        print("Error occurred: \(error.localizedDescription)")
-                    } else {
-                        print("Device created successfully")
-                    }
-                    
-                    guard let device = self.device else {
-                        print("device is nil")
-                        return
-                    }
-                    
-                    if let providerSecretKeys = localState.getProvideSecretKeys() {
-                        device.loadProvideSecretKeys(providerSecretKeys)
-                    } else {
-                        device.initProvideSecretKeys()
-                        device.loadProvideSecretKeys(device.getProvideSecretKeys())
-                    }
-                    
-                    device.setProvidePaused(true)
-                    device.setRouteLocal(routeLocal)
-                    device.setProvideMode(provideMode)
-                    device.setConnectLocation(connectLocation)
-                    device.setCanShowRatingDialog(canShowRatingDialog)
-                    device.setProvideWhileDisconnected(provideWhileDisconnected)
-                    device.setVpnInterfaceWhileOffline(vpnInterfaceWhileOffline)
-                    device.setCanRefer(canRefer)
+                
+                let device = SdkNewBringYourDeviceWithDefaults(
+                    networkSpace,
+                    clientJwt,
+                    self.deviceDescription,
+                    deviceSpec,
+                    self.getAppVersion(),
+                    instanceId,
+                    &newDeviceError
+                )
+                
+                if let error = newDeviceError {
+                    print("Error occurred: \(error.localizedDescription)")
+                } else {
+                    print("Device created successfully")
                 }
+                
+                guard let device = device else {
+                    print("device is nil")
+                    return
+                }
+                
+                if let providerSecretKeys = localState.getProvideSecretKeys() {
+                    device.loadProvideSecretKeys(providerSecretKeys)
+                } else {
+                    device.initProvideSecretKeys()
+                    device.loadProvideSecretKeys(device.getProvideSecretKeys())
+                }
+                
+                device.setProvidePaused(true)
+                device.setRouteLocal(routeLocal)
+                device.setProvideMode(provideMode)
+                device.setConnectLocation(connectLocation)
+                device.setCanShowRatingDialog(canShowRatingDialog)
+                device.setProvideWhileDisconnected(provideWhileDisconnected)
+                device.setVpnInterfaceWhileOffline(vpnInterfaceWhileOffline)
+                device.setCanRefer(canRefer)
+                
+                self.device = device
                 
             } else {
                 print("local state is nil")
@@ -346,28 +377,27 @@ private class SetJWTLocalStateCallback: NSObject, SdkCommitCallbackProtocol {
 
 
 // MARK: login/logout
-extension NetworkStore {
+extension GlobalStore {
     
     private class LogoutCallback: NSObject, SdkCommitCallbackProtocol {
         
-        weak var networkStore: NetworkStore?
+        weak var globalStore: GlobalStore?
         
-        init(networkStore: NetworkStore) {
-            self.networkStore = networkStore
+        init(globalStore: GlobalStore) {
+            self.globalStore = globalStore
         }
         
         func complete(_ success: Bool) {
             
-            guard let networkStore = networkStore else {
+            guard let globalStore = globalStore else {
                 print("[LogoutCallback:complete] network store is nil")
                 return
             }
             
-            networkStore.api?.setByJwt(nil)
-            DispatchQueue.main.async {
-                networkStore.setDevice(nil)
+            Task { @MainActor in
+                globalStore.api?.setByJwt(nil)
+                globalStore.setDevice(nil)
             }
-            
         }
     }
     
@@ -390,7 +420,7 @@ extension NetworkStore {
         
         do {
             
-            let deviceSpecs = await getDeviceSpecs()
+            let deviceSpecs = getDeviceSpecs()
             
             let result: Void = try await withCheckedThrowingContinuation { continuation in
                 
@@ -450,18 +480,19 @@ extension NetworkStore {
             return
         }
         
-        let logoutCallback = LogoutCallback(networkStore: self)
+        let logoutCallback = LogoutCallback(globalStore: self)
         
         asyncLocalState.logout(logoutCallback)
     }
     
-    private func getDeviceSpecs() async -> String {
+    private func getDeviceSpecs() -> String {
         
-        let systemVersion = await UIDevice.current.systemVersion
-        let deviceModel = await UIDevice.current.model
-        let deviceName = await UIDevice.current.name
+        let systemVersion = UIDevice.current.systemVersion
+        let deviceModel = UIDevice.current.model
+        let deviceName = UIDevice.current.name
         
         return "\(systemVersion) \(deviceModel) \(deviceName)"
     }
     
 }
+

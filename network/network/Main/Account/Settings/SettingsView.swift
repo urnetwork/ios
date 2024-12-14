@@ -10,13 +10,17 @@ import URnetworkSdk
 
 struct SettingsView: View {
     
-    @StateObject private var viewModel: ViewModel
+    @StateObject private var viewModel: ViewModel = ViewModel()
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var snackbarManager: UrSnackbarManager
     
-    init(api: SdkBringYourApi?) {
-        _viewModel = StateObject.init(wrappedValue: ViewModel(
-            api: api
-        ))
+    var clientId: SdkId?
+    @Binding var provideWhileDisconnected: Bool
+    @StateObject var accountPreferencesViewModel: AccountPreferencesViewModel
+    
+    var clientUrl: String {
+        guard let clientId = clientId?.idStr else { return "" }
+        return "https://ur.io/c?\(clientId)"
     }
     
     var body: some View {
@@ -60,11 +64,101 @@ struct SettingsView: View {
                     Spacer().frame(height: 32)
                     
                     HStack {
+                        UrLabel(text: "URid")
+                        
+                        Spacer()
+                    }
+                    
+                    /**
+                     * Copy URid
+                     */
+                    // TODO: copy URid
+                    Button(action: {
+                        if let clientId = clientId?.idStr {
+                            UIPasteboard.general.string = clientId
+                            
+                            snackbarManager.showSnackbar(message: "URid copied to clipboard")
+                        }
+                    }) {
+                        HStack {
+                            Text(clientId?.idStr ?? "")
+                                .font(themeManager.currentTheme.secondaryBodyFont)
+                            Spacer()
+                            Image(systemName: "document.on.document")
+                        }
+                        .foregroundColor(themeManager.currentTheme.textMutedColor)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
+                    }
+                    .background(themeManager.currentTheme.tintedBackgroundBase)
+                    .cornerRadius(8)
+                    
+                    Spacer().frame(height: 32)
+                    
+                    /**
+                     * Copy URnetwork link
+                     */
+                    HStack {
+                        UrLabel(text: "Share URnetwork")
+                        
+                        Spacer()
+                    }
+                    
+                    Button(action: {
+                        if let clientId = clientId?.idStr {
+                            UIPasteboard.general.string = "https://ur.io/c?\(clientId)"
+                            
+                            snackbarManager.showSnackbar(message: "URnetwork link copied to clipboard")
+                            
+                        }
+                    }) {
+                        HStack {
+                            Text(clientUrl)
+                                .font(themeManager.currentTheme.secondaryBodyFont)
+                                .foregroundColor(themeManager.currentTheme.textMutedColor)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                            Spacer()
+                            Image(systemName: "document.on.document")
+                        }
+                        .foregroundColor(themeManager.currentTheme.textMutedColor)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
+                    }
+                    .background(themeManager.currentTheme.tintedBackgroundBase)
+                    .cornerRadius(8)
+
+                    Spacer().frame(height: 32)
+                    
+                    /**
+                     * Connections
+                     */
+                    HStack {
+                        UrLabel(text: "Connections")
+                        
+                        Spacer()
+                    }
+                    
+                    UrSwitchToggle(isOn: $provideWhileDisconnected) {
+                        Text("Provide while disconnected")
+                            .font(themeManager.currentTheme.bodyFont)
+                            .foregroundColor(themeManager.currentTheme.textColor)
+                    }
+                    
+                    Spacer().frame(height: 32)
+                    
+                    /**
+                     * Notifications
+                     */
+                    
+                    HStack {
                         UrLabel(text: "Notifications")
                         
                         Spacer()
                     }
                     
+                    // TODO: this should be a different UI element
+                    // once notifications are enabled, they cannot revoke them through our UI
                     UrSwitchToggle(isOn: $viewModel.canReceiveNotifications) {
                         Text("Receive connection notifications")
                             .font(themeManager.currentTheme.bodyFont)
@@ -80,7 +174,10 @@ struct SettingsView: View {
                         Spacer()
                     }
                     
-                    UrSwitchToggle(isOn: $viewModel.canReceiveProductUpdates) {
+                    UrSwitchToggle(
+                        isOn: $accountPreferencesViewModel.canReceiveProductUpdates,
+                        isEnabled: !accountPreferencesViewModel.isUpdatingAccountPreferences
+                    ) {
                         Text("Send me product updates")
                             .font(themeManager.currentTheme.bodyFont)
                             .foregroundColor(themeManager.currentTheme.textColor)
@@ -124,8 +221,15 @@ struct SettingsView: View {
 }
 
 #Preview {
+    
+    let themeManager = ThemeManager.shared
+    let accountPreferenceViewModel = AccountPreferencesViewModel(api: SdkBringYourApi())
+    
     SettingsView(
-        api: nil
+        clientId: nil,
+        provideWhileDisconnected: .constant(true),
+        accountPreferencesViewModel: accountPreferenceViewModel
     )
-    .environmentObject(ThemeManager.shared)
+    .environmentObject(themeManager)
+    .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
 }

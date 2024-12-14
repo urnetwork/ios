@@ -56,7 +56,7 @@ struct UrSwitchToggleStyle: ToggleStyle {
 struct UrSwitchToggle<Label: View>: View {
     
     @Binding var isOn: Bool
-    
+    var isEnabled: Bool = true
     var label: () -> Label
 
     var body: some View {
@@ -64,15 +64,14 @@ struct UrSwitchToggle<Label: View>: View {
             label()
         }
         .toggleStyle(UrSwitchToggleStyle())
+        .disabled(!isEnabled)
     }
 }
 
 #Preview {
     
-    @State var isOn: Bool = false
-    
     UrSwitchToggle(
-        isOn: $isOn
+        isOn: .constant(false)
     ) {
         Text("Hello world")
     }

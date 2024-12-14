@@ -13,13 +13,25 @@ struct AccountNavStackView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @StateObject private var viewModel: ViewModel = ViewModel()
     
-    var api: SdkBringYourApi
+    @StateObject var accountPreferencesViewModel: AccountPreferencesViewModel
     
-//    init(api: SdkBringYourApi) {
-////        _viewModel = StateObject.init(wrappedValue: ViewModel(
-////            api: api
-////        ))
-//    }
+    var api: SdkBringYourApi
+    var device: SdkBringYourDevice
+    @Binding var provideWhileDisconnected: Bool
+    
+    init(
+        api: SdkBringYourApi,
+        device: SdkBringYourDevice,
+        provideWhileDisconnected: Binding<Bool>
+    ) {
+        self.api = api
+        _accountPreferencesViewModel = StateObject.init(wrappedValue: AccountPreferencesViewModel(
+                api: api
+            )
+        )
+        self.device = device
+        self._provideWhileDisconnected = provideWhileDisconnected
+    }
     
     var body: some View {
         NavigationStack(
@@ -46,7 +58,9 @@ struct AccountNavStackView: View {
                     
                 case .settings:
                     SettingsView(
-                        api: api
+                        clientId: device.clientId(),
+                        provideWhileDisconnected: $provideWhileDisconnected,
+                        accountPreferencesViewModel: accountPreferencesViewModel
                     )
                     .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                     .toolbar {
@@ -75,7 +89,9 @@ struct AccountNavStackView: View {
 
 #Preview {
     AccountNavStackView(
-        api: SdkBringYourApi()
+        api: SdkBringYourApi(),
+        device: SdkBringYourDevice(),
+        provideWhileDisconnected: .constant(true)
     )
     .environmentObject(ThemeManager.shared)
 }
