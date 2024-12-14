@@ -10,31 +10,17 @@ import URnetworkSdk
 
 struct SettingsView: View {
     
-    @StateObject private var viewModel: ViewModel
-    @StateObject var accountPreferencesViewModel: AccountPreferencesViewModel
+    @StateObject private var viewModel: ViewModel = ViewModel()
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var snackbarManager: UrSnackbarManager
     
     var clientId: SdkId?
     @Binding var provideWhileDisconnected: Bool
+    @StateObject var accountPreferencesViewModel: AccountPreferencesViewModel
     
     var clientUrl: String {
         guard let clientId = clientId?.idStr else { return "" }
         return "https://ur.io/c?\(clientId)"
-    }
-    
-    init(
-        clientId: SdkId?,
-        provideWhileDisconnected: Binding<Bool>,
-        accountPreferencesViewModel: AccountPreferencesViewModel,
-        api: SdkBringYourApi?
-    ) {
-        _viewModel = StateObject.init(wrappedValue: ViewModel(
-            api: api
-        ))
-        self.clientId = clientId
-        self._provideWhileDisconnected = provideWhileDisconnected
-        self._accountPreferencesViewModel = StateObject(wrappedValue: accountPreferencesViewModel)
     }
     
     var body: some View {
@@ -171,6 +157,8 @@ struct SettingsView: View {
                         Spacer()
                     }
                     
+                    // TODO: this should be a different UI element
+                    // once notifications are enabled, they cannot revoke them through our UI
                     UrSwitchToggle(isOn: $viewModel.canReceiveNotifications) {
                         Text("Receive connection notifications")
                             .font(themeManager.currentTheme.bodyFont)
@@ -240,8 +228,7 @@ struct SettingsView: View {
     SettingsView(
         clientId: nil,
         provideWhileDisconnected: .constant(true),
-        accountPreferencesViewModel: accountPreferenceViewModel,
-        api: nil
+        accountPreferencesViewModel: accountPreferenceViewModel
     )
     .environmentObject(themeManager)
     .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())

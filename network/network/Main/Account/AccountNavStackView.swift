@@ -60,8 +60,7 @@ struct AccountNavStackView: View {
                     SettingsView(
                         clientId: device.clientId(),
                         provideWhileDisconnected: $provideWhileDisconnected,
-                        accountPreferencesViewModel: accountPreferencesViewModel,
-                        api: api
+                        accountPreferencesViewModel: accountPreferencesViewModel
                     )
                     .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                     .toolbar {
