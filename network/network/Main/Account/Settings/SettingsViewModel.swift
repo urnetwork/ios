@@ -14,7 +14,6 @@ extension SettingsView {
         
         @Published var canReceiveNotifications: Bool = false
         @Published var canReceiveProductUpdates: Bool = false
-        @Published var canProvideWhileDisconnected: Bool = false
         
         var api: SdkBringYourApi?
         

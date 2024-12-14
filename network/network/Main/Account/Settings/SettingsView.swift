@@ -15,17 +15,19 @@ struct SettingsView: View {
     @EnvironmentObject var snackbarManager: UrSnackbarManager
     
     var clientId: SdkId?
+    @Binding var provideWhileDisconnected: Bool
     
     var clientUrl: String {
         guard let clientId = clientId?.idStr else { return "" }
         return "https://ur.io/c?\(clientId)"
     }
     
-    init(clientId: SdkId?, api: SdkBringYourApi?) {
+    init(clientId: SdkId?, provideWhileDisconnected: Binding<Bool>, api: SdkBringYourApi?) {
         _viewModel = StateObject.init(wrappedValue: ViewModel(
             api: api
         ))
         self.clientId = clientId
+        self._provideWhileDisconnected = provideWhileDisconnected
     }
     
     var body: some View {
@@ -144,7 +146,7 @@ struct SettingsView: View {
                         Spacer()
                     }
                     
-                    UrSwitchToggle(isOn: $viewModel.canProvideWhileDisconnected) {
+                    UrSwitchToggle(isOn: $provideWhileDisconnected) {
                         Text("Provide while disconnected")
                             .font(themeManager.currentTheme.bodyFont)
                             .foregroundColor(themeManager.currentTheme.textColor)
@@ -227,6 +229,7 @@ struct SettingsView: View {
     
     SettingsView(
         clientId: nil,
+        provideWhileDisconnected: .constant(true),
         api: nil
     )
     .environmentObject(themeManager)

@@ -15,6 +15,7 @@ struct AccountNavStackView: View {
     
     var api: SdkBringYourApi
     var device: SdkBringYourDevice
+    @Binding var provideWhileDisconnected: Bool
     
 //    init(api: SdkBringYourApi) {
 ////        _viewModel = StateObject.init(wrappedValue: ViewModel(
@@ -48,6 +49,7 @@ struct AccountNavStackView: View {
                 case .settings:
                     SettingsView(
                         clientId: device.clientId(),
+                        provideWhileDisconnected: $provideWhileDisconnected,
                         api: api
                     )
                     .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
@@ -78,7 +80,8 @@ struct AccountNavStackView: View {
 #Preview {
     AccountNavStackView(
         api: SdkBringYourApi(),
-        device: SdkBringYourDevice()
+        device: SdkBringYourDevice(),
+        provideWhileDisconnected: .constant(true)
     )
     .environmentObject(ThemeManager.shared)
 }

@@ -13,14 +13,21 @@ struct MainTabView: View {
     var api: SdkBringYourApi
     var device: SdkBringYourDevice
     var logout: () -> Void
+    @Binding var provideWhileDisconnected: Bool
     
     @EnvironmentObject var themeManager: ThemeManager
     @State private var selectedTab = 0
     
-    init(api: SdkBringYourApi, device: SdkBringYourDevice, logout: @escaping () -> Void) {
+    init(
+        api: SdkBringYourApi,
+        device: SdkBringYourDevice,
+        logout: @escaping () -> Void,
+        provideWhileDisconnected: Binding<Bool>
+    ) {
         self.api = api
         self.logout = logout
         self.device = device
+        self._provideWhileDisconnected = provideWhileDisconnected
         setupTabBar()
     }
     
@@ -48,7 +55,8 @@ struct MainTabView: View {
              */
             AccountNavStackView(
                 api: api,
-                device: device
+                device: device,
+                provideWhileDisconnected: $provideWhileDisconnected
             )
             .background(themeManager.currentTheme.backgroundColor)
             .tabItem {

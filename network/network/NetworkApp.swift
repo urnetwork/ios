@@ -12,7 +12,7 @@ import GoogleSignIn
 @main
 struct NetworkApp: App {
     
-    @StateObject var networkStore = NetworkStore()
+    @StateObject var globalStore = GlobalStore()
     @StateObject private var snackbarManager = UrSnackbarManager()
     
     var body: some Scene {
@@ -20,21 +20,22 @@ struct NetworkApp: App {
             
             ZStack {
                 
-                if let api = networkStore.api {
+                if let api = globalStore.api {
                     
-                    if let device = networkStore.device {
+                    if let device = globalStore.device {
                         
                         MainTabView(
                             api: api,
                             device: device,
-                            logout: networkStore.logout
+                            logout: globalStore.logout,
+                            provideWhileDisconnected: $globalStore.provideWhileDisconnected
                         )
                         
                     } else {
                         
                         LoginNavigationView(
                             api: api,
-                            authenticateNetworkClient: networkStore.authenticateNetworkClient
+                            authenticateNetworkClient: globalStore.authenticateNetworkClient
                         )
                         
                     }
