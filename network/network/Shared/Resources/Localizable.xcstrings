@@ -10,7 +10,13 @@
     " and " : {
 
     },
+    " for direct support." : {
+
+    },
     "[Discord](https://discord.com/invite/RUNZXMwPRK)" : {
+
+    },
+    "[join our Discord](https://discord.com/invite/RUNZXMwPRK)" : {
 
     },
     "[Privacy Policy](https://ur.io/privacy)" : {
@@ -67,7 +73,13 @@
     "Enter your phone number or email" : {
 
     },
+    "Feedback" : {
+
+    },
     "Forgot your password?" : {
+
+    },
+    "Get in touch" : {
 
     },
     "Get started" : {
@@ -136,10 +148,16 @@
     "Search" : {
 
     },
+    "Send" : {
+
+    },
     "Send me product updates" : {
 
     },
     "Send reset link" : {
+
+    },
+    "Send us your feedback directly or " : {
 
     },
     "Settings" : {
@@ -155,9 +173,6 @@
 
     },
     "Stay in touch" : {
-
-    },
-    "Support View" : {
 
     },
     "Tell us who you really are. Enter the code we sent you to verify your identity." : {

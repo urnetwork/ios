@@ -10,21 +10,94 @@ import URnetworkSdk
 
 struct FeedbackView: View {
     
+    @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var snackbarManager: UrSnackbarManager
     @StateObject private var viewModel: ViewModel
     
-    init(api: SdkBringYourApi) {
+    init(api: SdkBringYourApi?) {
         _viewModel = StateObject.init(wrappedValue: ViewModel(
             api: api
         ))
     }
     
     var body: some View {
-        Text("Support View")
+        
+        VStack {
+            
+            HStack {
+                Text("Get in touch")
+                    .font(themeManager.currentTheme.titleFont)
+                    .foregroundColor(themeManager.currentTheme.textColor)
+                Spacer()
+            }
+            
+            Spacer().frame(height: 64)
+            
+            HStack {
+                Text("Send us your feedback directly or ") + Text("[join our Discord](https://discord.com/invite/RUNZXMwPRK)") + Text(" for direct support.")
+                
+                Spacer()
+            }
+            .foregroundColor(themeManager.currentTheme.textColor)
+            
+            Spacer().frame(height: 32)
+            
+            HStack {
+                UrLabel(text: "Feedback")
+                Spacer()
+            }
+
+            TextEditor(
+                text: $viewModel.feedback
+            )
+            .padding(.horizontal, 4)
+            .frame(height: 100)
+            .disabled(viewModel.isSending)
+            .scrollContentBackground(.hidden) // otherwise background color doesn't work
+            .background(themeManager.currentTheme.tintedBackgroundBase)
+            .cornerRadius(8)
+            .foregroundColor(themeManager.currentTheme.textColor)
+            
+            Spacer()
+            
+            UrButton(
+                text: "Send",
+                action: {
+                    
+                    Task {
+                        let result = await viewModel.sendFeedback()
+                        self.handleSendFeedbackResult(result)
+                    }
+                    
+                }
+            )
+            
+        }
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(themeManager.currentTheme.backgroundColor)
+    }
+    
+    private func handleSendFeedbackResult(_ result: Result<Void, Error>) {
+        
+        UIApplication.shared.endEditing(true)
+        
+        
+        switch result {
+        case .success:
+            
+            // TODO: message sent overlay
+            
+            snackbarManager.showSnackbar(message: "Sent! Thanks for your feedback.")
+        case .failure:
+            snackbarManager.showSnackbar(message: "There was an error sending your feedback. Please try again later.")
+        }
     }
 }
 
 #Preview {
     FeedbackView(
-        api: SdkBringYourApi()
+        api: nil
     )
+    .environmentObject(ThemeManager.shared)
 }
