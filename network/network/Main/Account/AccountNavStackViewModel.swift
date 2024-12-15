@@ -9,10 +9,10 @@ import Foundation
 import URnetworkSdk
 
 enum AccountNavigationPath: Hashable {
-//    case password(_ userAuth: String)
     case profile
     case settings
-    case wallet
+    case wallets
+    case wallet(_ wallet: SdkAccountWallet)
 }
 
 extension AccountNavStackView {
