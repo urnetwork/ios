@@ -14,7 +14,7 @@ struct AccountNavStackView: View {
     @StateObject private var viewModel: ViewModel = ViewModel()
     
     @StateObject var accountPreferencesViewModel: AccountPreferencesViewModel
-    @StateObject var walletsViewModel: WalletsViewModel
+    @StateObject var accountWalletsViewModel: AccountWalletsViewModel
     
     var api: SdkBringYourApi
     var device: SdkBringYourDevice
@@ -30,7 +30,7 @@ struct AccountNavStackView: View {
                 api: api
             )
         )
-        _walletsViewModel = StateObject.init(wrappedValue: WalletsViewModel(
+        _accountWalletsViewModel = StateObject.init(wrappedValue: AccountWalletsViewModel(
                 api: api
             )
         )
@@ -77,10 +77,12 @@ struct AccountNavStackView: View {
                     
                 case .wallets:
                     WalletsView(
-                        wallets: walletsViewModel.wallets,
+                        wallets: accountWalletsViewModel.wallets,
                         navigate: viewModel.navigate,
-                        createWallet: walletsViewModel.createWallet,
-                        unpaidMegaBytes: walletsViewModel.unpaidMegaBytes
+                        createWallet: accountWalletsViewModel.createWallet,
+                        unpaidMegaBytes: accountWalletsViewModel.unpaidMegaBytes,
+                        fetchAccountWallets: accountWalletsViewModel.fetchAccountWallets,
+                        api: api
                     )
                         .toolbar {
                             ToolbarItem(placement: .principal) {

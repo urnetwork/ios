@@ -46,18 +46,12 @@ struct FeedbackView: View {
                 UrLabel(text: "Feedback")
                 Spacer()
             }
-
-            TextEditor(
-                text: $viewModel.feedback
-            )
-            .padding(.horizontal, 4)
-            .frame(height: 100)
-            .disabled(viewModel.isSending)
-            .scrollContentBackground(.hidden) // otherwise background color doesn't work
-            .background(themeManager.currentTheme.tintedBackgroundBase)
-            .cornerRadius(8)
-            .foregroundColor(themeManager.currentTheme.textColor)
             
+            UrTextEditor(
+                text: $viewModel.feedback,
+                enabled: !viewModel.isSending
+            )
+
             Spacer()
             
             UrButton(

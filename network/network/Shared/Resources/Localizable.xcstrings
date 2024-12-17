@@ -40,10 +40,16 @@
     "Change" : {
 
     },
+    "Connect an external wallet" : {
+
+    },
     "Connect external wallet" : {
 
     },
     "Connect View!!" : {
+
+    },
+    "Connect Wallet" : {
 
     },
     "Connections" : {
@@ -71,6 +77,9 @@
 
     },
     "Enter a name for your network" : {
+
+    },
+    "Enter a Solana or Matic USDC wallet address" : {
 
     },
     "Enter your phone number or email" : {
@@ -212,6 +221,15 @@
 
     },
     "USDC" : {
+
+    },
+    "USDC addresses on Solana and Polygon are currently supported" : {
+
+    },
+    "USDC wallet address" : {
+
+    },
+    "Wallets exist" : {
 
     },
     "You may need to your check spam folder or unblock no-reply@ur.io" : {
