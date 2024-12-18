@@ -14,6 +14,9 @@ struct AccountNavStackView: View {
     @StateObject private var viewModel: ViewModel = ViewModel()
     
     @StateObject var accountPreferencesViewModel: AccountPreferencesViewModel
+    @StateObject var accountWalletsViewModel: AccountWalletsViewModel
+    @StateObject var accountPaymentsViewModel: AccountPaymentsViewModel
+    @StateObject var payoutWalletViewModel: PayoutWalletViewModel
     
     var api: SdkBringYourApi
     var device: SdkBringYourDevice
@@ -29,6 +32,20 @@ struct AccountNavStackView: View {
                 api: api
             )
         )
+        _accountWalletsViewModel = StateObject.init(wrappedValue: AccountWalletsViewModel(
+                api: api
+            )
+        )
+        _accountPaymentsViewModel = StateObject.init(wrappedValue: AccountPaymentsViewModel(
+                api: api
+            )
+        )
+        
+        _payoutWalletViewModel = StateObject.init(wrappedValue: PayoutWalletViewModel(
+                api: api
+            )
+        )
+        
         self.device = device
         self._provideWhileDisconnected = provideWhileDisconnected
     }
@@ -70,17 +87,37 @@ struct AccountNavStackView: View {
                          }
                     }
                     
-                case .wallet:
-                    WalletView(
-                        api: api,
-                        back: viewModel.back
+                case .wallets:
+                    WalletsView(
+                        wallets: accountWalletsViewModel.wallets,
+                        payoutWalletId: payoutWalletViewModel.payoutWalletId,
+                        navigate: viewModel.navigate,
+                        unpaidMegaBytes: accountWalletsViewModel.unpaidMegaBytes,
+                        // payouts: accountWalletsViewModel.payouts,
+                        fetchAccountWallets: accountWalletsViewModel.fetchAccountWallets,
+                        api: api
                     )
-                    .toolbar {
-                         ToolbarItem(placement: .principal) {
-                             Text("Wallet")
-                                 .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
-                         }
-                    }
+                        .toolbar {
+                            ToolbarItem(placement: .principal) {
+                                Text("Payout Wallets")
+                                    .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
+                            }
+                        }
+                        .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
+                        .environmentObject(accountPaymentsViewModel)
+                    
+                case .wallet(let wallet):
+                
+                    WalletView()
+                        .toolbar {
+                            ToolbarItem(placement: .principal) {
+                                Text("Payout Wallets")
+                                    .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
+                            }
+                        }
+                        .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
+                        .environmentObject(accountPaymentsViewModel)
+                
                 }
             }
         }

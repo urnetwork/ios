@@ -115,7 +115,7 @@ struct AccountRootView: View {
                             name: "Wallet",
                             iconPath: "ur.symbols.wallet",
                             action: {
-                                navigate(.wallet)
+                                navigate(.wallets)
                             }
                         )
                         AccountNavLink(

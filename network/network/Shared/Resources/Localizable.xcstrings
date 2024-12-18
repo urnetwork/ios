@@ -28,6 +28,9 @@
     "************" : {
 
     },
+    "%@ USDC" : {
+
+    },
     "%d providers" : {
 
     },
@@ -40,7 +43,19 @@
     "Change" : {
 
     },
+    "Circle" : {
+
+    },
+    "Connect an external wallet" : {
+
+    },
+    "Connect external wallet" : {
+
+    },
     "Connect View!!" : {
+
+    },
+    "Connect Wallet" : {
 
     },
     "Connections" : {
@@ -53,6 +68,9 @@
 
     },
     "Create an account" : {
+
+    },
+    "DEFAULT" : {
 
     },
     "Don't see it? " : {
@@ -68,6 +86,9 @@
 
     },
     "Enter a name for your network" : {
+
+    },
+    "Enter a Solana or Matic USDC wallet address" : {
 
     },
     "Enter your phone number or email" : {
@@ -127,6 +148,12 @@
     "Password must be at least 12 characters long" : {
 
     },
+    "Payout Wallets" : {
+
+    },
+    "Payouts occur every two weeks, and require a minimum amount to receive a payout." : {
+
+    },
     "Plan" : {
 
     },
@@ -160,6 +187,9 @@
     "Send us your feedback directly or " : {
 
     },
+    "Set up Circle wallet" : {
+
+    },
     "Settings" : {
 
     },
@@ -184,19 +214,40 @@
     "This network name is already taken" : {
 
     },
+    "To start earning, connect your cryptocurrency wallet to URnetwork or set one up with Circle." : {
+
+    },
+    "total payouts" : {
+
+    },
+    "Unpaid megabytes provided" : {
+
+    },
     "URid" : {
 
     },
     "URnetwork Member" : {
 
     },
+    "URwallet" : {
+
+    },
     "USDC" : {
 
     },
-    "Wallet" : {
+    "USDC addresses on Solana and Polygon are currently supported" : {
+
+    },
+    "USDC wallet address" : {
+
+    },
+    "Wallets" : {
 
     },
     "You may need to your check spam folder or unblock no-reply@ur.io" : {
+
+    },
+    "You share with others, we share with you. Earn a share of revenue when you provide data to others in the network." : {
 
     },
     "You've got mail" : {
