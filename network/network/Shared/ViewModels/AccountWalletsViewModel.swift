@@ -35,52 +35,54 @@ class AccountWalletsViewModel: ObservableObject {
     
     init(api: SdkBringYourApi?) {
         self.api = api
-        self.fetchAccountWallets()
-        self.fetchTransferStats()
+        self.initAccountWallets()
+        self.initTransferStats()
     }
     
-    func fetchAccountWallets() {
+    func initAccountWallets() {
+        Task {
+            await fetchAccountWallets()
+        }
+    }
+    
+    func fetchAccountWallets() async {
         
         if isLoadingAccountWallets {
             return
         }
         
         isLoadingAccountWallets = true
-        
-        Task {
             
-            do {
-                let result: SdkGetAccountWalletsResult = try await withCheckedThrowingContinuation { [weak self] continuation in
+        do {
+            let result: SdkGetAccountWalletsResult = try await withCheckedThrowingContinuation { [weak self] continuation in
+                
+                guard let self = self else { return }
+                
+                let callback = GetAccountWalletsCallback { result, err in
                     
-                    guard let self = self else { return }
-                    
-                    let callback = GetAccountWalletsCallback { result, err in
-                        
-                        if let err = err {
-                            continuation.resume(throwing: err)
-                            return
-                        }
-                        
-                        guard let result = result else {
-                            continuation.resume(throwing: NSError(domain: self.domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "SdkGetAccountWalletsResult result is nil"]))
-                            return
-                        }
-                        
-                        continuation.resume(returning: result)
-                        
+                    if let err = err {
+                        continuation.resume(throwing: err)
+                        return
                     }
                     
-                    api?.getAccountWallets(callback)
+                    guard let result = result else {
+                        continuation.resume(throwing: NSError(domain: self.domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "SdkGetAccountWalletsResult result is nil"]))
+                        return
+                    }
+                    
+                    continuation.resume(returning: result)
+                    
                 }
                 
-                wallets = handleAccountWalletsList(result)
-                isLoadingAccountWallets = false
-                
-            } catch(let error) {
-                print("\(domain) Error fetching account wallets: \(error)")
-                isLoadingAccountWallets = false
+                api?.getAccountWallets(callback)
             }
             
+            wallets = handleAccountWalletsList(result)
+            isLoadingAccountWallets = false
+            
+        } catch(let error) {
+            print("\(domain) Error fetching account wallets: \(error)")
+            isLoadingAccountWallets = false
         }
         
     }
@@ -104,10 +106,16 @@ class AccountWalletsViewModel: ObservableObject {
         
     }
     
+    func initTransferStats() {
+        Task {
+            await fetchTransferStats()
+        }
+    }
+    
     /**
      * Fetch unpaid bytes provided
      */
-    func fetchTransferStats() {
+    func fetchTransferStats() async {
         
         if isLoadingTransferStats {
             return
@@ -115,44 +123,40 @@ class AccountWalletsViewModel: ObservableObject {
         
         isLoadingTransferStats = true
         
-        Task {
-         
-            do {
+        do {
+            
+            let result: SdkTransferStatsResult = try await withCheckedThrowingContinuation { [weak self] continuation in
                 
-                let result: SdkTransferStatsResult = try await withCheckedThrowingContinuation { [weak self] continuation in
+                guard let self = self else { return }
+                
+                let callback = TransferStatsCallback { result, err in
                     
-                    guard let self = self else { return }
-                    
-                    let callback = TransferStatsCallback { result, err in
-                        
-                        if let err = err {
-                            continuation.resume(throwing: err)
-                            return
-                        }
-                        
-                        guard let result = result else {
-                            continuation.resume(throwing: NSError(domain: self.domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "TransferStatsCallback result is nil"]))
-                            return
-                        }
-                        
-                        continuation.resume(returning: result)
+                    if let err = err {
+                        continuation.resume(throwing: err)
+                        return
                     }
                     
-                    api?.getTransferStats(callback)
+                    guard let result = result else {
+                        continuation.resume(throwing: NSError(domain: self.domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "TransferStatsCallback result is nil"]))
+                        return
+                    }
                     
+                    continuation.resume(returning: result)
                 }
                 
-                let unpaidBytes = result.unpaidBytesProvided
-                unpaidMegaBytes = String(format: "%.2f MB", Double(unpaidBytes) / 1_048_576) // 1 MB = 1,048,576 bytes
-                isLoadingTransferStats = false
+                api?.getTransferStats(callback)
                 
-            } catch(let error) {
-                print("\(domain) Error fetching transfer stats: \(error)")
-                isLoadingTransferStats = false
             }
             
+            let unpaidBytes = result.unpaidBytesProvided
+            unpaidMegaBytes = String(format: "%.2f MB", Double(unpaidBytes) / 1_048_576) // 1 MB = 1,048,576 bytes
+            isLoadingTransferStats = false
+            
+        } catch(let error) {
+            print("\(domain) Error fetching transfer stats: \(error)")
+            isLoadingTransferStats = false
         }
-        
+            
     }
     
 }

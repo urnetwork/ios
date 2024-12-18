@@ -95,6 +95,7 @@ struct AccountNavStackView: View {
                         unpaidMegaBytes: accountWalletsViewModel.unpaidMegaBytes,
                         // payouts: accountWalletsViewModel.payouts,
                         fetchAccountWallets: accountWalletsViewModel.fetchAccountWallets,
+                        fetchTransferStats: accountWalletsViewModel.fetchTransferStats,
                         api: api
                     )
                         .toolbar {
