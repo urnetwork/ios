@@ -15,6 +15,8 @@ struct AccountNavStackView: View {
     
     @StateObject var accountPreferencesViewModel: AccountPreferencesViewModel
     @StateObject var accountWalletsViewModel: AccountWalletsViewModel
+    @StateObject var accountPaymentsViewModel: AccountPaymentsViewModel
+    @StateObject var payoutWalletViewModel: PayoutWalletViewModel
     
     var api: SdkBringYourApi
     var device: SdkBringYourDevice
@@ -34,6 +36,16 @@ struct AccountNavStackView: View {
                 api: api
             )
         )
+        _accountPaymentsViewModel = StateObject.init(wrappedValue: AccountPaymentsViewModel(
+                api: api
+            )
+        )
+        
+        _payoutWalletViewModel = StateObject.init(wrappedValue: PayoutWalletViewModel(
+                api: api
+            )
+        )
+        
         self.device = device
         self._provideWhileDisconnected = provideWhileDisconnected
     }
@@ -78,9 +90,10 @@ struct AccountNavStackView: View {
                 case .wallets:
                     WalletsView(
                         wallets: accountWalletsViewModel.wallets,
+                        payoutWalletId: payoutWalletViewModel.payoutWalletId,
                         navigate: viewModel.navigate,
-                        createWallet: accountWalletsViewModel.createWallet,
                         unpaidMegaBytes: accountWalletsViewModel.unpaidMegaBytes,
+                        // payouts: accountWalletsViewModel.payouts,
                         fetchAccountWallets: accountWalletsViewModel.fetchAccountWallets,
                         api: api
                     )
@@ -91,6 +104,7 @@ struct AccountNavStackView: View {
                             }
                         }
                         .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
+                        .environmentObject(accountPaymentsViewModel)
                     
                 case .wallet(let wallet):
                 
@@ -102,6 +116,7 @@ struct AccountNavStackView: View {
                             }
                         }
                         .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
+                        .environmentObject(accountPaymentsViewModel)
                 
                 }
             }

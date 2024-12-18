@@ -28,6 +28,9 @@
     "************" : {
 
     },
+    "%@ USDC" : {
+
+    },
     "%d providers" : {
 
     },
@@ -38,6 +41,9 @@
 
     },
     "Change" : {
+
+    },
+    "Circle" : {
 
     },
     "Connect an external wallet" : {
@@ -62,6 +68,9 @@
 
     },
     "Create an account" : {
+
+    },
+    "DEFAULT" : {
 
     },
     "Don't see it? " : {
@@ -208,6 +217,9 @@
     "To start earning, connect your cryptocurrency wallet to URnetwork or set one up with Circle." : {
 
     },
+    "total payouts" : {
+
+    },
     "Unpaid megabytes provided" : {
 
     },
@@ -229,7 +241,7 @@
     "USDC wallet address" : {
 
     },
-    "Wallets exist" : {
+    "Wallets" : {
 
     },
     "You may need to your check spam folder or unblock no-reply@ur.io" : {
