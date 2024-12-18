@@ -11,7 +11,6 @@ import URnetworkSdk
 struct EmptyWalletsView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @Binding var displayExternalWalletSheet: Bool
-    var fetchAccountWallets: () -> Void
     var api: SdkBringYourApi?
     
     var body: some View {
@@ -58,7 +57,6 @@ struct EmptyWalletsView: View {
 
 #Preview {
     EmptyWalletsView(
-        displayExternalWalletSheet: .constant(false),
-        fetchAccountWallets: {}
+        displayExternalWalletSheet: .constant(false)
     )
 }
