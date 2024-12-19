@@ -123,6 +123,7 @@ struct AccountNavStackView: View {
                         }
                         .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                         .environmentObject(accountPaymentsViewModel)
+                        .environmentObject(payoutWalletViewModel)
                 
                 }
             }

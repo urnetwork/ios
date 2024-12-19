@@ -11,6 +11,7 @@ import URnetworkSdk
 struct WalletView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var payoutWalletViewModel: PayoutWalletViewModel
     
     var wallet: SdkAccountWallet
     let isCircleWallet: Bool
@@ -64,16 +65,24 @@ struct WalletView: View {
                     
                     Spacer().frame(width: 16)
                     
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 0) {
                         
                         Text("\(walletName) wallet")
                             .font(themeManager.currentTheme.secondaryTitleFont)
                             .foregroundColor(themeManager.currentTheme.textColor)
                         
-                        if !isCircleWallet {
-                            Text(wallet.obscuredWalletAddress())
-                                .font(themeManager.currentTheme.toolbarTitleFont)
-                                .foregroundColor(themeManager.currentTheme.textColor)
+                        HStack {
+                            
+                            if !isCircleWallet {
+                                Text(wallet.obscuredWalletAddress())
+                                    .font(themeManager.currentTheme.toolbarTitleFont)
+                                    .foregroundColor(themeManager.currentTheme.textColor)
+                            }
+                            
+                            Spacer()
+
+                            PayoutWalletTag(isPayoutWallet: isPayoutWallet)
+                            
                         }
                         
                     }
@@ -129,7 +138,9 @@ struct WalletView: View {
                     
                     if !isPayoutWallet {
                         
-                        UrButton(text: "Make default", action: {})
+                        UrButton(text: "Make default", action: {
+                            makeDefaultWallet()
+                        })
                         
                         Spacer().frame(height: 8)
                         
@@ -179,6 +190,20 @@ struct WalletView: View {
         }
         .refreshable {
             await fetchPayments()
+        }
+    }
+    
+    private func makeDefaultWallet() {
+        
+        guard let walletId = wallet.walletId else {
+            
+            // TODO: snackbar
+            
+            return
+        }
+        
+        Task {
+            await payoutWalletViewModel.updatePayoutWallet(walletId)
         }
     }
 }

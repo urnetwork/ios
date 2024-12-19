@@ -114,16 +114,8 @@ private struct WalletListItem: View {
                 Spacer()
                 
                 VStack(alignment: .trailing) {
-                 
-                    HStack {
-                        Text(isPayoutWallet ? "DEFAULT" : "")
-                            .font(Font.custom("PP NeueBit", size: 16).weight(.bold))
-                            .foregroundColor(themeManager.currentTheme.textMutedColor)
-                    }
-                    .padding(6)
-                    .background(isPayoutWallet ? .white.opacity(0.04) : .clear)
-                    .cornerRadius(6)
                     
+                    PayoutWalletTag(isPayoutWallet: isPayoutWallet)
                     
                     Spacer().frame(height: 8)
                     
