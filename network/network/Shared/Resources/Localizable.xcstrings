@@ -31,13 +31,28 @@
     "%@ USDC" : {
 
     },
+    "%@ wallet" : {
+
+    },
+    "%@ Wallet" : {
+
+    },
     "%d providers" : {
+
+    },
+    "+%@ USDC" : {
+
+    },
+    "$1.23" : {
 
     },
     "0" : {
 
     },
     "Account" : {
+
+    },
+    "Balance" : {
 
     },
     "Change" : {
@@ -127,6 +142,9 @@
     "Logout" : {
 
     },
+    "Make default" : {
+
+    },
     "Network name" : {
 
     },
@@ -154,6 +172,9 @@
     "Payouts occur every two weeks, and require a minimum amount to receive a payout." : {
 
     },
+    "Pending" : {
+
+    },
     "Plan" : {
 
     },
@@ -164,6 +185,9 @@
 
     },
     "Receive connection notifications" : {
+
+    },
+    "Remove wallet" : {
 
     },
     "Resend code" : {
@@ -218,6 +242,9 @@
 
     },
     "total payouts" : {
+
+    },
+    "Transfer funds" : {
 
     },
     "Unpaid megabytes provided" : {

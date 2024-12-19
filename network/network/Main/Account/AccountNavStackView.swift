@@ -108,11 +108,17 @@ struct AccountNavStackView: View {
                         .environmentObject(accountPaymentsViewModel)
                     
                 case .wallet(let wallet):
+                    
+                    let payments = accountPaymentsViewModel.filterPaymentsByWalletId(wallet.walletId)
                 
-                    WalletView()
+                    WalletView(
+                        wallet: wallet,
+                        payoutWalletId: payoutWalletViewModel.payoutWalletId,
+                        payments: payments
+                    )
                         .toolbar {
                             ToolbarItem(placement: .principal) {
-                                Text("Payout Wallets")
+                                Text("\(wallet.blockchain) Wallet")
                                     .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
                             }
                         }

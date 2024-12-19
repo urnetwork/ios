@@ -86,7 +86,8 @@ struct WalletsView: View {
                     PopulatedWalletsView(
                         wallets: wallets,
                         payoutWalletId: payoutWalletId,
-                        displayExternalWalletSheet: $viewModel.displayExternalWalletSheet
+                        displayExternalWalletSheet: $viewModel.displayExternalWalletSheet,
+                        navigate: navigate
                     )
                 }
                 
