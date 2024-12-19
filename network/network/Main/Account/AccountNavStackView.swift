@@ -89,12 +89,9 @@ struct AccountNavStackView: View {
                     
                 case .wallets:
                     WalletsView(
-                        wallets: accountWalletsViewModel.wallets,
+                        // wallets: accountWalletsViewModel.wallets,
                         payoutWalletId: payoutWalletViewModel.payoutWalletId,
                         navigate: viewModel.navigate,
-                        unpaidMegaBytes: accountWalletsViewModel.unpaidMegaBytes,
-                        fetchAccountWallets: accountWalletsViewModel.fetchAccountWallets,
-                        fetchTransferStats: accountWalletsViewModel.fetchTransferStats,
                         api: api
                     )
                         .toolbar {
@@ -105,6 +102,7 @@ struct AccountNavStackView: View {
                         }
                         .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                         .environmentObject(accountPaymentsViewModel)
+                        .environmentObject(accountWalletsViewModel)
                     
                 case .wallet(let wallet):
                     

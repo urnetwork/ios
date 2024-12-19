@@ -11,7 +11,6 @@ import URnetworkSdk
 struct EmptyWalletsView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @Binding var displayExternalWalletSheet: Bool
-    var api: SdkBringYourApi?
     
     var body: some View {
         VStack {
