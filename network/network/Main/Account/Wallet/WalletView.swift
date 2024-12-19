@@ -12,6 +12,7 @@ struct WalletView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var payoutWalletViewModel: PayoutWalletViewModel
+    @EnvironmentObject var snackbarManager: UrSnackbarManager
     
     var wallet: SdkAccountWallet
     let isCircleWallet: Bool
@@ -196,14 +197,14 @@ struct WalletView: View {
     private func makeDefaultWallet() {
         
         guard let walletId = wallet.walletId else {
-            
-            // TODO: snackbar
+            snackbarManager.showSnackbar(message: "Error setting default wallet")
             
             return
         }
         
         Task {
             await payoutWalletViewModel.updatePayoutWallet(walletId)
+            snackbarManager.showSnackbar(message: "Payout wallet updated")
         }
     }
 }
