@@ -12,14 +12,10 @@ struct WalletsView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var accountPaymentsViewModel: AccountPaymentsViewModel
+    @EnvironmentObject var accountWalletsViewModel: AccountWalletsViewModel
     
-    var wallets: [SdkAccountWallet]
     var payoutWalletId: SdkId?
     var navigate: (AccountNavigationPath) -> Void
-    var unpaidMegaBytes: String
-    // var payouts: [SdkAccountPayment]
-    var fetchAccountWallets: () async -> Void
-    var fetchTransferStats: () async -> Void
     var api: SdkBringYourApi?
     
     @StateObject private var viewModel: ViewModel = ViewModel()
@@ -49,7 +45,7 @@ struct WalletsView: View {
                         }
                         
                         HStack {
-                            Text(unpaidMegaBytes)
+                            Text(accountWalletsViewModel.unpaidMegaBytes)
                                 .font(themeManager.currentTheme.titleCondensedFont)
                                 .foregroundColor(themeManager.currentTheme.textColor)
                             
@@ -76,17 +72,16 @@ struct WalletsView: View {
                 
                 Spacer().frame(height: 16)
                 
-                if (wallets.isEmpty) {
+                if (accountWalletsViewModel.wallets.isEmpty) {
                     EmptyWalletsView(
-                        displayExternalWalletSheet: $viewModel.displayExternalWalletSheet,
-                        api: api
+                        displayExternalWalletSheet: $viewModel.displayExternalWalletSheet
                     )
                     .padding()
                 } else {
                     PopulatedWalletsView(
-                        wallets: wallets,
                         payoutWalletId: payoutWalletId,
-                        displayExternalWalletSheet: $viewModel.displayExternalWalletSheet
+                        displayExternalWalletSheet: $viewModel.displayExternalWalletSheet,
+                        navigate: navigate
                     )
                 }
                 
@@ -96,22 +91,20 @@ struct WalletsView: View {
             
         }
         .refreshable {
-            async let fetchWallets: Void = fetchAccountWallets()
+            async let fetchWallets: Void = accountWalletsViewModel.fetchAccountWallets()
             async let fetchPayments: Void = accountPaymentsViewModel.fetchPayments()
-            async let fetchTransferStats: Void = fetchTransferStats()
+            async let fetchTransferStats: Void = accountWalletsViewModel.fetchTransferStats()
             
             // Wait for all tasks to complete
             (_, _, _) = await (fetchWallets, fetchPayments, fetchTransferStats)
         }
-        // .frame(maxWidth: .infinity, maxHeight: .infinity)
-        // .frame(maxHeight: .infinity)
         // connect external wallet bottom sheet
         .sheet(isPresented: $viewModel.displayExternalWalletSheet) {
             
             ConnectExternalWalletSheetView(
                 onSuccess: {
                     Task {
-                        await fetchAccountWallets()
+                        await accountWalletsViewModel.fetchAccountWallets()
                         viewModel.displayExternalWalletSheet = false
                     }
                 },
@@ -129,13 +122,8 @@ struct WalletsView: View {
     let themeManager = ThemeManager.shared
     
     WalletsView(
-        wallets: [],
         payoutWalletId: nil,
-        navigate: {_ in},
-        unpaidMegaBytes: "1.23",
-        // payouts: [],
-        fetchAccountWallets: {},
-        fetchTransferStats: {}
+        navigate: {_ in}
     )
         .environmentObject(themeManager)
         .background(themeManager.currentTheme.backgroundColor)

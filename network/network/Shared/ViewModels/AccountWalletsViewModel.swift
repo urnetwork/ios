@@ -20,6 +20,17 @@ private class GetAccountWalletsCallback: SdkCallback<SdkGetAccountWalletsResult,
     }
 }
 
+private class RemoveWalletCallback: SdkCallback<SdkRemoveWalletResult, SdkRemoveWalletCallbackProtocol>, SdkRemoveWalletCallbackProtocol {
+    func result(_ result: SdkRemoveWalletResult?, err: Error?) {
+        handleResult(result, err: err)
+    }
+}
+
+enum RemoveWalletError: Error {
+    case isLoading
+    case noWalletId
+}
+
 @MainActor
 class AccountWalletsViewModel: ObservableObject {
     
@@ -28,6 +39,13 @@ class AccountWalletsViewModel: ObservableObject {
     @Published private(set) var isLoadingTransferStats: Bool = false
     @Published private(set) var isLoadingAccountWallets: Bool = false
     @Published private(set) var isCreatingExternalWallet: Bool = false
+    @Published private(set) var isRemovingWallet: Bool = false
+    
+    /**
+     * For removing wallet
+     */
+    @Published var isPresentingRemoveWalletSheet: Bool = false
+    @Published var queuedToRemove: SdkId?
     
     @Published private(set) var unpaidMegaBytes: String = ""
     
@@ -159,4 +177,64 @@ class AccountWalletsViewModel: ObservableObject {
             
     }
     
+}
+
+// MARK: remove wallet
+extension AccountWalletsViewModel {
+    
+    func promptRemoveWallet(_ walletId: SdkId) {
+        isPresentingRemoveWalletSheet = true
+        queuedToRemove = walletId
+    }
+    
+    func removeWallet() async -> Result<Void, Error> {
+
+        if isRemovingWallet {
+            return .failure(RemoveWalletError.isLoading)
+        }
+        
+        guard let walletId = queuedToRemove else {
+            return .failure(RemoveWalletError.noWalletId)
+        }
+        
+        isRemovingWallet = true
+        
+        do {
+            let _: SdkRemoveWalletResult = try await withCheckedThrowingContinuation { [weak self] continuation in
+                
+                guard let self = self else { return }
+                
+                let callback = RemoveWalletCallback { result, err in
+                    
+                    if let err = err {
+                        continuation.resume(throwing: err)
+                        return
+                    }
+                    
+                    guard let result = result else {
+                        continuation.resume(throwing: NSError(domain: self.domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "SdkRemoveWalletResult result is nil"]))
+                        return
+                    }
+                    
+                    continuation.resume(returning: result)
+                }
+                
+                let args = SdkRemoveWalletArgs()
+                args.walletId = walletId.idStr
+                
+                api?.removeWallet(args, callback: callback)
+                
+            }
+            
+            await fetchAccountWallets()
+            isRemovingWallet = false
+            
+            return .success(())
+        } catch(let error) {
+            isRemovingWallet = false
+            print("\(domain) error removing wallet: \(error)")
+            return .failure(error)
+        }
+        
+    }
 }

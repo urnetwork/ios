@@ -89,13 +89,9 @@ struct AccountNavStackView: View {
                     
                 case .wallets:
                     WalletsView(
-                        wallets: accountWalletsViewModel.wallets,
+                        // wallets: accountWalletsViewModel.wallets,
                         payoutWalletId: payoutWalletViewModel.payoutWalletId,
                         navigate: viewModel.navigate,
-                        unpaidMegaBytes: accountWalletsViewModel.unpaidMegaBytes,
-                        // payouts: accountWalletsViewModel.payouts,
-                        fetchAccountWallets: accountWalletsViewModel.fetchAccountWallets,
-                        fetchTransferStats: accountWalletsViewModel.fetchTransferStats,
                         api: api
                     )
                         .toolbar {
@@ -106,23 +102,57 @@ struct AccountNavStackView: View {
                         }
                         .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                         .environmentObject(accountPaymentsViewModel)
+                        .environmentObject(accountWalletsViewModel)
                     
                 case .wallet(let wallet):
+                    
+                    let payments = accountPaymentsViewModel.filterPaymentsByWalletId(wallet.walletId)
                 
-                    WalletView()
+                    WalletView(
+                        wallet: wallet,
+                        payoutWalletId: payoutWalletViewModel.payoutWalletId,
+                        payments: payments,
+                        promptRemoveWallet: accountWalletsViewModel.promptRemoveWallet,
+                        fetchPayments: accountPaymentsViewModel.fetchPayments
+                    )
                         .toolbar {
                             ToolbarItem(placement: .principal) {
-                                Text("Payout Wallets")
+                                Text("\(wallet.blockchain) Wallet")
                                     .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
                             }
                         }
                         .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                         .environmentObject(accountPaymentsViewModel)
+                        .environmentObject(payoutWalletViewModel)
                 
                 }
             }
         }
+        .confirmationDialog(
+            "Are you sure you want to remove this wallet?",
+            isPresented: $accountWalletsViewModel.isPresentingRemoveWalletSheet
+        ) {
+            Button("Remove wallet", role: .destructive) {
+                removeWallet()
+            }
+        }
     }
+    
+    private func removeWallet() {
+        
+        viewModel.back()
+        
+        Task {
+            let result = await accountWalletsViewModel.removeWallet()
+            
+            if case .failure(let error) = result {
+                
+                // TODO: snackbar error
+                
+            }
+        }
+    }
+    
 }
 
 #Preview {
