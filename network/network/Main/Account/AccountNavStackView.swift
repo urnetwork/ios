@@ -112,7 +112,8 @@ struct AccountNavStackView: View {
                         wallet: wallet,
                         payoutWalletId: payoutWalletViewModel.payoutWalletId,
                         payments: payments,
-                        promptRemoveWallet: accountWalletsViewModel.promptRemoveWallet
+                        promptRemoveWallet: accountWalletsViewModel.promptRemoveWallet,
+                        fetchPayments: accountPaymentsViewModel.fetchPayments
                     )
                         .toolbar {
                             ToolbarItem(placement: .principal) {

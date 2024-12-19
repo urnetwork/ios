@@ -17,6 +17,7 @@ struct WalletView: View {
     let isPayoutWallet: Bool
     let payments: [SdkAccountPayment]
     let promptRemoveWallet: (SdkId) -> Void
+    let fetchPayments: () async -> Void
     
     var walletName: String {
         
@@ -37,13 +38,15 @@ struct WalletView: View {
         wallet: SdkAccountWallet,
         payoutWalletId: SdkId?,
         payments: [SdkAccountPayment],
-        promptRemoveWallet: @escaping (SdkId) -> Void
+        promptRemoveWallet: @escaping (SdkId) -> Void,
+        fetchPayments: @escaping () async -> Void
     ) {
         self.wallet = wallet
         self.isCircleWallet = wallet.walletType == SdkWalletTypeCircleUserControlled
         self.isPayoutWallet = payoutWalletId?.cmp(wallet.walletId) == 0
         self.payments = payments
         self.promptRemoveWallet = promptRemoveWallet
+        self.fetchPayments = fetchPayments
     }
     
     var body: some View {
@@ -174,6 +177,9 @@ struct WalletView: View {
             .padding()
             
         }
+        .refreshable {
+            await fetchPayments()
+        }
     }
 }
 
@@ -182,6 +188,7 @@ struct WalletView: View {
         wallet: SdkAccountWallet(),
         payoutWalletId: nil,
         payments: [],
-        promptRemoveWallet: {_ in}
+        promptRemoveWallet: {_ in},
+        fetchPayments: {}
     )
 }
