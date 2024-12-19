@@ -18,6 +18,9 @@ struct PopulatedWalletsView: View {
     var navigate: (AccountNavigationPath) -> Void
     
     var body: some View {
+        
+        // TODO: if is in process of removing wallet, show spinner
+        
         VStack(spacing: 0) {
             
             HStack {

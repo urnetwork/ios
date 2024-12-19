@@ -93,7 +93,6 @@ struct AccountNavStackView: View {
                         payoutWalletId: payoutWalletViewModel.payoutWalletId,
                         navigate: viewModel.navigate,
                         unpaidMegaBytes: accountWalletsViewModel.unpaidMegaBytes,
-                        // payouts: accountWalletsViewModel.payouts,
                         fetchAccountWallets: accountWalletsViewModel.fetchAccountWallets,
                         fetchTransferStats: accountWalletsViewModel.fetchTransferStats,
                         api: api
@@ -114,7 +113,8 @@ struct AccountNavStackView: View {
                     WalletView(
                         wallet: wallet,
                         payoutWalletId: payoutWalletViewModel.payoutWalletId,
-                        payments: payments
+                        payments: payments,
+                        promptRemoveWallet: accountWalletsViewModel.promptRemoveWallet
                     )
                         .toolbar {
                             ToolbarItem(placement: .principal) {
@@ -128,7 +128,31 @@ struct AccountNavStackView: View {
                 }
             }
         }
+        .confirmationDialog(
+            "Are you sure you want to remove this wallet?",
+            isPresented: $accountWalletsViewModel.isPresentingRemoveWalletSheet
+        ) {
+            Button("Remove wallet", role: .destructive) {
+                removeWallet()
+            }
+        }
     }
+    
+    private func removeWallet() {
+        
+        viewModel.back()
+        
+        Task {
+            let result = await accountWalletsViewModel.removeWallet()
+            
+            if case .failure(let error) = result {
+                
+                // TODO: snackbar error
+                
+            }
+        }
+    }
+    
 }
 
 #Preview {

@@ -11,12 +11,12 @@ import URnetworkSdk
 struct WalletView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
-    // @EnvironmentObject var accountPaymentsViewModel: AccountPaymentsViewModel
     
     var wallet: SdkAccountWallet
     let isCircleWallet: Bool
     let isPayoutWallet: Bool
     let payments: [SdkAccountPayment]
+    let promptRemoveWallet: (SdkId) -> Void
     
     var walletName: String {
         
@@ -33,11 +33,17 @@ struct WalletView: View {
         
     }
     
-    init(wallet: SdkAccountWallet, payoutWalletId: SdkId?, payments: [SdkAccountPayment]) {
+    init(
+        wallet: SdkAccountWallet,
+        payoutWalletId: SdkId?,
+        payments: [SdkAccountPayment],
+        promptRemoveWallet: @escaping (SdkId) -> Void
+    ) {
         self.wallet = wallet
         self.isCircleWallet = wallet.walletType == SdkWalletTypeCircleUserControlled
         self.isPayoutWallet = payoutWalletId?.cmp(wallet.walletId) == 0
         self.payments = payments
+        self.promptRemoveWallet = promptRemoveWallet
     }
     
     var body: some View {
@@ -74,7 +80,7 @@ struct WalletView: View {
                 }
                 
                 // Commented out for testing
-                // if isCircleWallet {
+                if isCircleWallet {
                     
                     Spacer().frame(height: 16)
                     
@@ -108,7 +114,7 @@ struct WalletView: View {
                     .background(themeManager.currentTheme.tintedBackgroundBase)
                     .cornerRadius(12)
                     
-                // }
+                }
                 
                 Spacer().frame(height: 16)
                 
@@ -135,7 +141,17 @@ struct WalletView: View {
                         
                         UrButton(
                             text: "Remove wallet",
-                            action: {},
+                            action: {
+                                
+                                guard let walletId = wallet.walletId else {
+                                    
+                                    // TODO: snackbar error
+                                    
+                                    return
+                                }
+                                
+                                promptRemoveWallet(walletId)
+                            },
                             style: .outlineSecondary
                         )
                         
@@ -165,6 +181,7 @@ struct WalletView: View {
     WalletView(
         wallet: SdkAccountWallet(),
         payoutWalletId: nil,
-        payments: []
+        payments: [],
+        promptRemoveWallet: {_ in}
     )
 }
