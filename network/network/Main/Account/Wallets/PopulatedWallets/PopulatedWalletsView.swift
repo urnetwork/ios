@@ -167,7 +167,7 @@ private struct WalletListItem: View {
                 
                 Spacer()
                 
-                Text(wallet.obscuredWalletAddress())
+                Text("***\(String(wallet.walletAddress.suffix(6)))")
                     .font(Font.custom("PP NeueBit", size: 18))
                     .foregroundColor(themeManager.currentTheme.textColor)
                 

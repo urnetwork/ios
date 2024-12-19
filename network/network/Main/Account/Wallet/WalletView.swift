@@ -75,7 +75,7 @@ struct WalletView: View {
                         HStack {
                             
                             if !isCircleWallet {
-                                Text(wallet.obscuredWalletAddress())
+                                Text("***\(String(wallet.walletAddress.suffix(6)))")
                                     .font(themeManager.currentTheme.toolbarTitleFont)
                                     .foregroundColor(themeManager.currentTheme.textColor)
                             }
