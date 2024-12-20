@@ -24,17 +24,36 @@ class VPNManager {
             }
             
             let vpnProtocol = NETunnelProviderProtocol()
+            vpnProtocol.serverAddress = "" // what should this be set as?
+            vpnProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
+            vpnProtocol.username = "" // what should this be set as?
+            vpnProtocol.passwordReference = self.getPasswordReference() // what do we need a password for?
+            vpnProtocol.disconnectOnSleep = false
             
+            vpnManager.protocolConfiguration = vpnProtocol
+            vpnManager.localizedDescription = "URnetwork"
+            vpnManager.isEnabled = true
             
-            
+            vpnManager.saveToPreferences { error in
+                if let error = error {
+                    print("Error saving preferences: \(error.localizedDescription)")
+                } else {
+                    print("VPN configuration saved successfully")
+                }
+            }
         }
     }
     
-    func connect() {
+    private func getPasswordReference() -> Data? {
+        // Retrieve the password reference from the keychain
+        return nil
+    }
+    
+    func connect(with options: [String: NSObject]? = nil) {
         let vpnManager = NEVPNManager.shared()
         
         do {
-            try vpnManager.connection.startVPNTunnel()
+            try vpnManager.connection.startVPNTunnel(options: options)
             print("VPN connection started")
         } catch {
             print("Error starting VPN connection: \(error.localizedDescription)")
