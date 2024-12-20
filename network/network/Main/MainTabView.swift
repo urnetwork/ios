@@ -13,6 +13,7 @@ struct MainTabView: View {
     var api: SdkBringYourApi
     var device: SdkBringYourDevice
     var logout: () -> Void
+    var connectViewController: SdkConnectViewController?
     @Binding var provideWhileDisconnected: Bool
     
     @EnvironmentObject var themeManager: ThemeManager
@@ -28,6 +29,7 @@ struct MainTabView: View {
         self.logout = logout
         self.device = device
         self._provideWhileDisconnected = provideWhileDisconnected
+        self.connectViewController = device.openConnectViewController()
         setupTabBar()
     }
     
@@ -40,7 +42,8 @@ struct MainTabView: View {
              */
             ConnectView(
                 api: api,
-                logout: logout
+                logout: logout,
+                connectViewController: connectViewController
             )
             .background(themeManager.currentTheme.backgroundColor)
             .tabItem {

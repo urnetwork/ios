@@ -13,7 +13,8 @@ struct ProviderListSheetView: View {
     @EnvironmentObject var themeManager: ThemeManager
     
     var selectedProvider: SdkConnectLocation?
-    var setSelectedProvider: (SdkConnectLocation?) -> Void
+    var connect: (SdkConnectLocation) -> Void
+    // var setSelectedProvider: (SdkConnectLocation?) -> Void
     
     /**
      * Provider lists
@@ -34,37 +35,37 @@ struct ProviderListSheetView: View {
                 groupName: "Best Search Matches",
                 providers: providerBestSearchMatches,
                 selectedProvider: selectedProvider,
-                setSelectedProvider: setSelectedProvider
+                connect: connect
             )
             ProviderListGroup(
                 groupName: "Promoted Locations",
                 providers: providerPromoted,
                 selectedProvider: selectedProvider,
-                setSelectedProvider: setSelectedProvider
+                connect: connect
             )
             ProviderListGroup(
                 groupName: "Countries",
                 providers: providerCountries,
                 selectedProvider: selectedProvider,
-                setSelectedProvider: setSelectedProvider
+                connect: connect
             )
             ProviderListGroup(
                 groupName: "Regions",
                 providers: providerRegions,
                 selectedProvider: selectedProvider,
-                setSelectedProvider: setSelectedProvider
+                connect: connect
             )
             ProviderListGroup(
                 groupName: "Cities",
                 providers: providerCities,
                 selectedProvider: selectedProvider,
-                setSelectedProvider: setSelectedProvider
+                connect: connect
             )
             ProviderListGroup(
                 groupName: "Devices",
                 providers: providerDevices,
                 selectedProvider: selectedProvider,
-                setSelectedProvider: setSelectedProvider
+                connect: connect
             )
         }
     }
@@ -77,7 +78,7 @@ private struct ProviderListGroup: View {
     var groupName: String
     var providers: [SdkConnectLocation]
     var selectedProvider: SdkConnectLocation?
-    var setSelectedProvider: (SdkConnectLocation) -> Void
+    var connect: (SdkConnectLocation) -> Void
     
     var body: some View {
         if !providers.isEmpty {
@@ -98,8 +99,8 @@ private struct ProviderListGroup: View {
                         providerCount: provider.providerCount,
                         color: getProviderColor(provider),
                         isSelected: selectedProvider != nil && selectedProvider?.connectLocationId?.cmp(provider.connectLocationId) == 0,
-                        setSelectedProvider: {
-                            setSelectedProvider(provider)
+                        connect: {
+                            connect(provider)
                         }
                     )
                 }
@@ -174,7 +175,7 @@ private struct ProviderListGroup: View {
     return VStack {
         ProviderListSheetView(
             selectedProvider: nil,
-            setSelectedProvider: {_ in },
+            connect: {_ in },
             providerCountries: providerCountries,
             providerPromoted: [],
             providerDevices: [],
