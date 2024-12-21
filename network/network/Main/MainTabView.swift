@@ -16,6 +16,8 @@ struct MainTabView: View {
     var connectViewController: SdkConnectViewController?
     @Binding var provideWhileDisconnected: Bool
     
+    var vpnManager: VPNManager
+    
     @EnvironmentObject var themeManager: ThemeManager
     @State private var selectedTab = 0
     
@@ -30,6 +32,11 @@ struct MainTabView: View {
         self.device = device
         self._provideWhileDisconnected = provideWhileDisconnected
         self.connectViewController = device.openConnectViewController()
+        
+        // vpn manager
+        self.vpnManager = VPNManager(device: device)
+        vpnManager.setup()
+        
         setupTabBar()
     }
     

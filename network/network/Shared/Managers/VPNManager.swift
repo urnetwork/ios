@@ -7,12 +7,17 @@
 
 import Foundation
 import NetworkExtension
+import URnetworkSdk
 
 class VPNManager {
     
-    static let shared = VPNManager()
+    var device: SdkBringYourDevice
     
-    private init() {}
+    // static let shared = VPNManager()
+    
+    init(device: SdkBringYourDevice) {
+        self.device = device
+    }
     
     func setup() {
         let vpnManager = NEVPNManager.shared()
@@ -24,10 +29,10 @@ class VPNManager {
             }
             
             let vpnProtocol = NETunnelProviderProtocol()
-            vpnProtocol.serverAddress = "" // what should this be set as?
+            // vpnProtocol.serverAddress = "" // what should this be set as?
             vpnProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
-            vpnProtocol.username = "" // what should this be set as?
-            vpnProtocol.passwordReference = self.getPasswordReference() // what do we need a password for?
+            // vpnProtocol.username = "" // what should this be set as?
+            // vpnProtocol.passwordReference = self.getPasswordReference() // what do we need a password for?
             vpnProtocol.disconnectOnSleep = false
             
             vpnManager.protocolConfiguration = vpnProtocol
@@ -39,9 +44,48 @@ class VPNManager {
                     print("Error saving preferences: \(error.localizedDescription)")
                 } else {
                     print("VPN configuration saved successfully")
+                    self.addListeners()
                 }
             }
         }
+    }
+    
+    func addListeners() {
+        
+        let connectChangeListener = ConnectChangedListener { [weak self] connectEnabled in
+            
+            guard let self = self else { return }
+            
+            print("connect changed: \(connectEnabled)")
+            self.updateVpnService()
+            
+        }
+        
+        device.add(connectChangeListener)
+    }
+    
+    private func updateVpnService() {
+        
+        print("update vpn service hit")
+        let provideEnabled = device.getProvideEnabled()
+        let providePaused = device.getProvidePaused()
+        let connectEnabled = device.getConnectEnabled()
+        let routeLocal = device.getRouteLocal()
+        
+        if (provideEnabled || connectEnabled || !routeLocal) {
+            print("start vpn")
+            
+            // TODO: handle wakelock & wifi lock
+            self.connect()
+            
+        } else {
+            
+            print("stop vpn")
+            self.disconnect()
+            
+        }
+        
+        
     }
     
     private func getPasswordReference() -> Data? {
@@ -49,8 +93,12 @@ class VPNManager {
         return nil
     }
     
-    func connect(with options: [String: NSObject]? = nil) {
+    func connect(
+        // with options: [String: NSObject]? = nil
+    ) {
         let vpnManager = NEVPNManager.shared()
+        var options: [String: NSObject] = [:]
+        options["device"] = device
         
         do {
             try vpnManager.connection.startVPNTunnel(options: options)
@@ -66,4 +114,17 @@ class VPNManager {
         print("VPN connection stopped")
     }
     
+}
+
+private class ConnectChangedListener: NSObject, SdkConnectChangeListenerProtocol {
+    
+    private let callback: (_ connectEnabled: Bool) -> Void
+
+    init(callback: @escaping (_ connectEnabled: Bool) -> Void) {
+        self.callback = callback
+    }
+    
+    func connectChanged(_ connectEnabled: Bool) {
+        callback(connectEnabled)
+    }
 }
