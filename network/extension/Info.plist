@@ -4,8 +4,13 @@
 <dict>
 	<key>NSExtension</key>
 	<dict>
+		<key>NSExtensionAttributes</key>
+		<dict>
+			<key>NETunnelProvider</key>
+			<dict/>
+		</dict>
 		<key>NSExtensionPointIdentifier</key>
-		<string>com.apple.networkextension.app-proxy</string>
+		<string>com.apple.networkextension.packet-tunnel</string>
 		<key>NSExtensionPrincipalClass</key>
 		<string>$(PRODUCT_MODULE_NAME).AppProxyProvider</string>
 	</dict>

@@ -12,34 +12,33 @@ import URnetworkSdk
 class VPNManager {
     
     var device: SdkBringYourDevice
-    
-    // static let shared = VPNManager()
+    var tunnelManager: NETunnelProviderManager
     
     init(device: SdkBringYourDevice) {
         self.device = device
+        self.tunnelManager = NETunnelProviderManager()
     }
     
     func setup() {
-        let vpnManager = NEVPNManager.shared()
         
-        vpnManager.loadFromPreferences { error in
+        tunnelManager.loadFromPreferences { error in
             if let error = error {
                 print("Error loading preferences: \(error.localizedDescription)")
                 return
             }
             
             let vpnProtocol = NETunnelProviderProtocol()
-            // vpnProtocol.serverAddress = "" // what should this be set as?
+            vpnProtocol.serverAddress = "ur.io" // what should this be set as?
             vpnProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
-            // vpnProtocol.username = "" // what should this be set as?
+            // vpnProtocol.username = "hello_world" // what should this be set as?
             // vpnProtocol.passwordReference = self.getPasswordReference() // what do we need a password for?
             vpnProtocol.disconnectOnSleep = false
             
-            vpnManager.protocolConfiguration = vpnProtocol
-            vpnManager.localizedDescription = "URnetwork"
-            vpnManager.isEnabled = true
+            self.tunnelManager.protocolConfiguration = vpnProtocol
+            self.tunnelManager.localizedDescription = "URnetwork"
+            self.tunnelManager.isEnabled = true
             
-            vpnManager.saveToPreferences { error in
+            self.tunnelManager.saveToPreferences { error in
                 if let error = error {
                     print("Error saving preferences: \(error.localizedDescription)")
                 } else {
@@ -96,12 +95,11 @@ class VPNManager {
     func connect(
         // with options: [String: NSObject]? = nil
     ) {
-        let vpnManager = NEVPNManager.shared()
         var options: [String: NSObject] = [:]
         options["device"] = device
         
         do {
-            try vpnManager.connection.startVPNTunnel(options: options)
+            try tunnelManager.connection.startVPNTunnel(options: options)
             print("VPN connection started")
         } catch {
             print("Error starting VPN connection: \(error.localizedDescription)")
@@ -109,8 +107,7 @@ class VPNManager {
     }
     
     func disconnect() {
-        let vpnManager = NEVPNManager.shared()
-        vpnManager.connection.stopVPNTunnel()
+        tunnelManager.connection.stopVPNTunnel()
         print("VPN connection stopped")
     }
     
