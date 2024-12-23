@@ -132,7 +132,7 @@ class AppProxyProvider: NEAppProxyProvider {
         tunnelNetworkSettings.ipv4Settings = ipv4Settings
         
         // Configure DNS settings
-        let dnsSettings = NEDNSSettings(servers: [])
+        let dnsSettings = NEDNSSettings(servers: ["8.8.8.8", "8.8.4.4"])
         tunnelNetworkSettings.dnsSettings = dnsSettings
         
         // Apply the network settings
