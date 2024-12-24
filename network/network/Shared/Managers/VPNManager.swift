@@ -27,14 +27,15 @@ class VPNManager {
                 return
             }
             
-            let vpnProtocol = NETunnelProviderProtocol()
-            vpnProtocol.serverAddress = "ur.io" // what should this be set as?
-            vpnProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
+            let tunnelProtocol = NETunnelProviderProtocol()
+            tunnelProtocol.serverAddress = "127.0.0.1" // what should this be set as?
+            // tunnelProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
+            tunnelProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
             // vpnProtocol.username = "hello_world" // what should this be set as?
             // vpnProtocol.passwordReference = self.getPasswordReference() // what do we need a password for?
-            vpnProtocol.disconnectOnSleep = false
+            tunnelProtocol.disconnectOnSleep = false
             
-            self.tunnelManager.protocolConfiguration = vpnProtocol
+            self.tunnelManager.protocolConfiguration = tunnelProtocol
             self.tunnelManager.localizedDescription = "URnetwork"
             self.tunnelManager.isEnabled = true
             
@@ -95,14 +96,24 @@ class VPNManager {
     func connect(
         // with options: [String: NSObject]? = nil
     ) {
-        var options: [String: NSObject] = [:]
-        options["device"] = device
+//        var options: [String: NSObject] = [:]
+//        options["device"] = device
+        
+        let options: [String: NSObject] = [
+            "device": device as NSObject
+        ]
         
         do {
             try tunnelManager.connection.startVPNTunnel(options: options)
             print("VPN connection started")
-        } catch {
-            print("Error starting VPN connection: \(error.localizedDescription)")
+        } catch let error as NSError {
+            
+            print("Error starting VPN connection:")
+            print("Domain: \(error.domain)")
+            print("Code: \(error.code)")
+            print("Description: \(error.localizedDescription)")
+            print("User Info: \(error.userInfo)")
+            
         }
     }
     
