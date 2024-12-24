@@ -12,41 +12,49 @@ import URnetworkSdk
 class VPNManager {
     
     var device: SdkBringYourDevice
-    var tunnelManager: NETunnelProviderManager
+    var tunnelManager: NETunnelProviderManager?
     
     init(device: SdkBringYourDevice) {
         self.device = device
-        self.tunnelManager = NETunnelProviderManager()
+        // self.tunnelManager = NETunnelProviderManager()
+        // self.setup()
+        self.loadOrCreateManager()
     }
     
-    func setup() {
-        
-        tunnelManager.loadFromPreferences { error in
+    private func loadOrCreateManager() {
+        // Load all configurations first
+        NETunnelProviderManager.loadAllFromPreferences { [weak self] (managers, error) in
             if let error = error {
-                print("Error loading preferences: \(error.localizedDescription)")
+                print("Error loading managers: \(error.localizedDescription)")
                 return
             }
             
-            let tunnelProtocol = NETunnelProviderProtocol()
-            tunnelProtocol.serverAddress = "127.0.0.1" // what should this be set as?
-            // tunnelProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
-            tunnelProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
-            // vpnProtocol.username = "hello_world" // what should this be set as?
-            // vpnProtocol.passwordReference = self.getPasswordReference() // what do we need a password for?
-            tunnelProtocol.disconnectOnSleep = false
-            
-            self.tunnelManager.protocolConfiguration = tunnelProtocol
-            self.tunnelManager.localizedDescription = "URnetwork"
-            self.tunnelManager.isEnabled = true
-            
-            self.tunnelManager.saveToPreferences { error in
-                if let error = error {
-                    print("Error saving preferences: \(error.localizedDescription)")
-                } else {
-                    print("VPN configuration saved successfully")
-                    self.addListeners()
-                }
+            // Use existing manager or create new one
+            let manager = managers?.first ?? NETunnelProviderManager()
+            self?.tunnelManager = manager
+            self?.setup()
+        }
+    }
+    
+    func setup() {
+        guard let tunnelManager = tunnelManager else { return }
+        
+        let tunnelProtocol = NETunnelProviderProtocol()
+        tunnelProtocol.serverAddress = "127.0.0.1" // Use the same as remote address in PacketTunnelProvider
+        tunnelProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
+        tunnelProtocol.disconnectOnSleep = false
+        
+        tunnelManager.protocolConfiguration = tunnelProtocol
+        tunnelManager.localizedDescription = "URnetwork"
+        tunnelManager.isEnabled = true
+        
+        tunnelManager.saveToPreferences { [weak self] error in
+            if let error = error {
+                print("Error saving preferences: \(error.localizedDescription)")
+                return
             }
+            print("VPN configuration saved successfully")
+            self?.addListeners()
         }
     }
     
@@ -104,7 +112,7 @@ class VPNManager {
         ]
         
         do {
-            try tunnelManager.connection.startVPNTunnel(options: options)
+            try self.tunnelManager?.connection.startVPNTunnel(options: options)
             print("VPN connection started")
         } catch let error as NSError {
             
@@ -118,7 +126,7 @@ class VPNManager {
     }
     
     func disconnect() {
-        tunnelManager.connection.stopVPNTunnel()
+        self.tunnelManager?.connection.stopVPNTunnel()
         print("VPN connection stopped")
     }
     

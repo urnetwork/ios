@@ -35,7 +35,7 @@ struct MainTabView: View {
         
         // vpn manager
         self.vpnManager = VPNManager(device: device)
-        vpnManager.setup()
+        // vpnManager.loadOrCreateManager()
         
         setupTabBar()
     }

@@ -15,7 +15,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     private var packetReceiver: PacketReceiver?
     
     override init() {
-        NSLog("QNEPacketTunnel.Provider: init")
+        print("QNEPacketTunnel.Provider: init")
         super.init()
     }
     
@@ -47,7 +47,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         print("Packet receiver configured")
         
         // 3. Configure network settings
-        let networkSettings = NEPacketTunnelNetworkSettings(tunnelRemoteAddress: "65.19.157.40")
+        let networkSettings = NEPacketTunnelNetworkSettings(tunnelRemoteAddress: "127.0.0.1")
         
         // IPv4 Configuration
         let ipv4Settings = NEIPv4Settings(addresses: ["169.254.2.1"], subnetMasks: ["255.255.255.0"])
