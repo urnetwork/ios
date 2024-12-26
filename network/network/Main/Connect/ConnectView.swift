@@ -17,9 +17,10 @@ struct ConnectView: View {
     
     var logout: () -> Void
     
-    init(api: SdkBringYourApi, logout: @escaping () -> Void) {
+    init(api: SdkBringYourApi, logout: @escaping () -> Void, connectViewController: SdkConnectViewController?) {
         _viewModel = StateObject.init(wrappedValue: ViewModel(
-            api: api
+            api: api,
+            connectViewController: connectViewController
         ))
         self.logout = logout
         
@@ -31,6 +32,10 @@ struct ConnectView: View {
     var body: some View {
         
         VStack {
+            
+            
+            
+            
             Text("Connect View!!")
             
             Spacer().frame(height: 32)
@@ -54,7 +59,9 @@ struct ConnectView: View {
                             providerCount: selectedProvider.providerCount,
                             color: viewModel.getProviderColor(selectedProvider),
                             isSelected: false,
-                            setSelectedProvider: {}
+                            connect: {
+                                viewModel.connect()
+                            }
                         )
                     } else {
                         ProviderListItemView(
@@ -62,8 +69,8 @@ struct ConnectView: View {
                             providerCount: nil,
                             color: Color.urCoral,
                             isSelected: false,
-                            setSelectedProvider: {
-                                viewModel.setSelectedProvider(nil)
+                            connect: {
+                                viewModel.connect()
                             }
                         )
                     }
@@ -92,7 +99,8 @@ struct ConnectView: View {
             
             ProviderListSheetView(
                 selectedProvider: viewModel.selectedProvider,
-                setSelectedProvider: viewModel.setSelectedProvider,
+                connect: viewModel.connect,
+                // setSelectedProvider: viewModel.setSelectedProvider,
                 providerCountries: viewModel.providerCountries,
                 providerPromoted: viewModel.providerPromoted,
                 providerDevices: viewModel.providerDevices,
@@ -115,6 +123,7 @@ struct ConnectView: View {
 #Preview {
     ConnectView(
         api: SdkBringYourApi(),
-        logout: {}
+        logout: {},
+        connectViewController: nil
     )
 }

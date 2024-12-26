@@ -16,7 +16,7 @@ struct ProviderListItemView: View {
     var providerCount: Int32?
     var color: Color
     var isSelected: Bool
-    var setSelectedProvider: () -> Void
+    var connect: () -> Void
     
     var body: some View {
         HStack {
@@ -53,7 +53,7 @@ struct ProviderListItemView: View {
         .frame(maxWidth: .infinity)
         .contentShape(Rectangle())
         .onTapGesture {
-            setSelectedProvider()
+            connect()
         }
     }
 }
@@ -68,7 +68,7 @@ struct ProviderListItemView: View {
             providerCount: 1000,
             color: Color (hex: "CC3363"),
             isSelected: true,
-            setSelectedProvider: {}
+            connect: {}
         )
     }
     .environmentObject(themeManager)
