@@ -81,6 +81,14 @@ extension ConnectView {
         @Published private(set) var providerBestSearchMatches: [SdkConnectLocation] = []
         
         /**
+         * Connect grid
+         */
+        @Published private(set) var grid: SdkConnectGrid? = nil // might not need this to be tracked...
+        @Published private(set) var windowCurrentSize: Int32 = 0
+        @Published private(set) var gridPoints: [SdkId: SdkProviderGridPoint] = [:]
+        @Published private(set) var gridWidth: Int32 = 0
+        
+        /**
          * Selected Provider
          */
         @Published private(set) var selectedProvider: SdkConnectLocation?
@@ -106,8 +114,6 @@ extension ConnectView {
             self.addGridListener()
             self.addConnectionStatusListener()
             self.addSelectedLocationListener()
-            
-            print("initializing connect view model")
             
             // when search changes
             // debounce and fire search
@@ -160,13 +166,6 @@ extension ConnectView {
         private func addConnectionStatusListener() {
             let listener = ConnectionStatusListener { [weak self] in
                 print("connection status listener hit")
-            }
-            connectViewController?.add(listener)
-        }
-        
-        private func addGridListener() {
-            let listener = GridListener { [weak self] in
-                print("grid listener hit")
             }
             connectViewController?.add(listener)
         }
@@ -344,5 +343,66 @@ extension ConnectView.ViewModel {
         }
         
     }
+    
+}
+
+/**
+ * Grid
+ */
+
+extension ConnectView.ViewModel {
+    
+    
+    private func addGridListener() {
+        let listener = GridListener { [weak self] in
+            
+            guard let self = self else {
+                return
+            }
+            
+            DispatchQueue.main.async {
+             
+                self.grid = self.connectViewController?.getGrid()
+                
+                if let grid = self.grid {
+                    self.gridWidth = grid.getWidth()
+                    self.windowCurrentSize = grid.getWindowCurrentSize()
+                    
+                    let gridPointList = grid.getProviderGridPointList()
+                    
+                    guard let gridPointList = gridPointList else {
+                        print("grid point list is nil")
+                        return
+                    }
+                    
+                    var gridPoints: [SdkId: SdkProviderGridPoint] = [:]
+                    
+                    for i in 0..<gridPointList.len() {
+                        
+                        let gridPoint = gridPointList.get(i)
+                        
+                        if let gridPoint = gridPoint, let clientId = gridPoint.clientId {
+                            gridPoints[clientId] = gridPoint
+                            
+                            let state = gridPoint.state
+                            print("grid point \(clientId.idStr) state is \(state)")
+                        }
+                        
+                    }
+                    
+                    self.gridPoints = gridPoints
+                    
+                } else {
+                    self.windowCurrentSize = 0
+                    self.gridPoints = [:]
+                    self.gridWidth = 0
+                }
+                
+            }
+            
+        }
+        connectViewController?.add(listener)
+    }
+    
     
 }
