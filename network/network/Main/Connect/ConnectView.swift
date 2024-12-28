@@ -37,7 +37,8 @@ struct ConnectView: View {
                 gridPoints:
                     viewModel.gridPoints,
                 gridWidth: viewModel.gridWidth,
-                connectionStatus: viewModel.connectionStatus
+                connectionStatus: viewModel.connectionStatus,
+                windowCurrentSize: viewModel.windowCurrentSize
             )
             
             Spacer().frame(height: 32)
