@@ -14,6 +14,9 @@ struct ConnectButtonView: View {
     
     var gridPoints: [SdkId: SdkProviderGridPoint]
     var gridWidth: Int32
+    var connectionStatus: ConnectionStatus?
+    
+    let canvasWidth: CGFloat = 256
     
     
     @StateObject private var viewModel: ViewModel = ViewModel()
@@ -22,26 +25,45 @@ struct ConnectButtonView: View {
         
         ZStack {
             
-//            ConnectCanvasConnectingStateView(gridPoints: gridPoints, gridWidth: gridWidth)
             
-            ConnectCanvasDisconnectedStateView()
             
+            /**
+             * Disconnected
+             */
+            ConnectCanvasDisconnectedStateView().opacity(connectionStatus == .disconnected ? 1 : 0)
+                .animation(.easeInOut(duration: 0.5), value: connectionStatus)
+            
+            /**
+             * Connecting grid
+             */
+            ConnectCanvasConnectingStateView(gridPoints: gridPoints, gridWidth: gridWidth)
+                .opacity((connectionStatus == .connecting || connectionStatus == .destinationSet)
+                    ? 1
+                    : 0)
+                .animation(.easeInOut(duration: 0.5), value: connectionStatus)
+            
+            /**
+             * Connected
+             */
+            ConnectCanvasConnectedStateView(
+                canvasWidth: canvasWidth,
+                isActive: connectionStatus == .connected
+            )
+        
             Image("GlobeMask")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 256, height: 256)
+                .frame(width: canvasWidth, height: canvasWidth)
             
         }
         .background(themeManager.currentTheme.tintedBackgroundBase)
-//        .onDisappear {
-//            viewModel.stopAnimations()
-//        }
     }
 }
 
 #Preview {
     ConnectButtonView(
         gridPoints: [:],
-        gridWidth: 16
+        gridWidth: 16,
+        connectionStatus: .disconnected
     )
 }

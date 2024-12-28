@@ -60,6 +60,13 @@ private class SelectedLocationListener: NSObject, SdkSelectedLocationListenerPro
     }
 }
 
+enum ConnectionStatus: String {
+    case disconnected = "DISCONNECTED"
+    case connecting = "CONNECTING"
+    case destinationSet = "DESTINATION_SET"
+    case connected = "CONNECTED"
+}
+
 extension ConnectView {
     
     class ViewModel: ObservableObject {
@@ -79,6 +86,11 @@ extension ConnectView {
         @Published private(set) var providerRegions: [SdkConnectLocation] = []
         @Published private(set) var providerCities: [SdkConnectLocation] = []
         @Published private(set) var providerBestSearchMatches: [SdkConnectLocation] = []
+        
+        /**
+         * Connection status
+         */
+        @Published private(set) var connectionStatus: ConnectionStatus?
         
         /**
          * Connect grid
@@ -114,6 +126,8 @@ extension ConnectView {
             self.addGridListener()
             self.addConnectionStatusListener()
             self.addSelectedLocationListener()
+            
+            self.updateConnectionStatus()
             
             // when search changes
             // debounce and fire search
@@ -159,13 +173,6 @@ extension ConnectView {
                 
                 print("new selected location is: \(selectedLocation?.name ?? "none")")
                 self.selectedProvider = selectedLocation
-            }
-            connectViewController?.add(listener)
-        }
-        
-        private func addConnectionStatusListener() {
-            let listener = ConnectionStatusListener { [weak self] in
-                print("connection status listener hit")
             }
             connectViewController?.add(listener)
         }
@@ -404,5 +411,36 @@ extension ConnectView.ViewModel {
         connectViewController?.add(listener)
     }
     
+}
+
+// MARK: connection status
+extension ConnectView.ViewModel {
+    
+    private func addConnectionStatusListener() {
+        let listener = ConnectionStatusListener { [weak self] in
+            print("connection status listener hit")
+            
+            guard let self = self else {
+                return
+            }
+            
+            self.updateConnectionStatus()
+            
+        }
+        connectViewController?.add(listener)
+    }
+    
+    private func updateConnectionStatus() {
+        guard let statusString = self.connectViewController?.getConnectionStatus() else {
+            print("no status present")
+            return
+        }
+        
+        if let status = ConnectionStatus(rawValue: statusString) {
+            DispatchQueue.main.async {
+                self.connectionStatus = status
+            }
+        }
+    }
     
 }

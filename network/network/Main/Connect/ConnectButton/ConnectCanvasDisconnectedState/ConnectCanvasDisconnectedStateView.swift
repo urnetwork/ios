@@ -11,8 +11,6 @@ struct ConnectCanvasDisconnectedStateView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     
-    @StateObject private var viewModel: ViewModel = ViewModel()
-    
     @State private var pulseScale: CGFloat = 1
     @State private var pulseOpacity: Double = 1
     

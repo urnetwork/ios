@@ -36,7 +36,8 @@ struct ConnectView: View {
             ConnectButtonView(
                 gridPoints:
                     viewModel.gridPoints,
-                gridWidth: viewModel.gridWidth
+                gridWidth: viewModel.gridWidth,
+                connectionStatus: viewModel.connectionStatus
             )
             
             Spacer().frame(height: 32)
