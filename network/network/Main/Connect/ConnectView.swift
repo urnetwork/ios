@@ -33,10 +33,15 @@ struct ConnectView: View {
         
         VStack {
             
-            
-            
-            
-            Text("Connect View!!")
+            ConnectButtonView(
+                gridPoints:
+                    viewModel.gridPoints,
+                gridWidth: viewModel.gridWidth,
+                connectionStatus: viewModel.connectionStatus,
+                windowCurrentSize: viewModel.windowCurrentSize,
+                connect: viewModel.connect,
+                disconnect: viewModel.disconnect
+            )
             
             Spacer().frame(height: 32)
             

@@ -60,6 +60,13 @@ private class SelectedLocationListener: NSObject, SdkSelectedLocationListenerPro
     }
 }
 
+enum ConnectionStatus: String {
+    case disconnected = "DISCONNECTED"
+    case connecting = "CONNECTING"
+    case destinationSet = "DESTINATION_SET"
+    case connected = "CONNECTED"
+}
+
 extension ConnectView {
     
     class ViewModel: ObservableObject {
@@ -79,6 +86,19 @@ extension ConnectView {
         @Published private(set) var providerRegions: [SdkConnectLocation] = []
         @Published private(set) var providerCities: [SdkConnectLocation] = []
         @Published private(set) var providerBestSearchMatches: [SdkConnectLocation] = []
+        
+        /**
+         * Connection status
+         */
+        @Published private(set) var connectionStatus: ConnectionStatus?
+        
+        /**
+         * Connect grid
+         */
+        @Published private(set) var grid: SdkConnectGrid? = nil // might not need this to be tracked...
+        @Published private(set) var windowCurrentSize: Int32 = 0
+        @Published private(set) var gridPoints: [SdkId: SdkProviderGridPoint] = [:]
+        @Published private(set) var gridWidth: Int32 = 0
         
         /**
          * Selected Provider
@@ -107,7 +127,7 @@ extension ConnectView {
             self.addConnectionStatusListener()
             self.addSelectedLocationListener()
             
-            print("initializing connect view model")
+            self.updateConnectionStatus()
             
             // when search changes
             // debounce and fire search
@@ -153,20 +173,6 @@ extension ConnectView {
                 
                 print("new selected location is: \(selectedLocation?.name ?? "none")")
                 self.selectedProvider = selectedLocation
-            }
-            connectViewController?.add(listener)
-        }
-        
-        private func addConnectionStatusListener() {
-            let listener = ConnectionStatusListener { [weak self] in
-                print("connection status listener hit")
-            }
-            connectViewController?.add(listener)
-        }
-        
-        private func addGridListener() {
-            let listener = GridListener { [weak self] in
-                print("grid listener hit")
             }
             connectViewController?.add(listener)
         }
@@ -343,6 +349,98 @@ extension ConnectView.ViewModel {
             return .failure(error)
         }
         
+    }
+    
+}
+
+/**
+ * Grid
+ */
+
+extension ConnectView.ViewModel {
+    
+    
+    private func addGridListener() {
+        let listener = GridListener { [weak self] in
+            
+            guard let self = self else {
+                return
+            }
+            
+            DispatchQueue.main.async {
+             
+                self.grid = self.connectViewController?.getGrid()
+                
+                if let grid = self.grid {
+                    self.gridWidth = grid.getWidth()
+                    self.windowCurrentSize = grid.getWindowCurrentSize()
+                    
+                    let gridPointList = grid.getProviderGridPointList()
+                    
+                    guard let gridPointList = gridPointList else {
+                        print("grid point list is nil")
+                        return
+                    }
+                    
+                    var gridPoints: [SdkId: SdkProviderGridPoint] = [:]
+                    
+                    for i in 0..<gridPointList.len() {
+                        
+                        let gridPoint = gridPointList.get(i)
+                        
+                        if let gridPoint = gridPoint, let clientId = gridPoint.clientId {
+                            gridPoints[clientId] = gridPoint
+                            
+                            let state = gridPoint.state
+                            print("grid point \(clientId.idStr) state is \(state)")
+                        }
+                        
+                    }
+                    
+                    self.gridPoints = gridPoints
+                    
+                } else {
+                    self.windowCurrentSize = 0
+                    self.gridPoints = [:]
+                    self.gridWidth = 0
+                }
+                
+            }
+            
+        }
+        connectViewController?.add(listener)
+    }
+    
+}
+
+// MARK: connection status
+extension ConnectView.ViewModel {
+    
+    private func addConnectionStatusListener() {
+        let listener = ConnectionStatusListener { [weak self] in
+            print("connection status listener hit")
+            
+            guard let self = self else {
+                return
+            }
+            
+            self.updateConnectionStatus()
+            
+        }
+        connectViewController?.add(listener)
+    }
+    
+    private func updateConnectionStatus() {
+        guard let statusString = self.connectViewController?.getConnectionStatus() else {
+            print("no status present")
+            return
+        }
+        
+        if let status = ConnectionStatus(rawValue: statusString) {
+            DispatchQueue.main.async {
+                self.connectionStatus = status
+            }
+        }
     }
     
 }
