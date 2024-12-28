@@ -67,6 +67,9 @@
     "Circle" : {
 
     },
+    "Connect" : {
+
+    },
     "Connect an external wallet" : {
 
     },
@@ -89,6 +92,9 @@
 
     },
     "DEFAULT" : {
+
+    },
+    "Disconnect" : {
 
     },
     "Don't see it? " : {
