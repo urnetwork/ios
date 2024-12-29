@@ -11,12 +11,13 @@ struct AccountRootView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     var navigate: (AccountNavigationPath) -> Void
+    var logout: () -> Void
     
     var body: some View {
         
-        GeometryReader { geometry in
-            
-            ScrollView(.vertical) {
+//        GeometryReader { geometry in
+//            
+//            ScrollView(.vertical) {
                 
                 VStack {
                     
@@ -26,8 +27,15 @@ struct AccountRootView: View {
                             .foregroundColor(themeManager.currentTheme.textColor)
                         
                         Spacer()
+                        
+                        AccountMenu(
+                            isGuest: false,
+                            logout: logout
+                        )
+                        
                     }
-                    .padding(.vertical, 12)
+                    .frame(height: 32)
+                    // .padding(.vertical, 12)
                     
                     Spacer().frame(height: 16)
                     
@@ -133,13 +141,11 @@ struct AccountRootView: View {
                     )
                     
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
-                .frame(minHeight: geometry.size.height)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
 //                .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
-            }
-        }
+//            }
+//        }
     }
 }
 
@@ -186,7 +192,8 @@ private struct AccountNavLink: View {
 
 #Preview {
     AccountRootView(
-        navigate: {_ in}
+        navigate: {_ in},
+        logout: {}
     )
         .environmentObject(ThemeManager.shared)
 }

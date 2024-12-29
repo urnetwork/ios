@@ -20,12 +20,14 @@ struct AccountNavStackView: View {
     
     var api: SdkBringYourApi
     var device: SdkBringYourDevice
+    var logout: () -> Void
     @Binding var provideWhileDisconnected: Bool
     
     init(
         api: SdkBringYourApi,
         device: SdkBringYourDevice,
-        provideWhileDisconnected: Binding<Bool>
+        provideWhileDisconnected: Binding<Bool>,
+        logout: @escaping () -> Void
     ) {
         self.api = api
         _accountPreferencesViewModel = StateObject.init(wrappedValue: AccountPreferencesViewModel(
@@ -48,6 +50,7 @@ struct AccountNavStackView: View {
         
         self.device = device
         self._provideWhileDisconnected = provideWhileDisconnected
+        self.logout = logout
     }
     
     var body: some View {
@@ -55,7 +58,8 @@ struct AccountNavStackView: View {
             path: $viewModel.navigationPath
         ) {
             AccountRootView(
-                navigate: viewModel.navigate
+                navigate: viewModel.navigate,
+                logout: logout
             )
             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
             .navigationDestination(for: AccountNavigationPath.self) { path in
@@ -159,7 +163,8 @@ struct AccountNavStackView: View {
     AccountNavStackView(
         api: SdkBringYourApi(),
         device: SdkBringYourDevice(),
-        provideWhileDisconnected: .constant(true)
+        provideWhileDisconnected: .constant(true),
+        logout: {}
     )
     .environmentObject(ThemeManager.shared)
 }

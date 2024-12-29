@@ -30,6 +30,7 @@ struct FeedbackView: View {
                     .foregroundColor(themeManager.currentTheme.textColor)
                 Spacer()
             }
+            .frame(height: 32)
             
             Spacer().frame(height: 64)
             

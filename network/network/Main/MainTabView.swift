@@ -66,7 +66,8 @@ struct MainTabView: View {
             AccountNavStackView(
                 api: api,
                 device: device,
-                provideWhileDisconnected: $provideWhileDisconnected
+                provideWhileDisconnected: $provideWhileDisconnected,
+                logout: logout
             )
             .background(themeManager.currentTheme.backgroundColor)
             .tabItem {

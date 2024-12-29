@@ -33,6 +33,17 @@ struct ConnectView: View {
         
         VStack {
             
+            HStack {
+                Spacer()
+                AccountMenu(
+                    isGuest: false,
+                    logout: logout
+                )
+            }
+            .frame(height: 32)
+            
+            Spacer()
+            
             ConnectButtonView(
                 gridPoints:
                     viewModel.gridPoints,
@@ -43,13 +54,10 @@ struct ConnectView: View {
                 disconnect: viewModel.disconnect
             )
             
-            Spacer().frame(height: 32)
-            
-            Button(action: logout) {
-                Text("Logout")
-            }
+            Spacer()
 
         }
+        .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .bottomSheet(
             bottomSheetPosition: $viewModel.bottomSheetPosition,
