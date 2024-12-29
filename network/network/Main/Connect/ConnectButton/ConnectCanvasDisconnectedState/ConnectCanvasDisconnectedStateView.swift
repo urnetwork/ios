@@ -17,6 +17,7 @@ struct ConnectCanvasDisconnectedStateView: View {
     var body: some View {
         
         ZStack {
+            
             Circle()
                 .fill(Color.urElectricBlue)
                 .frame(width: 56, height: 56)
@@ -43,8 +44,17 @@ struct ConnectCanvasDisconnectedStateView: View {
             Circle()
                 .fill(Color.urElectricBlue)
                 .frame(width: 48, height: 48)
+            
+            
+            VStack {
+                Text("Tap to connect")
+                    .font(Font.custom("PP NeueBit", size: 20))
+                    .foregroundColor(themeManager.currentTheme.textColor)
+                
+                Spacer().frame(height: 120)
+            }
         }
-        .frame(width: 80, height: 80)
+        .frame(width: 120, height: 120)
     }
 }
 
