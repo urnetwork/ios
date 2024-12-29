@@ -42,15 +42,6 @@ struct ConnectButtonView: View {
         }
     }
     
-    var btnText: LocalizedStringKey {
-        switch connectionStatus {
-        case .disconnected: return "Connect"
-        case .connecting, .destinationSet: return ""
-        case .connected: return "Disconnect"
-        case .none: return ""
-        }
-    }
-    
     @StateObject private var viewModel: ViewModel = ViewModel()
     
     var body: some View {
@@ -62,8 +53,9 @@ struct ConnectButtonView: View {
                 /**
                  * Disconnected
                  */
-                ConnectCanvasDisconnectedStateView().opacity(connectionStatus == .disconnected ? 1 : 0)
-                    .animation(.easeInOut(duration: 0.5), value: connectionStatus)
+                ConnectCanvasDisconnectedStateView()
+                .opacity(connectionStatus == .disconnected ? 1 : 0)
+                .animation(.easeInOut(duration: 0.5), value: connectionStatus)
                 
                 /**
                  * Connecting grid
@@ -86,6 +78,20 @@ struct ConnectButtonView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: canvasWidth, height: canvasWidth)
+                    .containerShape(Circle())
+                
+                // for capturing tap when disconnected
+                Circle()
+                    .fill(.clear)
+                    .frame(width: canvasWidth, height: canvasWidth)
+                    .contentShape(Circle())
+                    .onTapGesture {
+                        
+                        if connectionStatus == .disconnected {
+                            connect()
+                        }
+                        
+                    }
                 
             }
             .background(themeManager.currentTheme.tintedBackgroundBase)
@@ -117,20 +123,14 @@ struct ConnectButtonView: View {
             HStack {
                 
                 UrButton(
-                    text: btnText,
+                    text: "Disconnect",
                     action: {
-                        
-                        if connectionStatus == .connected {
-                            disconnect()
-                        }
-                        
-                        if connectionStatus == .disconnected {
-                            connect()
-                        }
+                        disconnect()
                     },
-                    style: .outlineSecondary
+                    style: .outlineSecondary,
+                    enabled: connectionStatus == .connected
                 )
-                .opacity(connectionStatus == .connected || connectionStatus == .disconnected ? 1 : 0)
+                .opacity(connectionStatus == .connected ? 1 : 0)
                 .animation(.easeInOut(duration: 0.5), value: connectionStatus)
                 
             }

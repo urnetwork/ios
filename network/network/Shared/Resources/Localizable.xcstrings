@@ -67,9 +67,6 @@
     "Circle" : {
 
     },
-    "Connect" : {
-
-    },
     "Connect an external wallet" : {
 
     },
@@ -147,9 +144,6 @@
     },
     "Join URnetwork" : {
       "comment" : "URnetwork is the project name and should not be translated"
-    },
-    "Logout" : {
-
     },
     "Make default" : {
 
@@ -236,6 +230,9 @@
 
     },
     "Stay in touch" : {
+
+    },
+    "Tap to connect" : {
 
     },
     "Tell us who you really are. Enter the code we sent you to verify your identity." : {
