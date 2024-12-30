@@ -12,6 +12,7 @@ import GoogleSignIn
 @main
 struct NetworkApp: App {
     
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var globalStore = GlobalStore()
     @StateObject private var snackbarManager = UrSnackbarManager()
     
