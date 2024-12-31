@@ -23,7 +23,9 @@ struct AccountMenu: View {
                     Label("Create account", systemImage: "person.crop.circle.badge.plus")
                 }
             } else {
-                Button(action: {}) {
+                Button(action: {
+                    logout()
+                }) {
                     Label("Sign out", systemImage: "rectangle.portrait.and.arrow.right")
                 }
             }
