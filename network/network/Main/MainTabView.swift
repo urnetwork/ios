@@ -54,9 +54,15 @@ struct MainTabView: View {
             )
             .background(themeManager.currentTheme.backgroundColor)
             .tabItem {
-                Image(selectedTab == 0 ? "ur.symbols.tab.connect.fill" : "ur.symbols.tab.connect")
-                    .renderingMode(.template)
-                    .foregroundColor(themeManager.currentTheme.textColor)
+                VStack {
+                    Image(selectedTab == 0 ? "ur.symbols.tab.connect.fill" : "ur.symbols.tab.connect")
+                        .renderingMode(.template)
+
+                    Text("Connect")
+        
+                }
+                .foregroundColor(themeManager.currentTheme.textColor)
+                
             }
             .tag(0)
             
@@ -71,9 +77,14 @@ struct MainTabView: View {
             )
             .background(themeManager.currentTheme.backgroundColor)
             .tabItem {
-                Image(selectedTab == 1 ? "ur.symbols.tab.account.fill" : "ur.symbols.tab.account")
-                    .renderingMode(.template)
-                    .foregroundColor(themeManager.currentTheme.textColor)
+                VStack {
+                    Image(selectedTab == 1 ? "ur.symbols.tab.account.fill" : "ur.symbols.tab.account")
+                        .renderingMode(.template)
+                                            
+                    Text("Account")
+
+                }
+                .foregroundColor(themeManager.currentTheme.textColor)
             }
             .tag(1)
             
@@ -85,9 +96,14 @@ struct MainTabView: View {
             )
             .background(themeManager.currentTheme.backgroundColor)
             .tabItem {
-                Image(selectedTab == 2 ? "ur.symbols.tab.support.fill" : "ur.symbols.tab.support")
-                    .renderingMode(.template)
-                    .foregroundColor(themeManager.currentTheme.textColor)
+                VStack {
+                    Image(selectedTab == 2 ? "ur.symbols.tab.support.fill" : "ur.symbols.tab.support")
+                        .renderingMode(.template)
+                    
+                    Text("Support")
+                        
+                }
+                .foregroundColor(themeManager.currentTheme.textColor)
             }
             .tag(2)
                 
@@ -95,6 +111,7 @@ struct MainTabView: View {
         
     }
     
+    // used for adding a border above the tab bar
     private func setupTabBar() {
         let appearance = UITabBarAppearance()
         appearance.shadowColor = UIColor(white: 1.0, alpha: 0.12)
@@ -106,6 +123,7 @@ struct MainTabView: View {
         
         UITabBar.appearance().scrollEdgeAppearance = appearance
         UITabBar.appearance().standardAppearance = appearance
+    
     }
     
 }
