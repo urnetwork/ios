@@ -41,7 +41,7 @@ struct AccountMenu: View {
                 .clipShape(Circle())
                 
         }
-        
+
     }
 }
 

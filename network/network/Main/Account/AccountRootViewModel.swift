@@ -11,11 +11,13 @@ import URnetworkSdk
 extension AccountRootView {
     
     class ViewModel: ObservableObject {
-        var api: SdkBringYourApi
+        // var api: SdkBringYourApi
         
-        init(api: SdkBringYourApi) {
-            self.api = api
-        }
+        @Published var isPresentedUpgradeSheet: Bool = false
+        
+//        init(api: SdkBringYourApi) {
+//            self.api = api
+//        }
     }
     
 }
