@@ -46,6 +46,9 @@
     "+%@ USDC" : {
 
     },
+    "$%@/month" : {
+
+    },
     "$1.23" : {
 
     },
@@ -59,6 +62,9 @@
 
     },
     "Balance" : {
+
+    },
+    "Become a" : {
 
     },
     "Change" : {
@@ -143,6 +149,9 @@
 
     },
     "Join the community on " : {
+
+    },
+    "Join the movement" : {
 
     },
     "Join URnetwork" : {
@@ -241,6 +250,9 @@
     "Support" : {
 
     },
+    "Support us in building a new kind of network that gives instead of takes." : {
+
+    },
     "Tap to connect" : {
 
     },
@@ -290,6 +302,9 @@
 
     },
     "You share with others, we share with you. Earn a share of revenue when you provide data to others in the network." : {
+
+    },
+    "You’ll unlock even faster speeds, and first dibs on new features like robust anti-censorship measures and data control." : {
 
     },
     "You've got mail" : {

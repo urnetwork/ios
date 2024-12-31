@@ -25,7 +25,9 @@ class GlobalStore: ObservableObject {
     
     @Published private(set) var device: SdkBringYourDevice? {
         didSet {
-            provideWhileDisconnected = device?.getProvideWhileDisconnected() ?? false
+            DispatchQueue.main.async {
+                self.provideWhileDisconnected = self.device?.getProvideWhileDisconnected() ?? false
+            }
         }
     }
     
@@ -297,7 +299,9 @@ extension GlobalStore {
                 device.setVpnInterfaceWhileOffline(vpnInterfaceWhileOffline)
                 device.setCanRefer(canRefer)
                 
-                self.device = device
+                DispatchQueue.main.async {
+                    self.device = device
+                }
                 
             } else {
                 print("local state is nil")
