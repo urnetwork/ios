@@ -12,13 +12,13 @@ struct CreateNetworkView: View {
 
     var authLoginArgs: SdkAuthLoginArgs
     var navigate: (LoginInitialNavigationPath) -> Void
-    var authenticateNetworkClient: (String) async -> Result<Void, Error>
     
     var userAuth: String?
     var authJwt: String?
     
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var snackbarManager: UrSnackbarManager
+    @EnvironmentObject var deviceManager: DeviceManager
     
     @StateObject private var viewModel: ViewModel
     
@@ -27,7 +27,7 @@ struct CreateNetworkView: View {
     init(
         authLoginArgs: SdkAuthLoginArgs,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
-        authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>,
+        // authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>,
         api: SdkBringYourApi
     ) {
         
@@ -43,7 +43,7 @@ struct CreateNetworkView: View {
         ))
         
         self.authLoginArgs = authLoginArgs
-        self.authenticateNetworkClient = authenticateNetworkClient
+        // self.authenticateNetworkClient = authenticateNetworkClient
         
         if !authLoginArgs.userAuth.isEmpty {
             self.userAuth = authLoginArgs.userAuth
@@ -191,7 +191,7 @@ struct CreateNetworkView: View {
     }
     
     private func handleSuccessWithJwt(_ jwt: String) async {
-        let result = await authenticateNetworkClient(jwt)
+        let result = await deviceManager.authenticateNetworkClient(jwt)
         
         if case .failure(let error) = result {
             print("[CreateNetworkView] handleSuccessWithJwt: \(error.localizedDescription)")
@@ -220,9 +220,6 @@ struct CreateNetworkView: View {
         CreateNetworkView(
             authLoginArgs: SdkAuthLoginArgs(),
             navigate: {_ in },
-            authenticateNetworkClient: {_ in
-                return .success(())
-            },
             api: SdkBringYourApi()
         )
     }

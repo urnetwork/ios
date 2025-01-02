@@ -12,24 +12,23 @@ struct LoginPasswordView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var snackbarManager: UrSnackbarManager
+    @EnvironmentObject var deviceManager: DeviceManager
     @StateObject private var viewModel: ViewModel
     
     var userAuth: String
     var navigate: (LoginInitialNavigationPath) -> Void
-    var authenticateNetworkClient: (String) async -> Result<Void, Error>
+    // var authenticateNetworkClient: (String) async -> Result<Void, Error>
     
     let snackbarErrorMessage = "There was an error authenticating. Please try again."
     
     init(
         userAuth: String,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
-        authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>,
         api: SdkBringYourApi?
     ) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api))
         self.userAuth = userAuth
         self.navigate = navigate
-        self.authenticateNetworkClient = authenticateNetworkClient
     }
 
     var body: some View {
@@ -135,7 +134,7 @@ struct LoginPasswordView: View {
     }
     
     private func handleSuccessWithJwt(_ jwt: String) async {
-        let result = await authenticateNetworkClient(jwt)
+        let result = await deviceManager.authenticateNetworkClient(jwt)
         
         if case .failure(let error) = result {
             print("LoginPasswordView: handleSuccessWithJwt: \(error.localizedDescription)")
@@ -157,9 +156,6 @@ struct LoginPasswordView: View {
         LoginPasswordView(
             userAuth: "hello@ur.io",
             navigate: {_ in },
-            authenticateNetworkClient: {_ in
-                return .success(())
-            },
             api: nil
         )
         

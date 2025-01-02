@@ -6,22 +6,30 @@
 //
 
 import SwiftUI
+import URnetworkSdk
 
 struct AccountRootView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
+    
     var navigate: (AccountNavigationPath) -> Void
     var logout: () -> Void
-    @StateObject private var viewModel: ViewModel = ViewModel()
+    var api: SdkBringYourApi
+
+    // TODO: pull this from device
+    var isGuest: Bool = true
     
+    @StateObject private var viewModel: ViewModel = ViewModel()
     @StateObject private var subscriptionManager = SubscriptionManager()
     
     init(
         navigate: @escaping (AccountNavigationPath) -> Void,
-        logout: @escaping () -> Void
+        logout: @escaping () -> Void,
+        api: SdkBringYourApi
     ) {
         self.navigate = navigate
         self.logout = logout
+        self.api = api
     }
     
     
@@ -119,21 +127,35 @@ struct AccountRootView: View {
                     name: "Profile",
                     iconPath: "ur.symbols.user.circle",
                     action: {
-                        navigate(.profile)
+                        
+                        if isGuest {
+                            viewModel.isPresentedCreateAccount = true
+                        } else {
+                            navigate(.profile)
+                        }
+                        
                     }
                 )
                 AccountNavLink(
                     name: "Settings",
                     iconPath: "ur.symbols.sliders",
                     action: {
-                        navigate(.settings)
+                        if isGuest {
+                            viewModel.isPresentedCreateAccount = true
+                        } else {
+                            navigate(.settings)
+                        }
                     }
                 )
                 AccountNavLink(
                     name: "Wallet",
                     iconPath: "ur.symbols.wallet",
                     action: {
-                        navigate(.wallets)
+                        if isGuest {
+                            viewModel.isPresentedCreateAccount = true
+                        } else {
+                            navigate(.wallets)
+                        }
                     }
                 )
                 AccountNavLink(
@@ -145,10 +167,14 @@ struct AccountRootView: View {
             
             Spacer()
             
-            UrButton(
-                text: "Create an account",
-                action: {}
-            )
+            if isGuest {
+                UrButton(
+                    text: "Create an account",
+                    action: {
+                        viewModel.isPresentedCreateAccount = true
+                    }
+                )
+            }
             
         }
         .padding()
@@ -167,9 +193,14 @@ struct AccountRootView: View {
                 }
             )
         }
-//                .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
-//            }
-//        }
+        .fullScreenCover(isPresented: $viewModel.isPresentedCreateAccount) {
+            LoginNavigationView(
+                api: api,
+                cancel: {
+                    viewModel.isPresentedCreateAccount = false
+                }
+            )
+        }
     }
 }
 
@@ -221,7 +252,8 @@ private struct AccountNavLink: View {
     VStack {
         AccountRootView(
             navigate: {_ in},
-            logout: {}
+            logout: {},
+            api: SdkBringYourApi()
         )
     }
     .environmentObject(themeManager)
