@@ -149,12 +149,19 @@ struct CreateNetworkView: View {
                         text: "Continue",
                         action: {
                             
-                            Task {
-                                let result = await viewModel.createNetwork(
-                                    userAuth: userAuth,
-                                    authJwt: authLoginArgs.authJwt
-                                )
-                                await handleResult(result)
+                            if deviceManager.device != nil {
+                                // TODO: upgrade from guest account
+                                
+                                
+                                
+                            } else {
+                                Task {
+                                    let result = await viewModel.createNetwork(
+                                        userAuth: userAuth,
+                                        authJwt: authLoginArgs.authJwt
+                                    )
+                                    await handleResult(result)
+                                }
                             }
                             
                         },

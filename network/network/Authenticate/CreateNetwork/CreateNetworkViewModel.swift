@@ -167,6 +167,10 @@ extension CreateNetworkView {
             
         }
         
+        func upgradeNetwork(networkId: SdkId, userAuth: String?, userAuthJwt: String?) async {
+            
+        }
+        
         func createNetwork(userAuth: String?, authJwt: String?) async -> LoginNetworkResult {
             
             if !formIsValid {
