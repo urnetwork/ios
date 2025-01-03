@@ -16,7 +16,7 @@ struct LoginNavigationView: View {
     
     var api: SdkBringYourApi
     var cancel: (() -> Void)? = nil
-    // var authenticateNetworkClient: (String) async -> Result<Void, Error>
+    var onSuccess: (() -> Void)? = nil
     
     var body: some View {
         NavigationStack(
@@ -26,7 +26,6 @@ struct LoginNavigationView: View {
                 api: api,
                 navigate: viewModel.navigate,
                 cancel: cancel
-                // authenticateNetworkClient: authenticateNetworkClient
             )
             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
             .navigationDestination(for: LoginInitialNavigationPath.self) { path in
@@ -42,6 +41,7 @@ struct LoginNavigationView: View {
                         CreateNetworkView(
                             authLoginArgs: authLoginArgs,
                             navigate: viewModel.navigate,
+                            onSuccess: onSuccess,
                             api: api
                         )
                             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
@@ -49,7 +49,8 @@ struct LoginNavigationView: View {
                         CreateNetworkVerifyView(
                             userAuth: userAuth,
                             api: api,
-                            navigate: viewModel.navigate
+                            navigate: viewModel.navigate,
+                            onSuccess: onSuccess
                         )
                             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                 case .resetPassword(let userAuth):

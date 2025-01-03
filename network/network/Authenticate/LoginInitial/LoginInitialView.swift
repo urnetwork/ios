@@ -43,16 +43,6 @@ struct LoginInitialView: View {
       
             ScrollView(.vertical) {
                 
-//                if let cancel = cancel {
-//                    HStack {
-//                        Button(action: {cancel()}) {
-//                            Image(systemName: "xmark")
-//                        }
-//                        Spacer()
-//                    }
-//                    .padding()
-//                }
-                
                 if isLandscape && isTablet {
                     
                     HStack(alignment: .center) {

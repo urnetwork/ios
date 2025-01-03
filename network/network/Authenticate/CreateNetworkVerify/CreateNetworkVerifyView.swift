@@ -22,14 +22,17 @@ struct CreateNetworkVerifyView: View {
     @FocusState private var isKeyboardShowing: Bool
     
     var navigate: (LoginInitialNavigationPath) -> Void
+    var onSuccess: (() -> Void)?
     
     init(
         userAuth: String,
         api: SdkBringYourApi,
-        navigate: @escaping (LoginInitialNavigationPath) -> Void
+        navigate: @escaping (LoginInitialNavigationPath) -> Void,
+        onSuccess: (() -> Void)? = nil
     ) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api, userAuth: userAuth))
         self.navigate = navigate
+        self.onSuccess = onSuccess
     }
     
     var body: some View {
@@ -163,7 +166,12 @@ struct CreateNetworkVerifyView: View {
             snackbarManager.showSnackbar(message: "There was an error authenticating, please try again later.")
             
             // TODO: clear viewmodel loading state
+            return
             
+        }
+        
+        if let onSuccess = onSuccess {
+            onSuccess()
         }
         
     }

@@ -15,6 +15,7 @@ struct CreateNetworkView: View {
     
     var userAuth: String?
     var authJwt: String?
+    var onSuccess: (() -> Void)?
     
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var snackbarManager: UrSnackbarManager
@@ -27,6 +28,7 @@ struct CreateNetworkView: View {
     init(
         authLoginArgs: SdkAuthLoginArgs,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
+        onSuccess: (() -> Void)? = nil,
         // authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>,
         api: SdkBringYourApi
     ) {
@@ -58,6 +60,7 @@ struct CreateNetworkView: View {
         }
         
         self.navigate = navigate
+        self.onSuccess = onSuccess
     }
 
     enum Field {
@@ -149,19 +152,22 @@ struct CreateNetworkView: View {
                         text: "Continue",
                         action: {
                             
-                            if deviceManager.device != nil {
-                                // TODO: upgrade from guest account
+                            Task {
+                                let result = deviceManager.device != nil
+                                // device exists - upgrade guest network
+                                ? await viewModel.upgradeGuestNetwork(
+                                    userAuth: userAuth,
+                                    authJwt: authLoginArgs.authJwt,
+                                    authType: authLoginArgs.authJwtType
+                                )
+                                // no device exists - create a new network
+                                : await viewModel.createNetwork(
+                                    userAuth: userAuth,
+                                    authJwt: authLoginArgs.authJwt,
+                                    authType: authLoginArgs.authJwtType
+                                )
                                 
-                                
-                                
-                            } else {
-                                Task {
-                                    let result = await viewModel.createNetwork(
-                                        userAuth: userAuth,
-                                        authJwt: authLoginArgs.authJwt
-                                    )
-                                    await handleResult(result)
-                                }
+                                await handleResult(result)
                             }
                             
                         },
@@ -206,6 +212,11 @@ struct CreateNetworkView: View {
             snackbarManager.showSnackbar(message: "There was an error creating your network. Please try again later.")
             
             // TODO: clear viewmodel loading state
+            return
+        }
+        
+        if let onSuccess = onSuccess {
+            onSuccess()
         }
         
     }

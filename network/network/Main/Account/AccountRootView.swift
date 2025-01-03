@@ -11,6 +11,7 @@ import URnetworkSdk
 struct AccountRootView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var deviceManager: DeviceManager
     
     var navigate: (AccountNavigationPath) -> Void
     var logout: () -> Void
@@ -179,6 +180,9 @@ struct AccountRootView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+//        .onChange(of: deviceManager.device) {
+//            viewModel.isPresentedCreateAccount = false
+//        }
         .sheet(isPresented: $viewModel.isPresentedUpgradeSheet) {
             UpgradeSubscriptionSheet(
                 subscriptionProduct: subscriptionManager.products.first,
@@ -197,6 +201,9 @@ struct AccountRootView: View {
             LoginNavigationView(
                 api: api,
                 cancel: {
+                    viewModel.isPresentedCreateAccount = false
+                },
+                onSuccess: {
                     viewModel.isPresentedCreateAccount = false
                 }
             )
