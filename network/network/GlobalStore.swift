@@ -145,15 +145,21 @@ class GlobalStore: ObservableObject {
 }
 
 private class NetworkSpaceUpdateCallback: NSObject, URnetworkSdk.SdkNetworkSpaceUpdateProtocol {
+    var c: (URnetworkSdk.SdkNetworkSpaceValues) -> Void
+    
+    init(c: @escaping (URnetworkSdk.SdkNetworkSpaceValues) -> Void) {
+        self.c = c
+    }
+    
     func update(_ values: URnetworkSdk.SdkNetworkSpaceValues?) {
-        guard let _ = values else {
-            return
+        if let values {
+            c(values)
         }
     }
 }
 
 private class GetJwtInitDeviceCallback: NSObject, SdkGetByClientJwtCallbackProtocol {
-    
+    	
     weak var globalStore: GlobalStore?
     var deviceSpecs: String
     
@@ -202,28 +208,26 @@ extension GlobalStore {
         
         let deviceSpecs = self.getDeviceSpecs()
         let networkSpaceManager = URnetworkSdk.SdkNewNetworkSpaceManager(storagePath)
-        let networkSpaceUpdateCallback = NetworkSpaceUpdateCallback()
         
-        let networkSpaceValues = SdkNetworkSpaceValues()
-        
-        // TODO: this should be moved into a config
-        networkSpaceValues.envSecret = ""
-        networkSpaceValues.bundled = true
-        networkSpaceValues.netExposeServerIps = true
-        networkSpaceValues.netExposeServerHostNames = true
-        networkSpaceValues.linkHostName = "ur.io"
-        networkSpaceValues.migrationHostName = "bringyour.com"
-        networkSpaceValues.store = ""
-        networkSpaceValues.wallet = "circle"
-        networkSpaceValues.ssoGoogle = false
-        
-        networkSpaceUpdateCallback.update(networkSpaceValues)
         
         let hostName = "ur.network"
         let envName = "main"
         let networkSpaceKey = URnetworkSdk.SdkNewNetworkSpaceKey(hostName, envName)
         
-        networkSpaceManager?.updateNetworkSpace(networkSpaceKey, callback: networkSpaceUpdateCallback)
+        networkSpaceManager?.updateNetworkSpace(networkSpaceKey, callback: NetworkSpaceUpdateCallback(
+            c: { networkSpaceValues in
+                // TODO: this should be moved into a config
+                networkSpaceValues.envSecret = ""
+                networkSpaceValues.bundled = true
+                networkSpaceValues.netExposeServerIps = true
+                networkSpaceValues.netExposeServerHostNames = true
+                networkSpaceValues.linkHostName = "ur.io"
+                networkSpaceValues.migrationHostName = "bringyour.com"
+                networkSpaceValues.store = ""
+                networkSpaceValues.wallet = "circle"
+                networkSpaceValues.ssoGoogle = false
+            }
+        ))
             
         self.networkSpace = networkSpaceManager?.getNetworkSpace(networkSpaceKey)
         
