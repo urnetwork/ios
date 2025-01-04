@@ -59,7 +59,8 @@ struct AccountNavStackView: View {
         ) {
             AccountRootView(
                 navigate: viewModel.navigate,
-                logout: logout
+                logout: logout,
+                api: api
             )
             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
             .navigationDestination(for: AccountNavigationPath.self) { path in

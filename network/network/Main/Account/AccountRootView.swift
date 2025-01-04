@@ -6,22 +6,26 @@
 //
 
 import SwiftUI
+import URnetworkSdk
 
 struct AccountRootView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     var navigate: (AccountNavigationPath) -> Void
     var logout: () -> Void
+    var api: SdkBringYourApi
     @StateObject private var viewModel: ViewModel = ViewModel()
     
     @StateObject private var subscriptionManager = SubscriptionManager()
     
     init(
         navigate: @escaping (AccountNavigationPath) -> Void,
-        logout: @escaping () -> Void
+        logout: @escaping () -> Void,
+        api: SdkBringYourApi
     ) {
         self.navigate = navigate
         self.logout = logout
+        self.api = api
     }
     
     
@@ -38,7 +42,8 @@ struct AccountRootView: View {
                 
                 AccountMenu(
                     isGuest: false,
-                    logout: logout
+                    logout: logout,
+                    api: api
                 )
                 
             }
@@ -136,11 +141,33 @@ struct AccountRootView: View {
                         navigate(.wallets)
                     }
                 )
-                AccountNavLink(
-                    name: "Refer and earn",
-                    iconPath: "ur.symbols.heart",
-                    action: {}
-                )
+                
+                ReferralShareLink(api: api) {
+                    
+                    VStack(spacing: 0) {
+                        HStack {
+                            
+                            Image("ur.symbols.heart")
+                                .foregroundColor(themeManager.currentTheme.textMutedColor)
+                            
+                            Spacer().frame(width: 16)
+                            
+                            Text("Refer and earn")
+                                .font(themeManager.currentTheme.bodyFont)
+                                .foregroundColor(themeManager.currentTheme.textColor)
+                            
+                            Spacer()
+                            
+                        }
+                        .padding(.vertical, 8)
+                        
+                        Divider()
+                            .background(themeManager.currentTheme.borderBaseColor)
+                        
+                    }
+                    
+                }
+                
             }
             
             Spacer()
@@ -167,8 +194,20 @@ struct AccountRootView: View {
                 }
             )
         }
-//                .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
+//        .fullScreenCover(isPresented: $viewModel.isPresentedReferralSheet) {
+//            NavigationView {
+//                ReferSheet(api: api)
+//                    .toolbar {
+//                        ToolbarItem(placement: .destructiveAction) {
+//                            Button(action: {
+//                                viewModel.isPresentedReferralSheet = false
+//                            }) {
+//                                Image(systemName: "xmark")
+//                            }
+//                        }
+//                    }
 //            }
+//        
 //        }
     }
 }
@@ -214,18 +253,19 @@ private struct AccountNavLink: View {
     }
 }
 
-#Preview {
-    
-    let themeManager = ThemeManager.shared
-    
-    VStack {
-        AccountRootView(
-            navigate: {_ in},
-            logout: {}
-        )
-    }
-    .environmentObject(themeManager)
-    .background(themeManager.currentTheme.backgroundColor)
-    .frame(maxHeight: .infinity)
-    
-}
+//#Preview {
+//    
+//    let themeManager = ThemeManager.shared
+//    
+//    VStack {
+//        AccountRootView(
+//            navigate: {_ in},
+//            logout: {},
+//            api: SdkBringYourApi()
+//        )
+//    }
+//    .environmentObject(themeManager)
+//    .background(themeManager.currentTheme.backgroundColor)
+//    .frame(maxHeight: .infinity)
+//    
+//}
