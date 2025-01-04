@@ -58,6 +58,9 @@
     "Account" : {
 
     },
+    "All the content in the world from URnetwork" : {
+
+    },
     "Are you sure you want to remove this wallet?" : {
 
     },
@@ -163,6 +166,9 @@
     "Make default" : {
 
     },
+    "More connections help our community stay anonymous (and help you earn!)" : {
+
+    },
     "Network name" : {
 
     },
@@ -205,6 +211,12 @@
     "Receive connection notifications" : {
 
     },
+    "Refer and earn" : {
+
+    },
+    "Refer friends" : {
+
+    },
     "Remove wallet" : {
 
     },
@@ -213,6 +225,9 @@
     },
     "Reset it." : {
       "comment" : "Referring to resetting the password"
+    },
+    "Review URnetwork" : {
+
     },
     "Search" : {
 
@@ -233,6 +248,9 @@
 
     },
     "Settings" : {
+
+    },
+    "Share" : {
 
     },
     "Share URnetwork" : {
@@ -284,6 +302,9 @@
 
     },
     "URnetwork Member" : {
+
+    },
+    "URnetwork Referral Code" : {
 
     },
     "URwallet" : {

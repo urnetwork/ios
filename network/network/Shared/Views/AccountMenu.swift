@@ -6,13 +6,14 @@
 //
 
 import SwiftUI
+import URnetworkSdk
 
 struct AccountMenu: View {
     
     // TODO: handle isGuest
     var isGuest: Bool
-    
     var logout: () -> Void
+    var api: SdkBringYourApi
     
     var body: some View {
     
@@ -30,7 +31,11 @@ struct AccountMenu: View {
                 }
             }
             
-            Button(action: {}) {
+//            ShareLink(item: URL(string: "https://ur.io/app?bonus=\(referralCodeViewModel.referralCode ?? "")")!, subject: Text("URnetwork Referral Code"), message: Text("All the content in the world from URnetwork")) {
+//                Label("Share URnetwork", systemImage: "square.and.arrow.up")
+//            }
+            
+            ReferralShareLink(api: api) {
                 Label("Share URnetwork", systemImage: "square.and.arrow.up")
             }
             
@@ -39,8 +44,8 @@ struct AccountMenu: View {
                 .resizable()
                 .frame(width: 32, height: 32)
                 .clipShape(Circle())
-                
         }
+        
 
     }
 }
@@ -48,6 +53,7 @@ struct AccountMenu: View {
 #Preview {
     AccountMenu(
         isGuest: false,
-        logout: {}
+        logout: {},
+        api: SdkBringYourApi()
     )
 }

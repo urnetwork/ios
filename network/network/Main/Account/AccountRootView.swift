@@ -10,6 +10,7 @@ import URnetworkSdk
 
 struct AccountRootView: View {
     
+    @Environment(\.openURL) private var openURL
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var deviceManager: DeviceManager
     
@@ -47,7 +48,8 @@ struct AccountRootView: View {
                 
                 AccountMenu(
                     isGuest: false,
-                    logout: logout
+                    logout: logout,
+                    api: api
                 )
                 
             }
@@ -159,11 +161,61 @@ struct AccountRootView: View {
                         }
                     }
                 )
-                AccountNavLink(
-                    name: "Refer and earn",
-                    iconPath: "ur.symbols.heart",
-                    action: {}
-                )
+                
+                ReferralShareLink(api: api) {
+                    
+                    VStack(spacing: 0) {
+                        HStack {
+                            
+                            Image("ur.symbols.heart")
+                                .foregroundColor(themeManager.currentTheme.textMutedColor)
+                            
+                            Spacer().frame(width: 16)
+                            
+                            Text("Refer and earn")
+                                .font(themeManager.currentTheme.bodyFont)
+                                .foregroundColor(themeManager.currentTheme.textColor)
+                            
+                            Spacer()
+                            
+                        }
+                        .padding(.vertical, 8)
+                        
+                        Divider()
+                            .background(themeManager.currentTheme.borderBaseColor)
+                        
+                    }
+                    
+                }
+                
+                Button(action: {
+                    openURL(URL(string: "https://apps.apple.com/app/id6446097114?action=write-review")!)
+                }) {
+                    
+                    VStack(spacing: 0) {
+                        HStack {
+                            
+                            Image(systemName: "pencil")
+                                .foregroundColor(themeManager.currentTheme.textMutedColor)
+                            
+                            Spacer().frame(width: 16)
+                            
+                            Text("Review URnetwork")
+                                .font(themeManager.currentTheme.bodyFont)
+                                .foregroundColor(themeManager.currentTheme.textColor)
+                            
+                            Spacer()
+                            
+                        }
+                        .padding(.vertical, 8)
+                        
+                        Divider()
+                            .background(themeManager.currentTheme.borderBaseColor)
+                        
+                    }
+                    
+                }
+                
             }
             
             Spacer()
@@ -208,6 +260,21 @@ struct AccountRootView: View {
                 }
             )
         }
+//        .fullScreenCover(isPresented: $viewModel.isPresentedReferralSheet) {
+//            NavigationView {
+//                ReferSheet(api: api)
+//                    .toolbar {
+//                        ToolbarItem(placement: .destructiveAction) {
+//                            Button(action: {
+//                                viewModel.isPresentedReferralSheet = false
+//                            }) {
+//                                Image(systemName: "xmark")
+//                            }
+//                        }
+//                    }
+//            }
+//        
+//        }
     }
 }
 
@@ -252,19 +319,19 @@ private struct AccountNavLink: View {
     }
 }
 
-#Preview {
-    
-    let themeManager = ThemeManager.shared
-    
-    VStack {
-        AccountRootView(
-            navigate: {_ in},
-            logout: {},
-            api: SdkBringYourApi()
-        )
-    }
-    .environmentObject(themeManager)
-    .background(themeManager.currentTheme.backgroundColor)
-    .frame(maxHeight: .infinity)
-    
-}
+//#Preview {
+//    
+//    let themeManager = ThemeManager.shared
+//    
+//    VStack {
+//        AccountRootView(
+//            navigate: {_ in},
+//            logout: {},
+//            api: SdkBringYourApi()
+//        )
+//    }
+//    .environmentObject(themeManager)
+//    .background(themeManager.currentTheme.backgroundColor)
+//    .frame(maxHeight: .infinity)
+//    
+//}
