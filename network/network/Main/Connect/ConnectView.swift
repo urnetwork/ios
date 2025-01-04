@@ -69,7 +69,7 @@ struct ConnectView: View {
             viewModel.requestReview = {
                 Task {
                  
-                    if deviceManager.device?.getCanShowRatingDialog() ?? false {
+                    if deviceManager.device?.getShouldShowRatingDialog() ?? false {
                         try await Task.sleep(for: .seconds(2))
                         requestReview()
                     }
