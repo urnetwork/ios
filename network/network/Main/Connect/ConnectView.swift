@@ -12,6 +12,8 @@ import BottomSheet
 struct ConnectView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var deviceManager: GlobalStore
+    @Environment(\.requestReview) private var requestReview
     
     @StateObject private var viewModel: ViewModel
     
@@ -58,6 +60,23 @@ struct ConnectView: View {
             
             Spacer()
 
+        }
+        .onAppear {
+            
+            /**
+             * Create callback function for prompting rating
+             */
+            viewModel.requestReview = {
+                Task {
+                 
+                    if deviceManager.device?.getCanShowRatingDialog() ?? false {
+                        try await Task.sleep(for: .seconds(2))
+                        requestReview()
+                    }
+                    
+                }
+            }
+            
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)

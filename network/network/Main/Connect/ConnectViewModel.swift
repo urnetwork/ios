@@ -116,6 +116,11 @@ extension ConnectView {
         private var debounceTimer: AnyCancellable?
         @Published var searchQuery: String = ""
         
+        /**
+         * Prompt ratings
+         */
+        var requestReview: (() -> Void)?
+        
         
         var api: SdkBringYourApi
         var connectViewController: SdkConnectViewController?
@@ -439,6 +444,12 @@ extension ConnectView.ViewModel {
         if let status = ConnectionStatus(rawValue: statusString) {
             DispatchQueue.main.async {
                 self.connectionStatus = status
+                
+                if status == .connected {
+                    if let requestReview = self.requestReview {
+                        requestReview()
+                    }
+                }
             }
         }
     }
