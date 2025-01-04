@@ -16,6 +16,7 @@ struct ConnectView: View {
     @StateObject private var viewModel: ViewModel
     
     var logout: () -> Void
+    var api: SdkBringYourApi
     
     init(api: SdkBringYourApi, logout: @escaping () -> Void, connectViewController: SdkConnectViewController?) {
         _viewModel = StateObject.init(wrappedValue: ViewModel(
@@ -23,7 +24,7 @@ struct ConnectView: View {
             connectViewController: connectViewController
         ))
         self.logout = logout
-        
+        self.api = api
         
         // adds clear button to search providers text field
         UITextField.appearance().clearButtonMode = .whileEditing
@@ -37,7 +38,8 @@ struct ConnectView: View {
                 Spacer()
                 AccountMenu(
                     isGuest: false,
-                    logout: logout
+                    logout: logout,
+                    api: api
                 )
             }
             .frame(height: 32)
