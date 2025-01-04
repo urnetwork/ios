@@ -10,6 +10,7 @@ import URnetworkSdk
 
 struct AccountRootView: View {
     
+    @Environment(\.openURL) private var openURL
     @EnvironmentObject var themeManager: ThemeManager
     var navigate: (AccountNavigationPath) -> Void
     var logout: () -> Void
@@ -153,6 +154,34 @@ struct AccountRootView: View {
                             Spacer().frame(width: 16)
                             
                             Text("Refer and earn")
+                                .font(themeManager.currentTheme.bodyFont)
+                                .foregroundColor(themeManager.currentTheme.textColor)
+                            
+                            Spacer()
+                            
+                        }
+                        .padding(.vertical, 8)
+                        
+                        Divider()
+                            .background(themeManager.currentTheme.borderBaseColor)
+                        
+                    }
+                    
+                }
+                
+                Button(action: {
+                    openURL(URL(string: "https://apps.apple.com/app/id6446097114?action=write-review")!)
+                }) {
+                    
+                    VStack(spacing: 0) {
+                        HStack {
+                            
+                            Image(systemName: "pencil")
+                                .foregroundColor(themeManager.currentTheme.textMutedColor)
+                            
+                            Spacer().frame(width: 16)
+                            
+                            Text("Review URnetwork")
                                 .font(themeManager.currentTheme.bodyFont)
                                 .foregroundColor(themeManager.currentTheme.textColor)
                             

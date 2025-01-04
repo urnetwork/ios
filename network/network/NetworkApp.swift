@@ -50,6 +50,7 @@ struct NetworkApp: App {
             }
             .environmentObject(ThemeManager.shared)
             .environmentObject(snackbarManager)
+            .environmentObject(globalStore)
             .onOpenURL { url in
                 GIDSignIn.sharedInstance.handle(url)
             }
