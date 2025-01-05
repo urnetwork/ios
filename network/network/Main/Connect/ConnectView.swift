@@ -87,7 +87,7 @@ struct ConnectView: View {
                 
                 VStack {
                  
-                    if let selectedProvider = viewModel.selectedProvider {
+                    if let selectedProvider = viewModel.selectedProvider, selectedProvider.connectLocationId?.bestAvailable != true {
                         ProviderListItemView(
                             name: selectedProvider.name,
                             providerCount: selectedProvider.providerCount,
