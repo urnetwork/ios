@@ -12,7 +12,7 @@ import BottomSheet
 struct ConnectView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
-    @EnvironmentObject var deviceManager: GlobalStore
+    @EnvironmentObject var deviceManager: DeviceManager
     @Environment(\.requestReview) private var requestReview
     
     @StateObject private var viewModel: ViewModel

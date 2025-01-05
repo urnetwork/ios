@@ -34,6 +34,7 @@ enum AuthType {
 
 extension CreateNetworkView {
     
+    @MainActor
     class ViewModel: ObservableObject {
         
         private var api: SdkBringYourApi
@@ -249,11 +250,14 @@ extension CreateNetworkView {
                     
                 }
                 
-                self.isCreatingNetwork = true
+                DispatchQueue.main.async {
+                    self.isCreatingNetwork = false
+                }
                 
                 return result
                 
             } catch {
+                self.isCreatingNetwork = false
                 return .failure(error)
             }
             
@@ -337,11 +341,16 @@ extension CreateNetworkView {
                     
                 }
                 
-                self.isCreatingNetwork = true
+                DispatchQueue.main.async {
+                    self.isCreatingNetwork = false
+                }
                 
                 return result
                 
             } catch {
+                
+                self.isCreatingNetwork = false
+                
                 return .failure(error)
             }
             

@@ -13,14 +13,12 @@ import GoogleSignIn
 struct NetworkApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @StateObject private var snackbarManager = UrSnackbarManager()
     
     var body: some Scene {
         WindowGroup {
             
             ContentView()
                 .environmentObject(ThemeManager.shared)
-                .environmentObject(snackbarManager)
                 .onOpenURL { url in
                     GIDSignIn.sharedInstance.handle(url)
                 }
