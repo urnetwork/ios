@@ -12,11 +12,16 @@ struct AccountRootView: View {
     
     @Environment(\.openURL) private var openURL
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var deviceManager: DeviceManager
+    
     var navigate: (AccountNavigationPath) -> Void
     var logout: () -> Void
     var api: SdkBringYourApi
-    @StateObject private var viewModel: ViewModel = ViewModel()
+
+    // TODO: pull this from device
+    var isGuest: Bool = true
     
+    @StateObject private var viewModel: ViewModel = ViewModel()
     @StateObject private var subscriptionManager = SubscriptionManager()
     
     init(
@@ -125,21 +130,35 @@ struct AccountRootView: View {
                     name: "Profile",
                     iconPath: "ur.symbols.user.circle",
                     action: {
-                        navigate(.profile)
+                        
+                        if isGuest {
+                            viewModel.isPresentedCreateAccount = true
+                        } else {
+                            navigate(.profile)
+                        }
+                        
                     }
                 )
                 AccountNavLink(
                     name: "Settings",
                     iconPath: "ur.symbols.sliders",
                     action: {
-                        navigate(.settings)
+                        if isGuest {
+                            viewModel.isPresentedCreateAccount = true
+                        } else {
+                            navigate(.settings)
+                        }
                     }
                 )
                 AccountNavLink(
                     name: "Wallet",
                     iconPath: "ur.symbols.wallet",
                     action: {
-                        navigate(.wallets)
+                        if isGuest {
+                            viewModel.isPresentedCreateAccount = true
+                        } else {
+                            navigate(.wallets)
+                        }
                     }
                 )
                 
@@ -201,14 +220,21 @@ struct AccountRootView: View {
             
             Spacer()
             
-            UrButton(
-                text: "Create an account",
-                action: {}
-            )
+            if isGuest {
+                UrButton(
+                    text: "Create an account",
+                    action: {
+                        viewModel.isPresentedCreateAccount = true
+                    }
+                )
+            }
             
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+//        .onChange(of: deviceManager.device) {
+//            viewModel.isPresentedCreateAccount = false
+//        }
         .sheet(isPresented: $viewModel.isPresentedUpgradeSheet) {
             UpgradeSubscriptionSheet(
                 subscriptionProduct: subscriptionManager.products.first,
@@ -220,6 +246,17 @@ struct AccountRootView: View {
                             viewModel.isPresentedUpgradeSheet = false
                         }
                     )
+                }
+            )
+        }
+        .fullScreenCover(isPresented: $viewModel.isPresentedCreateAccount) {
+            LoginNavigationView(
+                api: api,
+                cancel: {
+                    viewModel.isPresentedCreateAccount = false
+                },
+                onSuccess: {
+                    viewModel.isPresentedCreateAccount = false
                 }
             )
         }

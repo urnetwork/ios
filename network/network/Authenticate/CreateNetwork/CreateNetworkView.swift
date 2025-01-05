@@ -12,13 +12,14 @@ struct CreateNetworkView: View {
 
     var authLoginArgs: SdkAuthLoginArgs
     var navigate: (LoginInitialNavigationPath) -> Void
-    var authenticateNetworkClient: (String) async -> Result<Void, Error>
     
     var userAuth: String?
     var authJwt: String?
+    var onSuccess: (() -> Void)?
     
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var snackbarManager: UrSnackbarManager
+    @EnvironmentObject var deviceManager: DeviceManager
     
     @StateObject private var viewModel: ViewModel
     
@@ -27,7 +28,8 @@ struct CreateNetworkView: View {
     init(
         authLoginArgs: SdkAuthLoginArgs,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
-        authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>,
+        onSuccess: (() -> Void)? = nil,
+        // authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>,
         api: SdkBringYourApi
     ) {
         
@@ -43,7 +45,7 @@ struct CreateNetworkView: View {
         ))
         
         self.authLoginArgs = authLoginArgs
-        self.authenticateNetworkClient = authenticateNetworkClient
+        // self.authenticateNetworkClient = authenticateNetworkClient
         
         if !authLoginArgs.userAuth.isEmpty {
             self.userAuth = authLoginArgs.userAuth
@@ -58,6 +60,7 @@ struct CreateNetworkView: View {
         }
         
         self.navigate = navigate
+        self.onSuccess = onSuccess
     }
 
     enum Field {
@@ -150,10 +153,20 @@ struct CreateNetworkView: View {
                         action: {
                             
                             Task {
-                                let result = await viewModel.createNetwork(
+                                let result = deviceManager.device != nil
+                                // device exists - upgrade guest network
+                                ? await viewModel.upgradeGuestNetwork(
                                     userAuth: userAuth,
-                                    authJwt: authLoginArgs.authJwt
+                                    authJwt: authLoginArgs.authJwt,
+                                    authType: authLoginArgs.authJwtType
                                 )
+                                // no device exists - create a new network
+                                : await viewModel.createNetwork(
+                                    userAuth: userAuth,
+                                    authJwt: authLoginArgs.authJwt,
+                                    authType: authLoginArgs.authJwtType
+                                )
+                                
                                 await handleResult(result)
                             }
                             
@@ -191,7 +204,7 @@ struct CreateNetworkView: View {
     }
     
     private func handleSuccessWithJwt(_ jwt: String) async {
-        let result = await authenticateNetworkClient(jwt)
+        let result = await deviceManager.authenticateNetworkClient(jwt)
         
         if case .failure(let error) = result {
             print("[CreateNetworkView] handleSuccessWithJwt: \(error.localizedDescription)")
@@ -199,6 +212,11 @@ struct CreateNetworkView: View {
             snackbarManager.showSnackbar(message: "There was an error creating your network. Please try again later.")
             
             // TODO: clear viewmodel loading state
+            return
+        }
+        
+        if let onSuccess = onSuccess {
+            onSuccess()
         }
         
     }
@@ -220,9 +238,6 @@ struct CreateNetworkView: View {
         CreateNetworkView(
             authLoginArgs: SdkAuthLoginArgs(),
             navigate: {_ in },
-            authenticateNetworkClient: {_ in
-                return .success(())
-            },
             api: SdkBringYourApi()
         )
     }

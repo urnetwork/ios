@@ -10,7 +10,7 @@ import URnetworkSdk
 import UIKit
 
 @MainActor
-class GlobalStore: ObservableObject {
+class DeviceManager: ObservableObject {
     
     let domain = "GlobalStore"
     
@@ -154,10 +154,10 @@ private class NetworkSpaceUpdateCallback: NSObject, URnetworkSdk.SdkNetworkSpace
 
 private class GetJwtInitDeviceCallback: NSObject, SdkGetByClientJwtCallbackProtocol {
     
-    weak var globalStore: GlobalStore?
+    weak var globalStore: DeviceManager?
     var deviceSpecs: String
     
-    init(networkStore: GlobalStore?, deviceSpecs: String) {
+    init(networkStore: DeviceManager?, deviceSpecs: String) {
         self.globalStore = networkStore
         self.deviceSpecs = deviceSpecs
     }
@@ -196,7 +196,7 @@ private class GetJwtInitDeviceCallback: NSObject, SdkGetByClientJwtCallbackProto
 }
 
 // MARK: Network space handlers
-extension GlobalStore {
+extension DeviceManager {
     
     func initializeNetworkSpace(_ storagePath: String) async {
         
@@ -235,7 +235,7 @@ extension GlobalStore {
 }
 
 // MARK: Device handlers
-extension GlobalStore {
+extension DeviceManager {
     
     func initDevice(
         clientJwt: String,
@@ -381,26 +381,26 @@ private class SetJWTLocalStateCallback: NSObject, SdkCommitCallbackProtocol {
 
 
 // MARK: login/logout
-extension GlobalStore {
+extension DeviceManager {
     
     private class LogoutCallback: NSObject, SdkCommitCallbackProtocol {
         
-        weak var globalStore: GlobalStore?
+        weak var deviceManager: DeviceManager?
         
-        init(globalStore: GlobalStore) {
-            self.globalStore = globalStore
+        init(deviceManager: DeviceManager) {
+            self.deviceManager = deviceManager
         }
         
         func complete(_ success: Bool) {
             
-            guard let globalStore = globalStore else {
+            guard let deviceManager = deviceManager else {
                 print("[LogoutCallback:complete] network store is nil")
                 return
             }
             
             Task { @MainActor in
-                globalStore.api?.setByJwt(nil)
-                globalStore.setDevice(nil)
+                deviceManager.api?.setByJwt(nil)
+                deviceManager.setDevice(nil)
             }
         }
     }
@@ -484,7 +484,7 @@ extension GlobalStore {
             return
         }
         
-        let logoutCallback = LogoutCallback(globalStore: self)
+        let logoutCallback = LogoutCallback(deviceManager: self)
         
         asyncLocalState.logout(logoutCallback)
     }

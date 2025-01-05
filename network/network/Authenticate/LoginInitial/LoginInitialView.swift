@@ -15,20 +15,23 @@ struct LoginInitialView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var snackbarManager: UrSnackbarManager
+    @EnvironmentObject var deviceManager: DeviceManager
     @StateObject private var viewModel: ViewModel
     
     var api: SdkBringYourApi?
     var navigate: (LoginInitialNavigationPath) -> Void
-    var authenticateNetworkClient: (String) async -> Result<Void, Error>
+    var cancel: (() -> Void)?
+    // var authenticateNetworkClient: (String) async -> Result<Void, Error>
     
     init(
         api: SdkBringYourApi?,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
-        authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>
+        cancel: (() -> Void)? = nil
     ) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api))
         self.navigate = navigate
-        self.authenticateNetworkClient = authenticateNetworkClient
+        self.cancel = cancel
+        // self.authenticateNetworkClient = deviceManager
     }
     
     var body: some View {
@@ -86,6 +89,22 @@ struct LoginInitialView: View {
                 }
                 
             }
+            .scrollIndicators(.hidden)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    if let cancel = cancel {
+                        Button(action: { cancel() }) {
+//                            Text("Cancel")
+//                            .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
+                            Image(systemName: "xmark")
+                        }
+                    }
+                }
+                ToolbarItem(placement: .principal) {
+                    Text("Create Account")
+                        .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
+                }
+            }
         }
         
     }
@@ -125,7 +144,7 @@ struct LoginInitialView: View {
     }
     
     private func handleSuccessWithJwt(_ jwt: String) async {
-        let result = await authenticateNetworkClient(jwt)
+        let result = await deviceManager.authenticateNetworkClient(jwt)
         
         if case .failure(let error) = result {
             print("[LoginInitialView] handleSuccessWithJwt: \(error.localizedDescription)")
@@ -247,10 +266,7 @@ private struct LoginInitialFormView: View {
     ZStack {
         LoginInitialView(
             api: nil,
-            navigate: {_ in },
-            authenticateNetworkClient: {_ in
-                return .success(())
-            }
+            navigate: {_ in }
         )
     }
     .environmentObject(ThemeManager.shared)

@@ -15,24 +15,24 @@ struct CreateNetworkVerifyView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var snackbarManager: UrSnackbarManager
+    @EnvironmentObject var deviceManager: DeviceManager
     @StateObject private var viewModel: ViewModel
     
     // Keyboard state
     @FocusState private var isKeyboardShowing: Bool
     
     var navigate: (LoginInitialNavigationPath) -> Void
-    
-    var authenticateNetworkClient: (String) async -> Result<Void, Error>
+    var onSuccess: (() -> Void)?
     
     init(
         userAuth: String,
         api: SdkBringYourApi,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
-        authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>
+        onSuccess: (() -> Void)? = nil
     ) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api, userAuth: userAuth))
         self.navigate = navigate
-        self.authenticateNetworkClient = authenticateNetworkClient
+        self.onSuccess = onSuccess
     }
     
     var body: some View {
@@ -158,7 +158,7 @@ struct CreateNetworkVerifyView: View {
     
     private func handleSuccessWithJwt(_ jwt: String) async {
         
-        let result = await authenticateNetworkClient(jwt)
+        let result = await deviceManager.authenticateNetworkClient(jwt)
         
         if case .failure(let error) = result {
             print("[CreateNetworkVerifyView] handleSuccessWithJwt: \(error.localizedDescription)")
@@ -166,7 +166,12 @@ struct CreateNetworkVerifyView: View {
             snackbarManager.showSnackbar(message: "There was an error authenticating, please try again later.")
             
             // TODO: clear viewmodel loading state
+            return
             
+        }
+        
+        if let onSuccess = onSuccess {
+            onSuccess()
         }
         
     }
@@ -207,10 +212,7 @@ struct CreateNetworkVerifyView: View {
         CreateNetworkVerifyView(
             userAuth: "",
             api: SdkBringYourApi(),
-            navigate: {_ in },
-            authenticateNetworkClient: {_ in
-                return .success(())
-            }
+            navigate: {_ in }
         )
     }
     .environmentObject(ThemeManager.shared)
