@@ -22,17 +22,17 @@ struct CreateNetworkVerifyView: View {
     @FocusState private var isKeyboardShowing: Bool
     
     var navigate: (LoginInitialNavigationPath) -> Void
-    var onSuccess: (() -> Void)?
+    var handleSuccess: (_ jwt: String) async -> Void
     
     init(
         userAuth: String,
         api: SdkBringYourApi,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
-        onSuccess: (() -> Void)? = nil
+        handleSuccess: @escaping (_ jwt: String) async -> Void
     ) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api, userAuth: userAuth))
         self.navigate = navigate
-        self.onSuccess = onSuccess
+        self.handleSuccess = handleSuccess
     }
     
     var body: some View {
@@ -142,7 +142,10 @@ struct CreateNetworkVerifyView: View {
         switch result {
             
         case .success(let jwt):
-            await handleSuccessWithJwt(jwt)
+            // consider launching this in a task
+            // the ContentView will switch the the main app view before this function has completed
+            await handleSuccess(jwt)
+            // TODO: clear viewmodel loading state
             break
          
         case .failure(let error):
@@ -152,26 +155,6 @@ struct CreateNetworkVerifyView: View {
             
             // TODO: clear viewmodel loading state
             
-        }
-        
-    }
-    
-    private func handleSuccessWithJwt(_ jwt: String) async {
-        
-        let result = await deviceManager.authenticateNetworkClient(jwt)
-        
-        if case .failure(let error) = result {
-            print("[CreateNetworkVerifyView] handleSuccessWithJwt: \(error.localizedDescription)")
-            
-            snackbarManager.showSnackbar(message: "There was an error authenticating, please try again later.")
-            
-            // TODO: clear viewmodel loading state
-            return
-            
-        }
-        
-        if let onSuccess = onSuccess {
-            onSuccess()
         }
         
     }
@@ -212,7 +195,8 @@ struct CreateNetworkVerifyView: View {
         CreateNetworkVerifyView(
             userAuth: "",
             api: SdkBringYourApi(),
-            navigate: {_ in }
+            navigate: {_ in },
+            handleSuccess: {_ in }
         )
     }
     .environmentObject(ThemeManager.shared)

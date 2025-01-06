@@ -38,13 +38,15 @@ struct ContentView: View {
                 } else {
                     
                     LoginNavigationView(
-                        api: api
+                        api: api,
+                        handleSuccess: handleSuccessWithJwt
                         // authenticateNetworkClient: deviceManager.authenticateNetworkClient
                     )
                     
                 }
             } else {
                 // loading indicator?
+                ProgressView("Loading...")
             }
             
             UrSnackBar(message: snackbarManager.message, isVisible: snackbarManager.isVisible)
@@ -53,10 +55,26 @@ struct ContentView: View {
         }
         .environmentObject(deviceManager)
 //        .environmentObject(ThemeManager.shared)
-//        .environmentObject(snackbarManager)
+        .environmentObject(snackbarManager)
 //        .onOpenURL { url in
 //            GIDSignIn.sharedInstance.handle(url)
 //        }
+        
+    }
+    
+    private func handleSuccessWithJwt(_ jwt: String) async {
+        let result = await deviceManager.authenticateNetworkClient(jwt)
+        
+        if case .failure(let error) = result {
+            print("[ContentView] handleSuccessWithJwt: \(error.localizedDescription)")
+            
+            snackbarManager.showSnackbar(message: "There was an error creating your network. Please try again later.")
+            
+            return
+        }
+        
+        // TODO: fade out login flow
+        // TODO: create navigation view model and switch to main app instead of checking deviceManager.device
         
     }
     

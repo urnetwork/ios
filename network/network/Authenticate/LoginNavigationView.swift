@@ -16,7 +16,7 @@ struct LoginNavigationView: View {
     
     var api: SdkBringYourApi
     var cancel: (() -> Void)? = nil
-    var onSuccess: (() -> Void)? = nil
+    var handleSuccess: (_ jwt: String) async -> Void
     
     var body: some View {
         NavigationStack(
@@ -25,7 +25,8 @@ struct LoginNavigationView: View {
             LoginInitialView(
                 api: api,
                 navigate: viewModel.navigate,
-                cancel: cancel
+                cancel: cancel,
+                handleSuccess: handleSuccess
             )
             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
             .navigationDestination(for: LoginInitialNavigationPath.self) { path in
@@ -34,6 +35,7 @@ struct LoginNavigationView: View {
                         LoginPasswordView(
                             userAuth: userAuth,
                             navigate: viewModel.navigate,
+                            handleSuccess: handleSuccess,
                             api: api
                         )
                             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
@@ -41,7 +43,7 @@ struct LoginNavigationView: View {
                         CreateNetworkView(
                             authLoginArgs: authLoginArgs,
                             navigate: viewModel.navigate,
-                            onSuccess: onSuccess,
+                            handleSuccess: handleSuccess,
                             api: api
                         )
                             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
@@ -50,7 +52,7 @@ struct LoginNavigationView: View {
                             userAuth: userAuth,
                             api: api,
                             navigate: viewModel.navigate,
-                            onSuccess: onSuccess
+                            handleSuccess: handleSuccess
                         )
                             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                 case .resetPassword(let userAuth):
@@ -67,6 +69,7 @@ struct LoginNavigationView: View {
 
 #Preview {
     LoginNavigationView(
-        api: SdkBringYourApi()
+        api: SdkBringYourApi(),
+        handleSuccess: {_ in }
     )
 }

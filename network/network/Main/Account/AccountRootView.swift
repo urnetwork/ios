@@ -255,9 +255,14 @@ struct AccountRootView: View {
                 cancel: {
                     viewModel.isPresentedCreateAccount = false
                 },
-                onSuccess: {
-                    viewModel.isPresentedCreateAccount = false
+                
+                handleSuccess: { jwt in
+                    
                 }
+                
+//                onSuccess: {
+//                    viewModel.isPresentedCreateAccount = false
+//                }
             )
         }
 //        .fullScreenCover(isPresented: $viewModel.isPresentedReferralSheet) {

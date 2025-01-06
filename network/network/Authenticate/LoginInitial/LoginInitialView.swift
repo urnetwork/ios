@@ -21,17 +21,18 @@ struct LoginInitialView: View {
     var api: SdkBringYourApi?
     var navigate: (LoginInitialNavigationPath) -> Void
     var cancel: (() -> Void)?
-    // var authenticateNetworkClient: (String) async -> Result<Void, Error>
+    var handleSuccess: (_ jwt: String) async -> Void
     
     init(
         api: SdkBringYourApi?,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
-        cancel: (() -> Void)? = nil
+        cancel: (() -> Void)? = nil,
+        handleSuccess: @escaping (_ jwt: String) async -> Void
     ) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api))
         self.navigate = navigate
         self.cancel = cancel
-        // self.authenticateNetworkClient = deviceManager
+        self.handleSuccess = handleSuccess
     }
     
     var body: some View {
@@ -91,18 +92,20 @@ struct LoginInitialView: View {
             }
             .scrollIndicators(.hidden)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    if let cancel = cancel {
+                if let cancel = cancel {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        
                         Button(action: { cancel() }) {
-//                            Text("Cancel")
-//                            .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
+                            //                            Text("Cancel")
+                            //                            .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
                             Image(systemName: "xmark")
                         }
+                        
                     }
-                }
-                ToolbarItem(placement: .principal) {
-                    Text("Create Account")
-                        .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
+                    ToolbarItem(placement: .principal) {
+                        Text("Create Account")
+                            .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
+                    }
                 }
             }
         }
@@ -124,7 +127,9 @@ struct LoginInitialView: View {
         switch authLoginResult {
             
         case .login(let authJwt):
-            await handleSuccessWithJwt(authJwt)
+            
+            
+            await handleSuccess(authJwt)
             
             break
             
@@ -141,20 +146,6 @@ struct LoginInitialView: View {
             break
             
         }
-    }
-    
-    private func handleSuccessWithJwt(_ jwt: String) async {
-        let result = await deviceManager.authenticateNetworkClient(jwt)
-        
-        if case .failure(let error) = result {
-            print("[LoginInitialView] handleSuccessWithJwt: \(error.localizedDescription)")
-            
-            snackbarManager.showSnackbar(message: "There was an error authenticating, please try again later.")
-            
-            // TODO: clear viewmodel loading state
-            
-        }
-        
     }
     
     private func handleGoogleSignInButton() async {
@@ -266,7 +257,8 @@ private struct LoginInitialFormView: View {
     ZStack {
         LoginInitialView(
             api: nil,
-            navigate: {_ in }
+            navigate: {_ in },
+            handleSuccess: {_ in }
         )
     }
     .environmentObject(ThemeManager.shared)

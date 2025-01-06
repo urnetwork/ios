@@ -15,7 +15,8 @@ struct CreateNetworkView: View {
     
     var userAuth: String?
     var authJwt: String?
-    var onSuccess: (() -> Void)?
+    
+    var handleSuccess: (_ jwt: String) async -> Void
     
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var snackbarManager: UrSnackbarManager
@@ -28,8 +29,7 @@ struct CreateNetworkView: View {
     init(
         authLoginArgs: SdkAuthLoginArgs,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
-        onSuccess: (() -> Void)? = nil,
-        // authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>,
+        handleSuccess: @escaping (_ jwt: String) async -> Void,
         api: SdkBringYourApi
     ) {
         
@@ -45,7 +45,6 @@ struct CreateNetworkView: View {
         ))
         
         self.authLoginArgs = authLoginArgs
-        // self.authenticateNetworkClient = authenticateNetworkClient
         
         if !authLoginArgs.userAuth.isEmpty {
             self.userAuth = authLoginArgs.userAuth
@@ -60,7 +59,7 @@ struct CreateNetworkView: View {
         }
         
         self.navigate = navigate
-        self.onSuccess = onSuccess
+        self.handleSuccess = handleSuccess
     }
 
     enum Field {
@@ -82,7 +81,6 @@ struct CreateNetworkView: View {
                     if let userAuth = userAuth {
                         
                         UrTextField(
-                            // text: $viewModel.userAuth,
                             text: .constant(userAuth),
                             label: "Email or phone number",
                             placeholder: "Enter your phone number or email",
@@ -187,7 +185,7 @@ struct CreateNetworkView: View {
         switch result {
             
         case .successWithJwt(let jwt):
-            await handleSuccessWithJwt(jwt)
+            await handleSuccess(jwt)
             break
         case .successWithVerificationRequired:
             if let userAuth = userAuth {
@@ -201,24 +199,6 @@ struct CreateNetworkView: View {
             break
             
         }
-    }
-    
-    private func handleSuccessWithJwt(_ jwt: String) async {
-        let result = await deviceManager.authenticateNetworkClient(jwt)
-        
-        if case .failure(let error) = result {
-            print("[CreateNetworkView] handleSuccessWithJwt: \(error.localizedDescription)")
-            
-            snackbarManager.showSnackbar(message: "There was an error creating your network. Please try again later.")
-            
-            // TODO: clear viewmodel loading state
-            return
-        }
-        
-        if let onSuccess = onSuccess {
-            onSuccess()
-        }
-        
     }
     
     private func getAuthTypeFromArgs(_ args: SdkAuthLoginArgs) -> AuthType {
@@ -238,6 +218,7 @@ struct CreateNetworkView: View {
         CreateNetworkView(
             authLoginArgs: SdkAuthLoginArgs(),
             navigate: {_ in },
+            handleSuccess: {_ in },
             api: SdkBringYourApi()
         )
     }
