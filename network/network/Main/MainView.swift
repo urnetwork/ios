@@ -15,14 +15,10 @@ struct MainView: View {
     var logout: () -> Void
     var connectViewController: SdkConnectViewController?
     
-    // var vpnManager: VPNManager
-    
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var deviceManager: DeviceManager
-    // @State private var selectedTab = 0
     
     @State private var welcomeAnimationComplete = false
-    
     
     
     init(
@@ -34,10 +30,6 @@ struct MainView: View {
         self.logout = logout
         self.device = device
         self.connectViewController = device.openConnectViewController()
-        
-        // vpn manager
-        // self.vpnManager = VPNManager(device: device)
-        // vpnManager.loadOrCreateManager()
     }
     
     var body: some View {
@@ -70,6 +62,7 @@ struct WelcomeAnimation: View {
     
     @State private var globeSize: CGFloat = 256
     @State private var welcomeOffset: CGFloat = 400
+    @State private var backgroundOpacity: Double = 0
     
     var body: some View {
         
@@ -84,6 +77,7 @@ struct WelcomeAnimation: View {
                     .scaledToFill()
                     .frame(minWidth: 0)
                     .ignoresSafeArea()
+                    .opacity(backgroundOpacity)
                 
                 VStack(spacing: 0) {
                     
@@ -173,16 +167,23 @@ struct WelcomeAnimation: View {
                 }
                 .offset(y: welcomeOffset) // Apply the offset to move the VStack offscreen
                 .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
-                        withAnimation(.easeInOut(duration: 1.0)) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                        withAnimation(.easeInOut) {
                             welcomeOffset = 0 // Slide the VStack up onscreen
                         }
                     }
                 }
                 
             }
+            .background(themeManager.currentTheme.tintedBackgroundBase)
             .opacity(opacity)
             .onAppear {
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    withAnimation(.easeIn) {
+                        backgroundOpacity = 1
+                    }
+                }
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                     expandMask(size: size)
@@ -203,14 +204,22 @@ struct WelcomeAnimation: View {
     
     private func handleExit() {
         
-        withAnimation(.easeOut(duration: 1.0)) {
-            opacity = 0.0
+
+        withAnimation(.easeInOut) {
+            welcomeOffset = 400
         }
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            withAnimation(.easeOut(duration: 1.0)) {
+                opacity = 0.0
+            }
+            
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             welcomeAnimationComplete = true
         }
         
-        // welcomeAnimationComplete = true
     }
     
 }
@@ -227,6 +236,3 @@ struct WelcomeAnimation: View {
     .frame(maxWidth: .infinity, maxHeight: .infinity)
 }
 
-//#Preview {
-//    MainView()
-//}
