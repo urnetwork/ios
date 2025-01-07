@@ -15,12 +15,8 @@ struct LoginNavigationView: View {
     @EnvironmentObject var themeManager: ThemeManager
     
     var api: SdkBringYourApi
-    
-    var authenticateNetworkClient: (String) async -> Result<Void, Error>
-    
-//    init() {
-//        _viewModel = StateObject(wrappedValue: ViewModel(api: api))
-//    }
+    var cancel: (() -> Void)? = nil
+    var handleSuccess: (_ jwt: String) async -> Void
     
     var body: some View {
         NavigationStack(
@@ -29,7 +25,8 @@ struct LoginNavigationView: View {
             LoginInitialView(
                 api: api,
                 navigate: viewModel.navigate,
-                authenticateNetworkClient: authenticateNetworkClient
+                cancel: cancel,
+                handleSuccess: handleSuccess
             )
             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
             .navigationDestination(for: LoginInitialNavigationPath.self) { path in
@@ -38,7 +35,7 @@ struct LoginNavigationView: View {
                         LoginPasswordView(
                             userAuth: userAuth,
                             navigate: viewModel.navigate,
-                            authenticateNetworkClient: authenticateNetworkClient,
+                            handleSuccess: handleSuccess,
                             api: api
                         )
                             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
@@ -46,7 +43,7 @@ struct LoginNavigationView: View {
                         CreateNetworkView(
                             authLoginArgs: authLoginArgs,
                             navigate: viewModel.navigate,
-                            authenticateNetworkClient: authenticateNetworkClient,
+                            handleSuccess: handleSuccess,
                             api: api
                         )
                             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
@@ -55,7 +52,7 @@ struct LoginNavigationView: View {
                             userAuth: userAuth,
                             api: api,
                             navigate: viewModel.navigate,
-                            authenticateNetworkClient: authenticateNetworkClient
+                            handleSuccess: handleSuccess
                         )
                             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                 case .resetPassword(let userAuth):
@@ -73,8 +70,6 @@ struct LoginNavigationView: View {
 #Preview {
     LoginNavigationView(
         api: SdkBringYourApi(),
-        authenticateNetworkClient: { _ in
-            return .success(())
-        }
+        handleSuccess: {_ in }
     )
 }

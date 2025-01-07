@@ -15,24 +15,24 @@ struct CreateNetworkVerifyView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var snackbarManager: UrSnackbarManager
+    @EnvironmentObject var deviceManager: DeviceManager
     @StateObject private var viewModel: ViewModel
     
     // Keyboard state
     @FocusState private var isKeyboardShowing: Bool
     
     var navigate: (LoginInitialNavigationPath) -> Void
-    
-    var authenticateNetworkClient: (String) async -> Result<Void, Error>
+    var handleSuccess: (_ jwt: String) async -> Void
     
     init(
         userAuth: String,
         api: SdkBringYourApi,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
-        authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>
+        handleSuccess: @escaping (_ jwt: String) async -> Void
     ) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api, userAuth: userAuth))
         self.navigate = navigate
-        self.authenticateNetworkClient = authenticateNetworkClient
+        self.handleSuccess = handleSuccess
     }
     
     var body: some View {
@@ -142,26 +142,17 @@ struct CreateNetworkVerifyView: View {
         switch result {
             
         case .success(let jwt):
-            await handleSuccessWithJwt(jwt)
+            // consider launching this in a task
+            // the ContentView will switch the the main app view before this function has completed
+            
+            hideKeyboard()
+            
+            await handleSuccess(jwt)
+            // TODO: clear viewmodel loading state
             break
          
         case .failure(let error):
             print("[CreateNetworkVerifyView] handleOptSubmitResult: \(error.localizedDescription)")
-            
-            snackbarManager.showSnackbar(message: "There was an error authenticating, please try again later.")
-            
-            // TODO: clear viewmodel loading state
-            
-        }
-        
-    }
-    
-    private func handleSuccessWithJwt(_ jwt: String) async {
-        
-        let result = await authenticateNetworkClient(jwt)
-        
-        if case .failure(let error) = result {
-            print("[CreateNetworkVerifyView] handleSuccessWithJwt: \(error.localizedDescription)")
             
             snackbarManager.showSnackbar(message: "There was an error authenticating, please try again later.")
             
@@ -208,9 +199,7 @@ struct CreateNetworkVerifyView: View {
             userAuth: "",
             api: SdkBringYourApi(),
             navigate: {_ in },
-            authenticateNetworkClient: {_ in
-                return .success(())
-            }
+            handleSuccess: {_ in }
         )
     }
     .environmentObject(ThemeManager.shared)

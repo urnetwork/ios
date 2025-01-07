@@ -15,20 +15,24 @@ struct LoginInitialView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var snackbarManager: UrSnackbarManager
+    @EnvironmentObject var deviceManager: DeviceManager
     @StateObject private var viewModel: ViewModel
     
     var api: SdkBringYourApi?
     var navigate: (LoginInitialNavigationPath) -> Void
-    var authenticateNetworkClient: (String) async -> Result<Void, Error>
+    var cancel: (() -> Void)?
+    var handleSuccess: (_ jwt: String) async -> Void
     
     init(
         api: SdkBringYourApi?,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
-        authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>
+        cancel: (() -> Void)? = nil,
+        handleSuccess: @escaping (_ jwt: String) async -> Void
     ) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api))
         self.navigate = navigate
-        self.authenticateNetworkClient = authenticateNetworkClient
+        self.cancel = cancel
+        self.handleSuccess = handleSuccess
     }
     
     var body: some View {
@@ -86,6 +90,24 @@ struct LoginInitialView: View {
                 }
                 
             }
+            .scrollIndicators(.hidden)
+            .toolbar {
+                if let cancel = cancel {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        
+                        Button(action: { cancel() }) {
+                            //                            Text("Cancel")
+                            //                            .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
+                            Image(systemName: "xmark")
+                        }
+                        
+                    }
+                    ToolbarItem(placement: .principal) {
+                        Text("Create Account")
+                            .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
+                    }
+                }
+            }
         }
         
     }
@@ -105,7 +127,9 @@ struct LoginInitialView: View {
         switch authLoginResult {
             
         case .login(let authJwt):
-            await handleSuccessWithJwt(authJwt)
+            
+            
+            await handleSuccess(authJwt)
             
             break
             
@@ -122,20 +146,6 @@ struct LoginInitialView: View {
             break
             
         }
-    }
-    
-    private func handleSuccessWithJwt(_ jwt: String) async {
-        let result = await authenticateNetworkClient(jwt)
-        
-        if case .failure(let error) = result {
-            print("[LoginInitialView] handleSuccessWithJwt: \(error.localizedDescription)")
-            
-            snackbarManager.showSnackbar(message: "There was an error authenticating, please try again later.")
-            
-            // TODO: clear viewmodel loading state
-            
-        }
-        
     }
     
     private func handleGoogleSignInButton() async {
@@ -248,9 +258,7 @@ private struct LoginInitialFormView: View {
         LoginInitialView(
             api: nil,
             navigate: {_ in },
-            authenticateNetworkClient: {_ in
-                return .success(())
-            }
+            handleSuccess: {_ in }
         )
     }
     .environmentObject(ThemeManager.shared)

@@ -12,10 +12,13 @@ import BottomSheet
 struct ConnectView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var deviceManager: DeviceManager
+    @Environment(\.requestReview) private var requestReview
     
     @StateObject private var viewModel: ViewModel
     
     var logout: () -> Void
+    var api: SdkBringYourApi
     
     init(api: SdkBringYourApi, logout: @escaping () -> Void, connectViewController: SdkConnectViewController?) {
         _viewModel = StateObject.init(wrappedValue: ViewModel(
@@ -23,7 +26,7 @@ struct ConnectView: View {
             connectViewController: connectViewController
         ))
         self.logout = logout
-        
+        self.api = api
         
         // adds clear button to search providers text field
         UITextField.appearance().clearButtonMode = .whileEditing
@@ -37,7 +40,8 @@ struct ConnectView: View {
                 Spacer()
                 AccountMenu(
                     isGuest: false,
-                    logout: logout
+                    logout: logout,
+                    api: api
                 )
             }
             .frame(height: 32)
@@ -57,6 +61,23 @@ struct ConnectView: View {
             Spacer()
 
         }
+        .onAppear {
+            
+            /**
+             * Create callback function for prompting rating
+             */
+            viewModel.requestReview = {
+                Task {
+                 
+                    if deviceManager.device?.getShouldShowRatingDialog() ?? false {
+                        try await Task.sleep(for: .seconds(2))
+                        requestReview()
+                    }
+                    
+                }
+            }
+            
+        }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .bottomSheet(
@@ -66,7 +87,7 @@ struct ConnectView: View {
                 
                 VStack {
                  
-                    if let selectedProvider = viewModel.selectedProvider {
+                    if let selectedProvider = viewModel.selectedProvider, selectedProvider.connectLocationId?.bestAvailable != true {
                         ProviderListItemView(
                             name: selectedProvider.name,
                             providerCount: selectedProvider.providerCount,

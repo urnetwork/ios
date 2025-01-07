@@ -14,6 +14,7 @@ extension AccountRootView {
         // var api: SdkBringYourApi
         
         @Published var isPresentedUpgradeSheet: Bool = false
+        @Published var isPresentedCreateAccount: Bool = false
         
 //        init(api: SdkBringYourApi) {
 //            self.api = api

@@ -12,24 +12,25 @@ struct LoginPasswordView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var snackbarManager: UrSnackbarManager
+    @EnvironmentObject var deviceManager: DeviceManager
     @StateObject private var viewModel: ViewModel
     
     var userAuth: String
     var navigate: (LoginInitialNavigationPath) -> Void
-    var authenticateNetworkClient: (String) async -> Result<Void, Error>
+    var handleSuccess: (_ jwt: String) async -> Void
     
     let snackbarErrorMessage = "There was an error authenticating. Please try again."
     
     init(
         userAuth: String,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
-        authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>,
+        handleSuccess: @escaping (_ jwt: String) async -> Void,
         api: SdkBringYourApi?
     ) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api))
         self.userAuth = userAuth
         self.navigate = navigate
-        self.authenticateNetworkClient = authenticateNetworkClient
+        self.handleSuccess = handleSuccess
     }
 
     var body: some View {
@@ -73,6 +74,7 @@ struct LoginPasswordView: View {
                     UrButton(
                         text: "Continue",
                         action: {
+                            hideKeyboard()
                             if !viewModel.password.isEmpty {
                                 Task {
                                     let result = await viewModel.login(userAuth: self.userAuth)
@@ -114,7 +116,8 @@ struct LoginPasswordView: View {
         switch result {
             
         case .successWithJwt(let jwt):
-            await handleSuccessWithJwt(jwt)
+            await handleSuccess(jwt)
+            viewModel.setIsLoggingIn(false)
             break
             
         case .successWithVerificationRequired:
@@ -128,24 +131,9 @@ struct LoginPasswordView: View {
             viewModel.setIsLoggingIn(false)
             snackbarManager.showSnackbar(message: snackbarErrorMessage)
             
-            // TODO: clear viewmodel loading state
             break
             
         }
-    }
-    
-    private func handleSuccessWithJwt(_ jwt: String) async {
-        let result = await authenticateNetworkClient(jwt)
-        
-        if case .failure(let error) = result {
-            print("LoginPasswordView: handleSuccessWithJwt: \(error.localizedDescription)")
-            
-            snackbarManager.showSnackbar(message: snackbarErrorMessage)
-            
-            // TODO: clear viewmodel loading state
-        }
-        viewModel.setIsLoggingIn(false)
-        
     }
     
 }
@@ -157,9 +145,7 @@ struct LoginPasswordView: View {
         LoginPasswordView(
             userAuth: "hello@ur.io",
             navigate: {_ in },
-            authenticateNetworkClient: {_ in
-                return .success(())
-            },
+            handleSuccess: {_ in },
             api: nil
         )
         

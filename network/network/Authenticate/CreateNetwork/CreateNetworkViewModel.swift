@@ -21,6 +21,12 @@ private class NetworkCreateCallback: SdkCallback<SdkNetworkCreateResult, SdkNetw
     }
 }
 
+private class UpgradeGuestCallback: SdkCallback<SdkUpgradeGuestResult, SdkUpgradeGuestCallbackProtocol>, SdkUpgradeGuestCallbackProtocol {
+    func result(_ result: SdkUpgradeGuestResult?, err: Error?) {
+        handleResult(result, err: err)
+    }
+}
+
 enum AuthType {
     case password
     case apple
@@ -28,6 +34,7 @@ enum AuthType {
 
 extension CreateNetworkView {
     
+    @MainActor
     class ViewModel: ObservableObject {
         
         private var api: SdkBringYourApi
@@ -167,7 +174,11 @@ extension CreateNetworkView {
             
         }
         
-        func createNetwork(userAuth: String?, authJwt: String?) async -> LoginNetworkResult {
+        func upgradeGuestNetwork(
+            userAuth: String?,
+            authJwt: String?,
+            authType: String?
+        ) async -> LoginNetworkResult {
             
             if !formIsValid {
                 return .failure(NSError(domain: domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Create network form is invalid"]))
@@ -177,9 +188,97 @@ extension CreateNetworkView {
                 return .failure(NSError(domain: domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Network creation already in progress"]))
             }
                 
-            DispatchQueue.main.async {
-                self.isCreatingNetwork = true
+            
+            self.isCreatingNetwork = true
+            
+            do {
+                
+                let result: LoginNetworkResult = try await withCheckedThrowingContinuation { [weak self] continuation in
+                    
+                    guard let self = self else { return }
+                    
+                    let callback = UpgradeGuestCallback { result, err in
+                        
+                        if let err = err {
+                            continuation.resume(throwing: err)
+                            return
+                        }
+                        
+                        if let result = result {
+                            
+                            if let resultError = result.error {
+
+                                continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: resultError.message]))
+                                
+                                return
+                                
+                            }
+                            
+                            if result.verificationRequired != nil {
+                                continuation.resume(returning: .successWithVerificationRequired)
+                                return
+                            }
+                            
+                            if let network = result.network {
+                                
+                                continuation.resume(returning: .successWithJwt(network.byJwt))
+                                return
+                                
+                            } else {
+                                continuation.resume(throwing: NSError(domain: self.domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "No network found in result"]))
+                                return
+                            }
+                            
+                        }
+                        
+                    }
+                    
+                    let args = SdkUpgradeGuestArgs()
+                    args.networkName = networkName.trimmingCharacters(in: .whitespacesAndNewlines)
+                    
+                    if let userAuth = userAuth {
+                        args.userAuth = userAuth
+                        args.password = password
+                    }
+                    
+                    if let authJwt, let authType {
+                        args.authJwt = authJwt
+                        args.authJwtType = authType
+                    }
+                    
+                    api.upgradeGuest(args, callback: callback)
+                    
+                }
+                
+                DispatchQueue.main.async {
+                    self.isCreatingNetwork = false
+                }
+                
+                return result
+                
+            } catch {
+                self.isCreatingNetwork = false
+                return .failure(error)
             }
+            
+            
+        }
+        
+        func createNetwork(
+            userAuth: String?,
+            authJwt: String?,
+            authType: String?
+        ) async -> LoginNetworkResult {
+            
+            if !formIsValid {
+                return .failure(NSError(domain: domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Create network form is invalid"]))
+            }
+            
+            if isCreatingNetwork {
+                return .failure(NSError(domain: domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Network creation already in progress"]))
+            }
+            
+            self.isCreatingNetwork = true
             
             do {
                 
@@ -233,28 +332,25 @@ extension CreateNetworkView {
                         args.password = password
                     }
                     
-                    if let authJwt {
+                    if let authJwt, let authType {
                         args.authJwt = authJwt
-                        args.authJwtType = "apple"
+                        args.authJwtType = authType
                     }
-                    
-//                    if let api = api {
-//                        
-//                        api.networkCreate(args, callback: callback)
-//                        
-//                    }
                     
                     api.networkCreate(args, callback: callback)
                     
                 }
                 
                 DispatchQueue.main.async {
-                    self.isCreatingNetwork = true
+                    self.isCreatingNetwork = false
                 }
                 
                 return result
                 
             } catch {
+                
+                self.isCreatingNetwork = false
+                
                 return .failure(error)
             }
             

@@ -12,13 +12,15 @@ struct CreateNetworkView: View {
 
     var authLoginArgs: SdkAuthLoginArgs
     var navigate: (LoginInitialNavigationPath) -> Void
-    var authenticateNetworkClient: (String) async -> Result<Void, Error>
     
     var userAuth: String?
     var authJwt: String?
     
+    var handleSuccess: (_ jwt: String) async -> Void
+    
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var snackbarManager: UrSnackbarManager
+    @EnvironmentObject var deviceManager: DeviceManager
     
     @StateObject private var viewModel: ViewModel
     
@@ -27,7 +29,7 @@ struct CreateNetworkView: View {
     init(
         authLoginArgs: SdkAuthLoginArgs,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
-        authenticateNetworkClient: @escaping (String) async -> Result<Void, Error>,
+        handleSuccess: @escaping (_ jwt: String) async -> Void,
         api: SdkBringYourApi
     ) {
         
@@ -43,7 +45,6 @@ struct CreateNetworkView: View {
         ))
         
         self.authLoginArgs = authLoginArgs
-        self.authenticateNetworkClient = authenticateNetworkClient
         
         if !authLoginArgs.userAuth.isEmpty {
             self.userAuth = authLoginArgs.userAuth
@@ -58,6 +59,7 @@ struct CreateNetworkView: View {
         }
         
         self.navigate = navigate
+        self.handleSuccess = handleSuccess
     }
 
     enum Field {
@@ -79,7 +81,6 @@ struct CreateNetworkView: View {
                     if let userAuth = userAuth {
                         
                         UrTextField(
-                            // text: $viewModel.userAuth,
                             text: .constant(userAuth),
                             label: "Email or phone number",
                             placeholder: "Enter your phone number or email",
@@ -149,11 +150,23 @@ struct CreateNetworkView: View {
                         text: "Continue",
                         action: {
                             
+                            hideKeyboard()
+                            
                             Task {
-                                let result = await viewModel.createNetwork(
+                                let result = deviceManager.device != nil
+                                // device exists - upgrade guest network
+                                ? await viewModel.upgradeGuestNetwork(
                                     userAuth: userAuth,
-                                    authJwt: authLoginArgs.authJwt
+                                    authJwt: authLoginArgs.authJwt,
+                                    authType: authLoginArgs.authJwtType
                                 )
+                                // no device exists - create a new network
+                                : await viewModel.createNetwork(
+                                    userAuth: userAuth,
+                                    authJwt: authLoginArgs.authJwt,
+                                    authType: authLoginArgs.authJwtType
+                                )
+                                
                                 await handleResult(result)
                             }
                             
@@ -174,7 +187,7 @@ struct CreateNetworkView: View {
         switch result {
             
         case .successWithJwt(let jwt):
-            await handleSuccessWithJwt(jwt)
+            await handleSuccess(jwt)
             break
         case .successWithVerificationRequired:
             if let userAuth = userAuth {
@@ -188,19 +201,6 @@ struct CreateNetworkView: View {
             break
             
         }
-    }
-    
-    private func handleSuccessWithJwt(_ jwt: String) async {
-        let result = await authenticateNetworkClient(jwt)
-        
-        if case .failure(let error) = result {
-            print("[CreateNetworkView] handleSuccessWithJwt: \(error.localizedDescription)")
-            
-            snackbarManager.showSnackbar(message: "There was an error creating your network. Please try again later.")
-            
-            // TODO: clear viewmodel loading state
-        }
-        
     }
     
     private func getAuthTypeFromArgs(_ args: SdkAuthLoginArgs) -> AuthType {
@@ -220,9 +220,7 @@ struct CreateNetworkView: View {
         CreateNetworkView(
             authLoginArgs: SdkAuthLoginArgs(),
             navigate: {_ in },
-            authenticateNetworkClient: {_ in
-                return .success(())
-            },
+            handleSuccess: {_ in },
             api: SdkBringYourApi()
         )
     }

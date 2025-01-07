@@ -58,6 +58,9 @@
     "Account" : {
 
     },
+    "All the content in the world from URnetwork" : {
+
+    },
     "Are you sure you want to remove this wallet?" : {
 
     },
@@ -94,6 +97,9 @@
     "Create account" : {
 
     },
+    "Create Account" : {
+
+    },
     "Create an account" : {
 
     },
@@ -113,6 +119,9 @@
 
     },
     "Email or phone number" : {
+
+    },
+    "Enter" : {
 
     },
     "Enter a name for your network" : {
@@ -157,7 +166,13 @@
     "Join URnetwork" : {
       "comment" : "URnetwork is the project name and should not be translated"
     },
+    "Loading..." : {
+
+    },
     "Make default" : {
+
+    },
+    "More connections help our community stay anonymous (and help you earn!)" : {
 
     },
     "Network name" : {
@@ -167,6 +182,9 @@
 
     },
     "Nice! This network name is available" : {
+
+    },
+    "Nicely done." : {
 
     },
     "Notifications" : {
@@ -202,6 +220,12 @@
     "Receive connection notifications" : {
 
     },
+    "Refer and earn" : {
+
+    },
+    "Refer friends" : {
+
+    },
     "Remove wallet" : {
 
     },
@@ -210,6 +234,9 @@
     },
     "Reset it." : {
       "comment" : "Referring to resetting the password"
+    },
+    "Review URnetwork" : {
+
     },
     "Search" : {
 
@@ -232,6 +259,9 @@
     "Settings" : {
 
     },
+    "Share" : {
+
+    },
     "Share URnetwork" : {
 
     },
@@ -245,6 +275,9 @@
 
     },
     "Stay in touch" : {
+
+    },
+    "Step into the internet as it should be." : {
 
     },
     "Support" : {
@@ -281,6 +314,9 @@
 
     },
     "URnetwork Member" : {
+
+    },
+    "URnetwork Referral Code" : {
 
     },
     "URwallet" : {
