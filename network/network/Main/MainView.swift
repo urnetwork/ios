@@ -85,100 +85,49 @@ struct WelcomeAnimation: View {
                     .frame(minWidth: 0)
                     .ignoresSafeArea()
                 
-                VStack {
+                VStack(spacing: 0) {
+                    
+                    // top overlay
+                    Rectangle()
+                        .fill(.urBlack)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .ignoresSafeArea(edges: .top)
+                    
                     
                     VStack {
-                        Spacer()
                         
                         HStack(spacing: 0) {
-                            // Left overlay
+                            // left overlay
                             Rectangle()
                                 .fill(.urBlack)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                             
+                            // mask
                             Image("GlobeMask")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: globeSize, height: globeSize)
                             
-                            // Right overlay
+                            // right overlay
                             Rectangle()
                                 .fill(.urBlack)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                         }
                         
-                        Spacer()
                     }
-                    .position(x: size.width / 2, y: size.height / 2)
+                    .frame(maxWidth: .infinity, maxHeight: globeSize)
+                    
+                    // bottom overlay
+                    Rectangle()
+                        .fill(.urBlack)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .ignoresSafeArea(edges: .bottom)
                     
                     
                 }
-                
-                // top overlay
-                Rectangle()
-                    .fill(.urBlack)
-                    .frame(height: (size.height - globeSize) / 2 + geometry.safeAreaInsets.top)
-                    .position(
-                        x: size.width / 2,
-                        y: ((size.height - globeSize) / 4) + (geometry.safeAreaInsets.top / 2))
-                    .ignoresSafeArea(edges: .top)
-                
-                // bottom overlay
-                Rectangle()
-                    .fill(.urBlack)
-                    .frame(height: (size.height - globeSize) / 2 + geometry.safeAreaInsets.bottom)
-                    .position(
-                        x: size.width / 2,
-                        y: size.height - ((size.height - globeSize) / 4) - (geometry.safeAreaInsets.bottom / 2) + geometry.safeAreaInsets.bottom)
-                    .ignoresSafeArea(edges: .bottom)
-            
-                
-                
-                
-                
-//                Image("GlobeMask")
-//                    .resizable()
-//                    .aspectRatio(contentMode: .fit)
-//                    .frame(width: globeSize, height: globeSize)
-//                    .position(x: size.width / 2, y: size.height / 2)
-//
-//                // top overlay
-//                Rectangle()
-//                    .fill(.urBlack)
-//                    .frame(height: (size.height - globeSize) / 2 + geometry.safeAreaInsets.top)
-//                    .position(
-//                        x: size.width / 2,
-//                        y: ((size.height - globeSize) / 4) + (geometry.safeAreaInsets.top / 2))
-//                    .ignoresSafeArea(edges: .top)
-//
-//                // bottom overlay
-//                Rectangle()
-//                    .fill(.urBlack)
-//                    .frame(height: (size.height - globeSize) / 2 + geometry.safeAreaInsets.bottom)
-//                    .position(
-//                        x: size.width / 2,
-//                        y: size.height - ((size.height - globeSize) / 4) - (geometry.safeAreaInsets.bottom / 2) + geometry.safeAreaInsets.bottom)
-//                    .ignoresSafeArea(edges: .bottom)
-//
-//
-//                // Left overlay
-//                Rectangle()
-//                    .fill(.urBlack)
-//                    .frame(
-//                        width: (size.width - globeSize) / 2
-//                    )
-//                    .position(
-//                        // x: (size.width - globeSize) / 4,
-//                        x: 0,
-//                        y: size.height / 2
-//                    )
-//
-//                // Right overlay
-//                Rectangle()
-//                    .fill(.urBlack)
-//                    .frame(width: (size.width - globeSize) / 2)
-//                    .position(x: size.width - (size.width - globeSize) / 4, y: size.height / 2)
-                
+                .position(x: size.width / 2, y: size.height / 2)
+
+                // Welcome message overlay
                 VStack {
                     
                     Spacer()
