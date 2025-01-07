@@ -74,12 +74,6 @@ struct ConnectButtonView: View {
                     isActive: connectionStatus == .connected
                 )
             
-                Image("GlobeMask")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: canvasWidth, height: canvasWidth)
-                    .containerShape(Circle())
-                
                 // for capturing tap when disconnected
                 Circle()
                     .fill(.clear)
@@ -95,6 +89,12 @@ struct ConnectButtonView: View {
                 
             }
             .background(themeManager.currentTheme.tintedBackgroundBase)
+            .mask {
+                Image("ur.symbols.globe")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            }
+
             
             Spacer().frame(height: 32)
             

@@ -16,6 +16,8 @@ struct MainTabView: View {
     var connectViewController: SdkConnectViewController?
     @Binding var provideWhileDisconnected: Bool
     
+    @State private var opacity: Double = 0
+    
     var vpnManager: VPNManager
     
     @EnvironmentObject var themeManager: ThemeManager
@@ -107,6 +109,12 @@ struct MainTabView: View {
             }
             .tag(2)
                 
+        }
+        .opacity(opacity)
+        .onAppear {
+            withAnimation(.easeOut(duration: 1.0)) {
+                opacity = 1
+            }
         }
         
     }

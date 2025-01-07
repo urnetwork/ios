@@ -121,6 +121,9 @@
     "Email or phone number" : {
 
     },
+    "Enter" : {
+
+    },
     "Enter a name for your network" : {
 
     },
@@ -179,6 +182,9 @@
 
     },
     "Nice! This network name is available" : {
+
+    },
+    "Nicely done." : {
 
     },
     "Notifications" : {
@@ -269,6 +275,9 @@
 
     },
     "Stay in touch" : {
+
+    },
+    "Step into the internet as it should be." : {
 
     },
     "Support" : {

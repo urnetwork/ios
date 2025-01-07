@@ -9,41 +9,52 @@ import SwiftUI
 import URnetworkSdk
 import GoogleSignIn
 
-// TODO: either deprecate or move content of NetworkApp into this component
-
 struct ContentView: View {
     
     var api: SdkBringYourApi?
     
-    // @StateObject var viewModel = ViewModel()
+    @StateObject var viewModel = ViewModel()
     @StateObject var deviceManager = DeviceManager()
     @StateObject private var snackbarManager = UrSnackbarManager()
     
+    @State private var opacity: Double = 0.0
+    
     @EnvironmentObject var themeManager: ThemeManager
+    
+    @State var welcomeAnimationComplete: Bool = true
     
     var body: some View {
         ZStack {
             
             if let api = deviceManager.api {
                 
-                if let device = deviceManager.device {
+                switch viewModel.contentViewPath {
                     
-                    MainTabView(
-                        api: api,
-                        device: device,
-                        logout: deviceManager.logout,
-                        provideWhileDisconnected: $deviceManager.provideWhileDisconnected
-                    )
-                    
-                } else {
-                    
+                case .uninitialized:
+                    ProgressView("Loading...")
+                case .authenticate:
                     LoginNavigationView(
                         api: api,
                         handleSuccess: handleSuccessWithJwt
-                        // authenticateNetworkClient: deviceManager.authenticateNetworkClient
                     )
+                    .opacity(opacity)
+
+                case .main:
+                    if let device = deviceManager.device {
+                        MainView(
+                            api: api,
+                            device: device,
+                            logout: deviceManager.logout,
+                            welcomeAnimationComplete: $welcomeAnimationComplete
+                        )
+                        .opacity(opacity)
+
+                    } else {
+                        ProgressView("Loading...")
+                    }
                     
                 }
+                
             } else {
                 // loading indicator?
                 ProgressView("Loading...")
@@ -53,13 +64,49 @@ struct ContentView: View {
                 .padding(.bottom, 50)
             
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .environmentObject(deviceManager)
-//        .environmentObject(ThemeManager.shared)
+        .background(themeManager.currentTheme.backgroundColor)
         .environmentObject(snackbarManager)
-//        .onOpenURL { url in
-//            GIDSignIn.sharedInstance.handle(url)
-//        }
+        .onReceive(deviceManager.$device) { device in
+            
+            if deviceManager.deviceInitialized {
+                
+                if device != nil {
+                    welcomeAnimationComplete = false
+                }
+                
+                updatePath()
+            }
+            
+        }
+        .onReceive(deviceManager.$deviceInitialized) { isInitialized in
+            print("is initialized is \(isInitialized)")
+            
+            if isInitialized {
+                
+                updatePath()
+                
+            }
+            
+        }
         
+    }
+    
+    private func updatePath() {
+        
+        withAnimation {
+            opacity = 0.0
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            
+            viewModel.updatePath(deviceManager.device)
+            
+            withAnimation {
+                opacity = 1.0
+            }
+            
+        }
     }
     
     private func handleSuccessWithJwt(_ jwt: String) async {

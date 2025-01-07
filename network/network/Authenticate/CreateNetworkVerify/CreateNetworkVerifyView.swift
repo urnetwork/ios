@@ -144,6 +144,9 @@ struct CreateNetworkVerifyView: View {
         case .success(let jwt):
             // consider launching this in a task
             // the ContentView will switch the the main app view before this function has completed
+            
+            hideKeyboard()
+            
             await handleSuccess(jwt)
             // TODO: clear viewmodel loading state
             break
