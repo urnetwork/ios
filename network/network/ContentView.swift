@@ -15,9 +15,11 @@ struct ContentView: View {
     
     var api: SdkBringYourApi?
     
-    // @StateObject var viewModel = ViewModel()
+    @StateObject var viewModel = ViewModel()
     @StateObject var deviceManager = DeviceManager()
     @StateObject private var snackbarManager = UrSnackbarManager()
+    
+    @State private var opacity: Double = 0.0
     
     @EnvironmentObject var themeManager: ThemeManager
     
@@ -26,24 +28,63 @@ struct ContentView: View {
             
             if let api = deviceManager.api {
                 
-                if let device = deviceManager.device {
+                switch viewModel.contentViewPath {
                     
-                    MainTabView(
-                        api: api,
-                        device: device,
-                        logout: deviceManager.logout,
-                        provideWhileDisconnected: $deviceManager.provideWhileDisconnected
-                    )
-                    
-                } else {
-                    
+                case .uninitialized:
+                    ProgressView("Loading...")
+                case .authenticate:
                     LoginNavigationView(
                         api: api,
                         handleSuccess: handleSuccessWithJwt
-                        // authenticateNetworkClient: deviceManager.authenticateNetworkClient
                     )
+                    .opacity(opacity)
+//                    .onAppear {
+//                        withAnimation {
+//                            opacity = 1.0
+//                        }
+//                    }
+                case .main:
+                    if let device = deviceManager.device {
+//                        MainTabView(
+//                            api: api,
+//                            device: device,
+//                            logout: deviceManager.logout,
+//                            provideWhileDisconnected: $deviceManager.provideWhileDisconnected
+//                        )
+                        MainView(
+                            api: api,
+                            device: device,
+                            logout: deviceManager.logout
+                        )
+                        .opacity(opacity)
+//                        .onAppear {
+//                            withAnimation {
+//                                opacity = 1.0
+//                            }
+//                        }
+                    } else {
+                        ProgressView("Loading...")
+                    }
                     
                 }
+                
+//                if let device = deviceManager.device {
+//                    
+//                    MainTabView(
+//                        api: api,
+//                        device: device,
+//                        logout: deviceManager.logout,
+//                        provideWhileDisconnected: $deviceManager.provideWhileDisconnected
+//                    )
+//                    
+//                } else {
+//                    
+//                    LoginNavigationView(
+//                        api: api,
+//                        handleSuccess: handleSuccessWithJwt
+//                    )
+//                    
+//                }
             } else {
                 // loading indicator?
                 ProgressView("Loading...")
@@ -53,9 +94,27 @@ struct ContentView: View {
                 .padding(.bottom, 50)
             
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .environmentObject(deviceManager)
+        .background(themeManager.currentTheme.backgroundColor)
 //        .environmentObject(ThemeManager.shared)
         .environmentObject(snackbarManager)
+        .onReceive(deviceManager.$device) { device in
+            
+            withAnimation {
+                opacity = 0.0
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                
+                viewModel.updatePath(device)
+                
+                withAnimation {
+                    opacity = 1.0
+                }
+                
+            }
+            
+        }
 //        .onOpenURL { url in
 //            GIDSignIn.sharedInstance.handle(url)
 //        }

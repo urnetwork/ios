@@ -121,6 +121,9 @@
     "Email or phone number" : {
 
     },
+    "Enter" : {
+
+    },
     "Enter a name for your network" : {
 
     },
@@ -323,6 +326,9 @@
 
     },
     "Wallets" : {
+
+    },
+    "Welcome animation" : {
 
     },
     "You may need to your check spam folder or unblock no-reply@ur.io" : {
