@@ -37,6 +37,8 @@ class DeviceManager: ObservableObject {
         }
     }
     
+    @Published private(set) var deviceInitialized: Bool = false
+    
     private func handleProvideWhileDisconnectedUpdate(_ canProvideWhileDisconnected: Bool) {
         device?.setProvideWhileDisconnected(canProvideWhileDisconnected)
         
@@ -157,41 +159,18 @@ private class GetJwtInitDeviceCallback: NSObject, SdkGetByClientJwtCallbackProto
     weak var globalStore: DeviceManager?
     var deviceSpecs: String
     
-    init(networkStore: DeviceManager?, deviceSpecs: String) {
+    var onResult: (_ result: String?, _ ok: Bool) -> Void
+    
+    init(networkStore: DeviceManager?, deviceSpecs: String, onResult: @escaping (_ result: String?, _ ok: Bool) -> Void) {
         self.globalStore = networkStore
         self.deviceSpecs = deviceSpecs
+        self.onResult = onResult
     }
     
     func result(_ result: String?, ok: Bool) {
         
-        guard let globalStore = globalStore else {
-            print("[GetByClientJwtCallback] no network store found")
-            return
-        }
-        
-        if ok {
-            
-            guard let result else {
-                print("[GetByClientJwtCallback] result is nil")
-                
-                Task { @MainActor in
-                    globalStore.logout()
-                }
-                
-                return
-            }
-            
-            if result == "" {
-                Task { @MainActor in
-                    globalStore.logout()
-                }
-            } else {
-                Task { @MainActor in
-                    globalStore.initDevice(clientJwt: result, deviceSpec: self.deviceSpecs)
-                }
-            }
-            
-        }
+        self.onResult(result, ok)
+
     }
 }
 
@@ -199,6 +178,8 @@ private class GetJwtInitDeviceCallback: NSObject, SdkGetByClientJwtCallbackProto
 extension DeviceManager {
     
     func initializeNetworkSpace(_ storagePath: String) async {
+        
+        print("initialize network space hit")
         
         let deviceSpecs = self.getDeviceSpecs()
         let networkSpaceManager = URnetworkSdk.SdkNewNetworkSpaceManager(storagePath)
@@ -227,7 +208,38 @@ extension DeviceManager {
             
         self.networkSpace = networkSpaceManager?.getNetworkSpace(networkSpaceKey)
         
-        let getJwtCallback = GetJwtInitDeviceCallback(networkStore: self, deviceSpecs: deviceSpecs)
+        let getJwtCallback = GetJwtInitDeviceCallback(
+            networkStore: self,
+            deviceSpecs: deviceSpecs,
+            onResult: { result, ok in
+        
+                if ok {
+        
+                    guard let result else {
+                        print("[GetByClientJwtCallback] result is nil")
+                        self.logout()
+        
+                        return
+                    }
+        
+                    if result == "" {
+                        self.logout()
+                    } else {
+                        self.initDevice(clientJwt: result, deviceSpec: deviceSpecs)
+                    }
+        
+                } else {
+                    print("not ok")
+                    
+                    DispatchQueue.main.async {
+                        self.deviceInitialized = true
+                    }
+                    
+                }
+                
+                
+            }
+        )
         self.asyncLocalState?.getByClientJwt(getJwtCallback)
         
     }
@@ -279,7 +291,6 @@ extension DeviceManager {
                 }
                 
                 guard let device = device else {
-                    print("device is nil")
                     return
                 }
                 
@@ -307,6 +318,10 @@ extension DeviceManager {
                 print("local state is nil")
             }
             
+        }
+        
+        DispatchQueue.main.async {
+            self.deviceInitialized = true
         }
         
     }

@@ -14,32 +14,32 @@ struct MainView: View {
     var device: SdkBringYourDevice
     var logout: () -> Void
     var connectViewController: SdkConnectViewController?
+    var welcomeAnimationComplete: Binding<Bool>
     
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var deviceManager: DeviceManager
     
-    @State private var welcomeAnimationComplete = false
-    
-    
     init(
         api: SdkBringYourApi,
         device: SdkBringYourDevice,
-        logout: @escaping () -> Void
+        logout: @escaping () -> Void,
+        welcomeAnimationComplete: Binding<Bool>
     ) {
         self.api = api
         self.logout = logout
         self.device = device
         self.connectViewController = device.openConnectViewController()
+        self.welcomeAnimationComplete = welcomeAnimationComplete
     }
     
     var body: some View {
         
         Group {
          
-            switch welcomeAnimationComplete {
+            switch welcomeAnimationComplete.wrappedValue {
                 case false:
                 WelcomeAnimation(
-                    welcomeAnimationComplete: $welcomeAnimationComplete
+                    welcomeAnimationComplete: self.welcomeAnimationComplete
                 )
                 case true:
                 MainTabView(

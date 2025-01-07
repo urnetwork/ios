@@ -23,6 +23,8 @@ struct ContentView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     
+    @State var welcomeAnimationComplete: Bool = true
+    
     var body: some View {
         ZStack {
             
@@ -54,7 +56,8 @@ struct ContentView: View {
                         MainView(
                             api: api,
                             device: device,
-                            logout: deviceManager.logout
+                            logout: deviceManager.logout,
+                            welcomeAnimationComplete: $welcomeAnimationComplete
                         )
                         .opacity(opacity)
 //                        .onAppear {
@@ -101,24 +104,83 @@ struct ContentView: View {
         .environmentObject(snackbarManager)
         .onReceive(deviceManager.$device) { device in
             
-            withAnimation {
-                opacity = 0.0
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            print("device updated. device exists? \(device != nil)")
+            
+            
+            
+//            withAnimation {
+//                opacity = 0.0
+//            }
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//                
+//                viewModel.updatePath(device)
+//                
+//                withAnimation {
+//                    opacity = 1.0
+//                }
+//                
+//            }
+            
+            if deviceManager.deviceInitialized {
                 
-                viewModel.updatePath(device)
-                
-                withAnimation {
-                    opacity = 1.0
+                if device != nil {
+                    welcomeAnimationComplete = false
                 }
+                
+                updatePath()
+            }
+            
+        }
+        .onReceive(deviceManager.$deviceInitialized) { isInitialized in
+            print("is initialized is \(isInitialized)")
+            
+            if isInitialized {
+                
+                // viewModel.updatePath(deviceManager.device)
+                
+                
+//                withAnimation {
+//                    opacity = 0.0
+//                }
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//                    
+//                    viewModel.updatePath(deviceManager.device)
+//                    
+//                    withAnimation {
+//                        opacity = 1.0
+//                    }
+//                    
+//                }
+                
+                updatePath()
+                
                 
             }
             
         }
+        
 //        .onOpenURL { url in
 //            GIDSignIn.sharedInstance.handle(url)
 //        }
         
+    }
+    
+    private func updatePath() {
+        
+        print("update path hit")
+        
+        withAnimation {
+            opacity = 0.0
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            
+            viewModel.updatePath(deviceManager.device)
+            
+            withAnimation {
+                opacity = 1.0
+            }
+            
+        }
     }
     
     private func handleSuccessWithJwt(_ jwt: String) async {
