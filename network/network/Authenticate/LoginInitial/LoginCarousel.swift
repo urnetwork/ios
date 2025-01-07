@@ -69,12 +69,12 @@ struct LoginCarousel: View {
                     .scaledToFill()
                     .frame(width: 256, height: 256)
                     .opacity(nextOpacity)
-                
-                Image("GlobeMask")
+            }
+            .frame(width: 256, height: 256)
+            .mask {
+                Image("ur.symbols.globe")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 256, height: 256)
-                
             }
             .clipped()
             
@@ -189,6 +189,13 @@ struct LoginCarousel: View {
 }
 
 #Preview {
-    LoginCarousel()
-        .environmentObject(ThemeManager.shared)
+    
+    let themeManager = ThemeManager.shared
+    
+    VStack {
+        LoginCarousel()
+    }
+    .environmentObject(themeManager)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(themeManager.currentTheme.backgroundColor)
 }
