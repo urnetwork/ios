@@ -150,6 +150,8 @@ struct CreateNetworkView: View {
                         text: "Continue",
                         action: {
                             
+                            hideKeyboard()
+                            
                             Task {
                                 let result = deviceManager.device != nil
                                 // device exists - upgrade guest network

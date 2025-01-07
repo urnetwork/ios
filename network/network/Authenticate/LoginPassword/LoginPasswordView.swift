@@ -74,6 +74,7 @@ struct LoginPasswordView: View {
                     UrButton(
                         text: "Continue",
                         action: {
+                            hideKeyboard()
                             if !viewModel.password.isEmpty {
                                 Task {
                                     let result = await viewModel.login(userAuth: self.userAuth)
