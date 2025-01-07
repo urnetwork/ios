@@ -160,25 +160,6 @@ private class NetworkSpaceUpdateCallback: NSObject, URnetworkSdk.SdkNetworkSpace
     }
 }
 
-private class GetJwtInitDeviceCallback: NSObject, SdkGetByClientJwtCallbackProtocol {    
-    weak var globalStore: DeviceManager?
-    var deviceSpecs: String
-    
-    var onResult: (_ result: String?, _ ok: Bool) -> Void
-    
-    init(networkStore: DeviceManager?, deviceSpecs: String, onResult: @escaping (_ result: String?, _ ok: Bool) -> Void) {
-        self.globalStore = networkStore
-        self.deviceSpecs = deviceSpecs
-        self.onResult = onResult
-    }
-    
-    func result(_ result: String?, ok: Bool) {
-        
-        self.onResult(result, ok)
-
-    }
-}
-
 // MARK: Network space handlers
 extension DeviceManager {
     
