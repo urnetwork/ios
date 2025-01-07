@@ -9,8 +9,6 @@ import SwiftUI
 import URnetworkSdk
 import GoogleSignIn
 
-// TODO: either deprecate or move content of NetworkApp into this component
-
 struct ContentView: View {
     
     var api: SdkBringYourApi?
@@ -40,19 +38,9 @@ struct ContentView: View {
                         handleSuccess: handleSuccessWithJwt
                     )
                     .opacity(opacity)
-//                    .onAppear {
-//                        withAnimation {
-//                            opacity = 1.0
-//                        }
-//                    }
+
                 case .main:
                     if let device = deviceManager.device {
-//                        MainTabView(
-//                            api: api,
-//                            device: device,
-//                            logout: deviceManager.logout,
-//                            provideWhileDisconnected: $deviceManager.provideWhileDisconnected
-//                        )
                         MainView(
                             api: api,
                             device: device,
@@ -60,34 +48,13 @@ struct ContentView: View {
                             welcomeAnimationComplete: $welcomeAnimationComplete
                         )
                         .opacity(opacity)
-//                        .onAppear {
-//                            withAnimation {
-//                                opacity = 1.0
-//                            }
-//                        }
+
                     } else {
                         ProgressView("Loading...")
                     }
                     
                 }
                 
-//                if let device = deviceManager.device {
-//                    
-//                    MainTabView(
-//                        api: api,
-//                        device: device,
-//                        logout: deviceManager.logout,
-//                        provideWhileDisconnected: $deviceManager.provideWhileDisconnected
-//                    )
-//                    
-//                } else {
-//                    
-//                    LoginNavigationView(
-//                        api: api,
-//                        handleSuccess: handleSuccessWithJwt
-//                    )
-//                    
-//                }
             } else {
                 // loading indicator?
                 ProgressView("Loading...")
@@ -100,26 +67,8 @@ struct ContentView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .environmentObject(deviceManager)
         .background(themeManager.currentTheme.backgroundColor)
-//        .environmentObject(ThemeManager.shared)
         .environmentObject(snackbarManager)
         .onReceive(deviceManager.$device) { device in
-            
-            print("device updated. device exists? \(device != nil)")
-            
-            
-            
-//            withAnimation {
-//                opacity = 0.0
-//            }
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                
-//                viewModel.updatePath(device)
-//                
-//                withAnimation {
-//                    opacity = 1.0
-//                }
-//                
-//            }
             
             if deviceManager.deviceInitialized {
                 
@@ -136,38 +85,15 @@ struct ContentView: View {
             
             if isInitialized {
                 
-                // viewModel.updatePath(deviceManager.device)
-                
-                
-//                withAnimation {
-//                    opacity = 0.0
-//                }
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                    
-//                    viewModel.updatePath(deviceManager.device)
-//                    
-//                    withAnimation {
-//                        opacity = 1.0
-//                    }
-//                    
-//                }
-                
                 updatePath()
-                
                 
             }
             
         }
         
-//        .onOpenURL { url in
-//            GIDSignIn.sharedInstance.handle(url)
-//        }
-        
     }
     
     private func updatePath() {
-        
-        print("update path hit")
         
         withAnimation {
             opacity = 0.0

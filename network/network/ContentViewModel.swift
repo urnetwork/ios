@@ -9,7 +9,6 @@ import Foundation
 import URnetworkSdk
 
 enum ContentViewPath: Hashable {
-    // case initial
     case uninitialized
     case authenticate
     case main
@@ -22,7 +21,6 @@ extension ContentView {
         @Published private(set) var contentViewPath: ContentViewPath = .uninitialized
         
         func updatePath(_ device: SdkBringYourDevice?) {
-            print("update content view path hit. device exists: \(device != nil)")
             
             if device != nil {
                 contentViewPath = .main
