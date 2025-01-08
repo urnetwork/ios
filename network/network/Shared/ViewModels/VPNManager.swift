@@ -17,7 +17,9 @@ class VPNManager {
     init(device: SdkDeviceRemote) {
         print("VPN Manager init hit")
         self.device = device
-        self.loadOrCreateManager()
+//        self.loadOrCreateManager()
+        
+        self.addListeners()
     }
     
     private func loadOrCreateManager() {
@@ -38,12 +40,29 @@ class VPNManager {
     func setup() {
         guard let tunnelManager = tunnelManager else { return }
         
+        // FIXME provider configuration:
+        // 1. byJwt
+        // 2. rpc public cert
+        // 3. network space
+        var err: NSError?
+        let networkSpaceJson = device.getNetworkSpace()?.toJson(&err)
+        
+        if let err {
+            print("Error converting network space to json: \(err.localizedDescription)")
+            return
+        }
+        
         let tunnelProtocol = NETunnelProviderProtocol()
         // Use the same as remote address in PacketTunnelProvider
         // value from connect resolvedHost
         tunnelProtocol.serverAddress = "65.49.70.71"
         tunnelProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
         tunnelProtocol.disconnectOnSleep = false
+        tunnelProtocol.providerConfiguration = [
+            "by_jwt": device.getApi()?.getByJwt(),
+            "rpc_public_cert": "",
+            "network_space": networkSpaceJson,
+        ]
         
         tunnelManager.protocolConfiguration = tunnelProtocol
         tunnelManager.localizedDescription = "URnetwork"
@@ -55,7 +74,16 @@ class VPNManager {
                 return
             }
             print("VPN configuration saved successfully")
-            self?.addListeners()
+            
+            // see https://forums.developer.apple.com/forums/thread/25928
+            tunnelManager.loadFromPreferences { [weak self] error in
+                
+                self?.connect()
+            }
+            
+            
+            
+            
         }
     }
     
@@ -84,7 +112,10 @@ class VPNManager {
             print("start vpn")
             
             // TODO: handle wakelock & wifi lock
-            self.connect()
+            
+            
+            self.loadOrCreateManager()
+            
             
         } else {
             
@@ -102,6 +133,7 @@ class VPNManager {
     }
     
     func connect() {
+        
         
         do {
             

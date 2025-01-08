@@ -18,15 +18,61 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     private let logger = Logger(
         subsystem: "com.bringyour.network.extension",
         category: "PacketTunnel"
+        
     )
     private var active = true
+    
+    
+    private var device: SdkDeviceLocal?
+    
+    private var networkSpaceManager: SdkNetworkSpaceManager?
+    
     
     override init() {
         super.init()
         logger.debug("PacketTunnelProvider init")
+        
+        print("INIT TUNNEL")
+        
+        let documentsPath = FileManager.default.urls(for: .documentDirectory,
+                                                   in: .userDomainMask)[0]
+        
+            
+        networkSpaceManager = SdkNewNetworkSpaceManager(documentsPath.path())
     }
     
+    
     override func startTunnel(options: [String : NSObject]? = nil, completionHandler: @escaping ((any Error)?) -> Void) {
+        
+        print("START TUNNEL")
+        
+        device?.close()
+        
+        
+        var err: NSError?
+        
+        let byJwt = ""
+        var networkSpace: SdkNetworkSpace?
+        do {
+            try networkSpace = networkSpaceManager?.importNetworkSpace("")
+        } catch {
+            completionHandler(error)
+            return
+        }
+        
+        device = SdkNewDeviceLocalWithDefaults(
+            networkSpace,
+            byJwt,
+            "",
+            "",
+            "",
+            SdkNewId(),
+            true,
+            &err
+        )
+        if let err {
+            completionHandler(err)
+        }
         
         let packetReceiver = PacketReceiver { [weak self] data in
             guard let self = self, self.active else {
@@ -115,7 +161,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 //    }
 
     override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
-        self.logger.debug("Stopping tunnel with reason: \(String(describing: reason))")
+        self.logger.info("Stopping tunnel with reason: \(String(describing: reason))")
+        print("STOP TUNNEL")
         active = false
         completionHandler()
     }
