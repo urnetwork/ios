@@ -51,9 +51,9 @@ extension ConnectExternalWalletSheetView {
         private var cancellables = Set<AnyCancellable>()
         private var debounceTimer: AnyCancellable?
         
-        var api: SdkBringYourApi?
+        var api: SdkApi?
         
-        init(api: SdkBringYourApi?) {
+        init(api: SdkApi?) {
             self.api = api
             
             

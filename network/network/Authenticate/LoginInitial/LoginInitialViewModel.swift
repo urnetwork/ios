@@ -27,7 +27,7 @@ extension LoginInitialView {
     
     class ViewModel: ObservableObject {
         
-        private var api: SdkBringYourApi?
+        private var api: SdkApi?
         
         @Published var userAuth: String = "" {
             didSet {
@@ -44,7 +44,7 @@ extension LoginInitialView {
         
         let domain = "LoginInitialViewModel"
         
-        init(api: SdkBringYourApi?) {
+        init(api: SdkApi?) {
             self.api = api
         }
         

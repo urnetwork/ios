@@ -18,14 +18,14 @@ struct AccountNavStackView: View {
     @StateObject var accountPaymentsViewModel: AccountPaymentsViewModel
     @StateObject var payoutWalletViewModel: PayoutWalletViewModel
     
-    var api: SdkBringYourApi
-    var device: SdkBringYourDevice
+    var api: SdkApi
+    var device: SdkDeviceRemote
     var logout: () -> Void
     @Binding var provideWhileDisconnected: Bool
     
     init(
-        api: SdkBringYourApi,
-        device: SdkBringYourDevice,
+        api: SdkApi,
+        device: SdkDeviceRemote,
         provideWhileDisconnected: Binding<Bool>,
         logout: @escaping () -> Void
     ) {
@@ -80,7 +80,7 @@ struct AccountNavStackView: View {
                     
                 case .settings:
                     SettingsView(
-                        clientId: device.clientId(),
+                        clientId: device.getClientId(),
                         provideWhileDisconnected: $provideWhileDisconnected,
                         accountPreferencesViewModel: accountPreferencesViewModel
                     )
@@ -162,8 +162,8 @@ struct AccountNavStackView: View {
 
 #Preview {
     AccountNavStackView(
-        api: SdkBringYourApi(),
-        device: SdkBringYourDevice(),
+        api: SdkApi(),
+        device: SdkDeviceRemote(),
         provideWhileDisconnected: .constant(true),
         logout: {}
     )

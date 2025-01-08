@@ -17,13 +17,13 @@ extension ResetPasswordView {
     
     class ViewModel: ObservableObject {
         
-        private var api: SdkBringYourApi
+        private var api: SdkApi
         
         @Published var sendInProgress: Bool = false
         
         let domain = "ResetPasswordViewModel"
         
-        init(api: SdkBringYourApi) {
+        init(api: SdkApi) {
             self.api = api
         }
         

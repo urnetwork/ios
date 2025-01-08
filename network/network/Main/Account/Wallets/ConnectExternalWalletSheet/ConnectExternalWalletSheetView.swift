@@ -14,7 +14,7 @@ struct ConnectExternalWalletSheetView: View {
     @StateObject var viewModel: ViewModel
     var onSuccess: () -> Void
     
-    init(onSuccess: @escaping () -> Void, api: SdkBringYourApi?) {
+    init(onSuccess: @escaping () -> Void, api: SdkApi?) {
         
         self.onSuccess = onSuccess
         self._viewModel = StateObject(wrappedValue: ViewModel(api: api))

@@ -49,9 +49,9 @@ class AccountWalletsViewModel: ObservableObject {
     
     @Published private(set) var unpaidMegaBytes: String = ""
     
-    var api: SdkBringYourApi?
+    var api: SdkApi?
     
-    init(api: SdkBringYourApi?) {
+    init(api: SdkApi?) {
         self.api = api
         self.initAccountWallets()
         self.initTransferStats()

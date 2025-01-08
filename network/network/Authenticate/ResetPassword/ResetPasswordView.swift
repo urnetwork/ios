@@ -21,7 +21,7 @@ struct ResetPasswordView: View {
     init(
         userAuth: String,
         popNavigationStack: @escaping () -> Void,
-        api: SdkBringYourApi
+        api: SdkApi
     ) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api))
         self.userAuth = userAuth
@@ -104,7 +104,7 @@ struct ResetPasswordView: View {
         ResetPasswordView(
             userAuth: "hello@ur.io",
             popNavigationStack: {},
-            api: SdkBringYourApi()
+            api: SdkApi()
         )
     }
     .environmentObject(ThemeManager.shared)

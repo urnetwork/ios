@@ -21,9 +21,9 @@ class DeviceManager: ObservableObject {
         }
     }
     
-    @Published private(set) var api: SdkBringYourApi?
+    @Published private(set) var api: SdkApi?
     
-    @Published private(set) var device: SdkBringYourDevice? {
+    @Published private(set) var device: SdkDeviceRemote? {
         didSet {
             DispatchQueue.main.async {
                 self.provideWhileDisconnected = self.device?.getProvideWhileDisconnected() ?? false
@@ -136,11 +136,11 @@ class DeviceManager: ObservableObject {
         device?.setVpnInterfaceWhileOffline(value)
     }
     
-    func setApi(_ api: SdkBringYourApi?) {
+    func setApi(_ api: SdkApi?) {
         self.api = api
     }
     
-    func setDevice(_ device: SdkBringYourDevice?) {
+    func setDevice(_ device: SdkDeviceRemote?) {
         self.device = device
     }
     
@@ -274,13 +274,9 @@ extension DeviceManager {
                 var newDeviceError: NSError?
                 
                 
-                let device = SdkNewBringYourDeviceWithDefaults(
+                let device = SdkNewDeviceRemoteWithDefaults(
                     networkSpace,
                     clientJwt,
-                    self.deviceDescription,
-                    deviceSpec,
-                    self.getAppVersion(),
-                    instanceId,
                     &newDeviceError
                 )
                 
@@ -298,7 +294,7 @@ extension DeviceManager {
                     device.loadProvideSecretKeys(providerSecretKeys)
                 } else {
                     device.initProvideSecretKeys()
-                    device.loadProvideSecretKeys(device.getProvideSecretKeys())
+                    // FIXME save secret keys to local state
                 }
                 
                 device.setProvidePaused(true)

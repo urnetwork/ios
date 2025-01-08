@@ -28,14 +28,14 @@ enum UpdatePayoutWalletError: Error {
 @MainActor
 class PayoutWalletViewModel: ObservableObject {
     
-    var api: SdkBringYourApi?
+    var api: SdkApi?
     let domain = "[PayoutWalletViewModel]"
     
     @Published private(set) var payoutWalletId: SdkId?
     var isFetchingPayoutWallet: Bool = false
     @Published private(set) var isUpdatingPayoutWallet: Bool = false
     
-    init(api: SdkBringYourApi?) {
+    init(api: SdkApi?) {
         self.api = api
         self.initPayoutWallet()
     }

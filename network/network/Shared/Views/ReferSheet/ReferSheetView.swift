@@ -17,7 +17,7 @@ struct ReferSheet: View {
     // @StateObject var viewModel: ViewModel
     let referralCode = "https://ur.io"
     
-    init(api: SdkBringYourApi) {
+    init(api: SdkApi) {
         // _viewModel = StateObject(wrappedValue: ViewModel(api: api))
     }
     
@@ -156,7 +156,7 @@ struct ReferSheet: View {
 
 #Preview {
     ReferSheet(
-        api: SdkBringYourApi()
+        api: SdkApi()
     )
         .environmentObject(ThemeManager.shared)
 }

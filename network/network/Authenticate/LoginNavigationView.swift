@@ -14,7 +14,7 @@ struct LoginNavigationView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     
-    var api: SdkBringYourApi
+    var api: SdkApi
     var cancel: (() -> Void)? = nil
     var handleSuccess: (_ jwt: String) async -> Void
     
@@ -69,7 +69,7 @@ struct LoginNavigationView: View {
 
 #Preview {
     LoginNavigationView(
-        api: SdkBringYourApi(),
+        api: SdkApi(),
         handleSuccess: {_ in }
     )
 }

@@ -14,7 +14,7 @@ struct ReferralShareLink<Content: View>: View {
     
     let content: () -> Content
     
-    init(api: SdkBringYourApi, content: @escaping () -> Content) {
+    init(api: SdkApi, content: @escaping () -> Content) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api))
         self.content = content
     }
@@ -29,7 +29,7 @@ struct ReferralShareLink<Content: View>: View {
 
 #Preview {
     ReferralShareLink(
-        api: SdkBringYourApi()
+        api: SdkApi()
     ) {
         Label("Share URnetwork", systemImage: "square.and.arrow.up")
     }

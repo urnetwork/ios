@@ -20,7 +20,7 @@ extension ContentView {
         
         @Published private(set) var contentViewPath: ContentViewPath = .uninitialized
         
-        func updatePath(_ device: SdkBringYourDevice?) {
+        func updatePath(_ device: SdkDeviceRemote?) {
             
             if device != nil {
                 contentViewPath = .main

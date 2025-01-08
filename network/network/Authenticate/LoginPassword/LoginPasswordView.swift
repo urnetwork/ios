@@ -25,7 +25,7 @@ struct LoginPasswordView: View {
         userAuth: String,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
         handleSuccess: @escaping (_ jwt: String) async -> Void,
-        api: SdkBringYourApi?
+        api: SdkApi?
     ) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api))
         self.userAuth = userAuth

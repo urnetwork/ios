@@ -14,7 +14,7 @@ struct FeedbackView: View {
     @EnvironmentObject var snackbarManager: UrSnackbarManager
     @StateObject private var viewModel: ViewModel
     
-    init(api: SdkBringYourApi?) {
+    init(api: SdkApi?) {
         _viewModel = StateObject.init(wrappedValue: ViewModel(
             api: api
         ))

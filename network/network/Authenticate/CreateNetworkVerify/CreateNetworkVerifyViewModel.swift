@@ -30,7 +30,7 @@ extension CreateNetworkVerifyView {
     
     class ViewModel: ObservableObject {
         
-        private var api: SdkBringYourApi?
+        private var api: SdkApi?
         
         private var userAuth: String
         
@@ -48,7 +48,7 @@ extension CreateNetworkVerifyView {
         
         private let domain = "CraeteNetworkVerifyViewModel"
         
-        init(api: SdkBringYourApi?, userAuth: String) {
+        init(api: SdkApi?, userAuth: String) {
             self.api = api
             self.userAuth = userAuth
         }

@@ -16,7 +16,7 @@ struct AccountRootView: View {
     
     var navigate: (AccountNavigationPath) -> Void
     var logout: () -> Void
-    var api: SdkBringYourApi
+    var api: SdkApi
 
     // TODO: pull this from device
     var isGuest: Bool = true
@@ -27,7 +27,7 @@ struct AccountRootView: View {
     init(
         navigate: @escaping (AccountNavigationPath) -> Void,
         logout: @escaping () -> Void,
-        api: SdkBringYourApi
+        api: SdkApi
     ) {
         self.navigate = navigate
         self.logout = logout

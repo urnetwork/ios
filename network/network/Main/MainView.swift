@@ -10,8 +10,8 @@ import URnetworkSdk
 
 struct MainView: View {
     
-    var api: SdkBringYourApi
-    var device: SdkBringYourDevice
+    var api: SdkApi
+    var device: SdkDeviceRemote
     var logout: () -> Void
     var connectViewController: SdkConnectViewController?
     var welcomeAnimationComplete: Binding<Bool>
@@ -20,8 +20,8 @@ struct MainView: View {
     @EnvironmentObject var deviceManager: DeviceManager
     
     init(
-        api: SdkBringYourApi,
-        device: SdkBringYourDevice,
+        api: SdkApi,
+        device: SdkDeviceRemote,
         logout: @escaping () -> Void,
         welcomeAnimationComplete: Binding<Bool>
     ) {

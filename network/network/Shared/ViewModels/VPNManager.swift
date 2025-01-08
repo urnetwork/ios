@@ -11,10 +11,10 @@ import URnetworkSdk
 
 class VPNManager {
     
-    var device: SdkBringYourDevice
+    var device: SdkDeviceRemote
     var tunnelManager: NETunnelProviderManager?
     
-    init(device: SdkBringYourDevice) {
+    init(device: SdkDeviceRemote) {
         print("VPN Manager init hit")
         self.device = device
         self.loadOrCreateManager()

@@ -18,9 +18,9 @@ struct ConnectView: View {
     @StateObject private var viewModel: ViewModel
     
     var logout: () -> Void
-    var api: SdkBringYourApi
+    var api: SdkApi
     
-    init(api: SdkBringYourApi, logout: @escaping () -> Void, connectViewController: SdkConnectViewController?) {
+    init(api: SdkApi, logout: @escaping () -> Void, connectViewController: SdkConnectViewController?) {
         _viewModel = StateObject.init(wrappedValue: ViewModel(
             api: api,
             connectViewController: connectViewController
@@ -156,7 +156,7 @@ struct ConnectView: View {
 
 #Preview {
     ConnectView(
-        api: SdkBringYourApi(),
+        api: SdkApi(),
         logout: {},
         connectViewController: nil
     )
