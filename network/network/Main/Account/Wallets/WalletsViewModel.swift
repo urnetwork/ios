@@ -12,11 +12,9 @@ extension WalletsView {
     @MainActor
     class ViewModel: ObservableObject {
         
-        @Published var displayExternalWalletSheet: Bool = false
+        @Published var presentConnectWalletSheet: Bool = false
 
         let domain = "[WalletsViewModel]"
-        
-        init() {}
         
     }
     

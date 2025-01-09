@@ -8,7 +8,7 @@
 import SwiftUI
 import URnetworkSdk
 
-struct ConnectExternalWalletSheetView: View {
+struct EnterWalletAddressView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var accountWalletsViewModel: AccountWalletsViewModel
@@ -26,9 +26,9 @@ struct ConnectExternalWalletSheetView: View {
     var body: some View {
         VStack(alignment: .leading) {
             
-            Text("Connect an external wallet")
-                .font(themeManager.currentTheme.titleCondensedFont)
-                .foregroundColor(themeManager.currentTheme.textColor)
+//            Text("Connect an external wallet")
+//                .font(themeManager.currentTheme.titleCondensedFont)
+//                .foregroundColor(themeManager.currentTheme.textColor)
             
             Spacer().frame(height: 16)
             
@@ -55,20 +55,44 @@ struct ConnectExternalWalletSheetView: View {
             UrButton(
                 text: "Connect Wallet",
                 action: {
-                    Task {
-                        let result = await accountWalletsViewModel.connectWallet(
-                            walletAddress: viewModel.walletAddress,
-                            chain: viewModel.chain
-                        )
-                        self.handleCreateResult(result)
-                    }
+                    connect()
                 },
                 enabled: viewModel.isValidWalletAddress && !accountWalletsViewModel.isCreatingWallet
             )
         }
-        .padding()
+        // .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(themeManager.currentTheme.backgroundColor)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("Enter wallet address")
+                    .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
+            }
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(
+                    action: {
+                        connect()
+                    }
+                ) {
+                    Text("Connect")
+                        .font(themeManager.currentTheme.toolbarTitleFont)
+                }
+                .disabled(!viewModel.isValidWalletAddress || accountWalletsViewModel.isCreatingWallet)
+            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .padding(.horizontal)
+        // .background(themeManager.currentTheme.backgroundColor)
+    }
+    
+    private func connect() {
+        Task {
+            let result = await accountWalletsViewModel.connectWallet(
+                walletAddress: viewModel.walletAddress,
+                chain: viewModel.chain
+            )
+            self.handleCreateResult(result)
+        }
     }
     
     private func handleCreateResult(_ result: Result<Void, Error>) {

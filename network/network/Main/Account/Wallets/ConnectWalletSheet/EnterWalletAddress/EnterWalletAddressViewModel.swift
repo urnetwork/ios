@@ -15,7 +15,7 @@ enum ValidationError: Error {
     case invalidFormat
 }
 
-extension ConnectExternalWalletSheetView {
+extension EnterWalletAddressView {
     
     @MainActor
     class ViewModel: ObservableObject {
