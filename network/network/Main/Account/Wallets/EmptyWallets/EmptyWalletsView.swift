@@ -45,6 +45,15 @@ struct EmptyWalletsView: View {
             VStack {
                 
                 Spacer().frame(height: 8)
+                
+                // TODO: use Phantom icon
+                UrButton(
+                    text: "Link Phantom Wallet", action: {
+                        viewModel.connectPhantomWallet()
+                    }
+                )
+                
+                Spacer().frame(height: 16)
             
                 // TODO: use Solflare icon
                 UrButton(
