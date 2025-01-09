@@ -19,98 +19,142 @@ struct WalletsView: View {
     var api: SdkBringYourApi?
     
     @StateObject private var viewModel: ViewModel = ViewModel()
+    @StateObject private var connectWalletProviderViewModel = ConnectWalletProviderViewModel()
     
     var body: some View {
         
-        ScrollView {
+        Group {
          
-            VStack {
-                
+            if (accountWalletsViewModel.wallets.isEmpty) {
+                /**
+                 * Empty wallet view
+                 */
                 VStack {
-                 
-                    HStack {
-                        Text("URwallet")
-                            .font(themeManager.currentTheme.titleFont)
-                            .foregroundColor(themeManager.currentTheme.textColor)
-                        
-                        Spacer()
-                    }
                     
-                    Spacer().frame(height: 16)
+                    WalletsHeader(
+                        unpaidMegaBytes: accountWalletsViewModel.unpaidMegaBytes
+                    )
                     
-                    VStack {
-                        HStack {
-                            UrLabel(text: "Unpaid megabytes provided")
-                            Spacer()
-                        }
-                        
-                        HStack {
-                            Text(accountWalletsViewModel.unpaidMegaBytes)
-                                .font(themeManager.currentTheme.titleCondensedFont)
-                                .foregroundColor(themeManager.currentTheme.textColor)
-                            
-                            Spacer()
-                        }
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(themeManager.currentTheme.tintedBackgroundBase)
-                    .cornerRadius(12)
-                    
-                    Spacer().frame(height: 8)
-                    
-                    HStack {
-                        Text("Payouts occur every two weeks, and require a minimum amount to receive a payout.")
-                            .font(themeManager.currentTheme.secondaryBodyFont)
-                            .foregroundColor(themeManager.currentTheme.textMutedColor)
-                        
-                        Spacer()
-                    }
-                    
-                }
-                .padding()
-                
-                Spacer().frame(height: 16)
-                
-                if (accountWalletsViewModel.wallets.isEmpty) {
                     EmptyWalletsView(
-                        displayExternalWalletSheet: $viewModel.displayExternalWalletSheet
+                        presentConnectWalletSheet: $viewModel.presentConnectWalletSheet
                     )
-                    .padding()
-                } else {
-                    PopulatedWalletsView(
-                        payoutWalletId: payoutWalletId,
-                        displayExternalWalletSheet: $viewModel.displayExternalWalletSheet,
-                        navigate: navigate
-                    )
+        
                 }
+            } else {
                 
-                Spacer()
+                /**
+                 * Populated wallets view
+                 */
+                
+                ScrollView {
+                 
+                    VStack {
+                        
+                        WalletsHeader(
+                            unpaidMegaBytes: accountWalletsViewModel.unpaidMegaBytes
+                        )
+                        
+                        PopulatedWalletsView(
+                            payoutWalletId: payoutWalletId,
+                            // displayExternalWalletSheet: $viewModel.displayExternalWalletSheet,
+                            navigate: navigate,
+                            presentConnectWalletSheet: $viewModel.presentConnectWalletSheet
+                        )
+                    }
+                    
+                }
+                .refreshable {
+                    async let fetchWallets: Void = accountWalletsViewModel.fetchAccountWallets()
+                    async let fetchPayments: Void = accountPaymentsViewModel.fetchPayments()
+                    async let fetchTransferStats: Void = accountWalletsViewModel.fetchTransferStats()
+                    
+                    // Wait for all tasks to complete
+                    (_, _, _) = await (fetchWallets, fetchPayments, fetchTransferStats)
+                }
                 
             }
             
         }
-        .refreshable {
-            async let fetchWallets: Void = accountWalletsViewModel.fetchAccountWallets()
-            async let fetchPayments: Void = accountPaymentsViewModel.fetchPayments()
-            async let fetchTransferStats: Void = accountWalletsViewModel.fetchTransferStats()
+        .onReceive(connectWalletProviderViewModel.$connectedPublicKey) { walletAddress in
             
-            // Wait for all tasks to complete
-            (_, _, _) = await (fetchWallets, fetchPayments, fetchTransferStats)
+            if let walletAddress = walletAddress {
+                
+                // TODO: check if wallet address already present in existing wallets
+                
+                Task {
+                    // TODO: error handling on connect wallet
+                    let _ = await accountWalletsViewModel.connectWallet(walletAddress: walletAddress, chain: WalletChain.sol)
+                    viewModel.presentConnectWalletSheet = false
+                }
+                
+            }
+            
         }
-        // connect external wallet bottom sheet
-        .sheet(isPresented: $viewModel.displayExternalWalletSheet) {
+        .onOpenURL { url in
+            connectWalletProviderViewModel.handleDeepLink(url)
+        }
+        .sheet(isPresented: $viewModel.presentConnectWalletSheet) {
             
-            ConnectExternalWalletSheetView(
-                onSuccess: {
-                    viewModel.displayExternalWalletSheet = false
-                },
-                api: api
+            ConnectWalletNavigationStack(
+                api: api,
+                presentConnectWalletSheet: $viewModel.presentConnectWalletSheet
             )
             .presentationDetents([.height(264)])
-            .presentationDragIndicator(.visible)
+        }
+        .environmentObject(connectWalletProviderViewModel)
+    }
+}
+
+struct WalletsHeader: View {
+    
+    @EnvironmentObject var themeManager: ThemeManager
+    
+    var unpaidMegaBytes: String
+    
+    var body: some View {
+        VStack {
+         
+            HStack {
+                Text("URwallet")
+                    .font(themeManager.currentTheme.titleFont)
+                    .foregroundColor(themeManager.currentTheme.textColor)
+                
+                Spacer()
+            }
+            
+            Spacer().frame(height: 16)
+            
+            VStack {
+                HStack {
+                    UrLabel(text: "Unpaid megabytes provided")
+                    Spacer()
+                }
+                
+                HStack {
+                    Text(unpaidMegaBytes)
+                        .font(themeManager.currentTheme.titleCondensedFont)
+                        .foregroundColor(themeManager.currentTheme.textColor)
+                    
+                    Spacer()
+                }
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(themeManager.currentTheme.tintedBackgroundBase)
+            .cornerRadius(12)
+            
+            Spacer().frame(height: 8)
+            
+            HStack {
+                Text("Payouts occur every two weeks, and require a minimum amount to receive a payout.")
+                    .font(themeManager.currentTheme.secondaryBodyFont)
+                    .foregroundColor(themeManager.currentTheme.textMutedColor)
+                
+                Spacer()
+            }
             
         }
+        .padding(.horizontal)
     }
 }
 

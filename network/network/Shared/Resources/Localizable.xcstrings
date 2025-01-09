@@ -79,10 +79,7 @@
     "Connect" : {
 
     },
-    "Connect an external wallet" : {
-
-    },
-    "Connect external wallet" : {
+    "Connect wallet" : {
 
     },
     "Connect Wallet" : {
@@ -130,6 +127,9 @@
     "Enter a Solana or Matic USDC wallet address" : {
 
     },
+    "Enter wallet address" : {
+
+    },
     "Enter your phone number or email" : {
 
     },
@@ -166,12 +166,6 @@
     "Join URnetwork" : {
       "comment" : "URnetwork is the project name and should not be translated"
     },
-    "Link Phantom Wallet" : {
-
-    },
-    "Link Solflare Wallet" : {
-
-    },
     "Loading..." : {
 
     },
@@ -199,6 +193,9 @@
     "or" : {
       "comment" : "Referring to the two options 'Get started' *or* 'Login with Apple'"
     },
+    "Other" : {
+
+    },
     "Password" : {
 
     },
@@ -212,6 +209,9 @@
 
     },
     "Pending" : {
+
+    },
+    "Phantom" : {
 
     },
     "Plan" : {
@@ -274,6 +274,9 @@
     "Sign out" : {
 
     },
+    "Solflare" : {
+
+    },
     "Start earning" : {
 
     },
@@ -301,7 +304,7 @@
     "This network name is already taken" : {
 
     },
-    "To start earning, connect your cryptocurrency wallet to URnetwork or set one up with Circle." : {
+    "To start earning, connect your Solana wallet to URnetwork." : {
 
     },
     "total payouts" : {
