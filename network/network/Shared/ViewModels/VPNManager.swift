@@ -38,15 +38,20 @@ class VPNManager {
     }
     
     func setup() {
-        guard let tunnelManager = tunnelManager else { return }
+        guard let tunnelManager = tunnelManager else {
+            return
+        }
+        
+        guard let networkSpace = device.getNetworkSpace() else {
+            return
+        }
         
         // FIXME provider configuration:
         // 1. byJwt
         // 2. rpc public cert
         // 3. network space
         var err: NSError?
-        let networkSpaceJson = device.getNetworkSpace()?.toJson(&err)
-        
+        let networkSpaceJson = networkSpace.toJson(&err)
         if let err {
             print("Error converting network space to json: \(err.localizedDescription)")
             return
@@ -55,17 +60,21 @@ class VPNManager {
         let tunnelProtocol = NETunnelProviderProtocol()
         // Use the same as remote address in PacketTunnelProvider
         // value from connect resolvedHost
-        tunnelProtocol.serverAddress = "65.49.70.71"
+        tunnelProtocol.serverAddress = networkSpace.getHostName()//"127.0.0.1"
         tunnelProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
         tunnelProtocol.disconnectOnSleep = false
+        // see https://developer.apple.com/documentation/networkextension/nevpnprotocol/includeallnetworks
+        tunnelProtocol.includeAllNetworks = true
+        // this is needed for casting, etc.
+        tunnelProtocol.excludeLocalNetworks = true
         tunnelProtocol.providerConfiguration = [
-            "by_jwt": device.getApi()?.getByJwt(),
-            "rpc_public_cert": "",
-            "network_space": networkSpaceJson,
+            "by_jwt": device.getApi()?.getByJwt() as Any,
+            "rpc_public_key": "test",
+            "network_space": networkSpaceJson as Any,
         ]
         
         tunnelManager.protocolConfiguration = tunnelProtocol
-        tunnelManager.localizedDescription = "URnetwork"
+        tunnelManager.localizedDescription = "URnetwork [\(networkSpace.getHostName()) \(networkSpace.getEnvName())]"
         tunnelManager.isEnabled = true
         
         tunnelManager.saveToPreferences { [weak self] error in
