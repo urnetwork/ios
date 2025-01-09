@@ -65,6 +65,7 @@ class VPNManager {
         tunnelProtocol.disconnectOnSleep = false
         // see https://developer.apple.com/documentation/networkextension/nevpnprotocol/includeallnetworks
         tunnelProtocol.includeAllNetworks = true
+        
         // this is needed for casting, etc.
         tunnelProtocol.excludeLocalNetworks = true
         tunnelProtocol.providerConfiguration = [
@@ -148,6 +149,8 @@ class VPNManager {
             
             try self.tunnelManager?.connection.startVPNTunnel()
             print("VPN connection started")
+            
+            self.device.sync()
             
         } catch let error as NSError {
             
