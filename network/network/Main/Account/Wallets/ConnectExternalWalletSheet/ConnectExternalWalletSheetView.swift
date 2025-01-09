@@ -11,14 +11,16 @@ import URnetworkSdk
 struct ConnectExternalWalletSheetView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var accountWalletsViewModel: AccountWalletsViewModel
     @StateObject var viewModel: ViewModel
+    
     var onSuccess: () -> Void
     
-    init(onSuccess: @escaping () -> Void, api: SdkBringYourApi?) {
-        
+    init(
+        onSuccess: @escaping () -> Void, api: SdkBringYourApi?
+    ) {
         self.onSuccess = onSuccess
         self._viewModel = StateObject(wrappedValue: ViewModel(api: api))
-        
     }
     
     var body: some View {
@@ -30,43 +32,38 @@ struct ConnectExternalWalletSheetView: View {
             
             Spacer().frame(height: 16)
             
-//            UrTextEditor(
-//                text: $viewModel.walletAddress,
-//                height: 64,
-//                enabled: !viewModel.isCreatingWallet
-//            )
-            
             UrTextField(
                 text: $viewModel.walletAddress,
                 label: "USDC wallet address",
                 placeholder: "Enter a Solana or Matic USDC wallet address",
                 supportingText: "USDC addresses on Solana and Polygon are currently supported",
-                isEnabled: !viewModel.isCreatingWallet,
+                isEnabled: !accountWalletsViewModel.isCreatingWallet,
                 submitLabel: .continue,
                 onSubmit: {
                     Task {
-                        let result = await viewModel.createExternalWallet()
+                        let result = await accountWalletsViewModel.connectWallet(
+                            walletAddress: viewModel.walletAddress,
+                            chain: viewModel.chain
+                        )
                         self.handleCreateResult(result)
                     }
                 }
-                // keyboardType: .
             )
-            
-//            Text("USDC addresses on Solana and Polygon are currently supported")
-//                .font(themeManager.currentTheme.secondaryBodyFont)
-//                .foregroundColor(themeManager.currentTheme.textMutedColor)
-            
+
             Spacer()
             
             UrButton(
                 text: "Connect Wallet",
                 action: {
                     Task {
-                        let result = await viewModel.createExternalWallet()
+                        let result = await accountWalletsViewModel.connectWallet(
+                            walletAddress: viewModel.walletAddress,
+                            chain: viewModel.chain
+                        )
                         self.handleCreateResult(result)
                     }
                 },
-                enabled: viewModel.isValidWalletAddress && !viewModel.isCreatingWallet
+                enabled: viewModel.isValidWalletAddress && !accountWalletsViewModel.isCreatingWallet
             )
         }
         .padding()
@@ -77,7 +74,6 @@ struct ConnectExternalWalletSheetView: View {
     private func handleCreateResult(_ result: Result<Void, Error>) {
         switch result {
             
-            
         case .success:
             onSuccess()
             
@@ -87,10 +83,10 @@ struct ConnectExternalWalletSheetView: View {
     }
 }
 
-#Preview {
-    ConnectExternalWalletSheetView(
-        onSuccess: {},
-        api: nil
-    )
-        .environmentObject(ThemeManager.shared)
-}
+//#Preview {
+//    ConnectExternalWalletSheetView(
+//        onSuccess: {},
+//        api: nil
+//    )
+//        .environmentObject(ThemeManager.shared)
+//}

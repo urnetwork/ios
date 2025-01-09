@@ -19,7 +19,7 @@ struct AccountRootView: View {
     var api: SdkBringYourApi
 
     // TODO: pull this from device
-    var isGuest: Bool = true
+    var isGuest: Bool = false
     
     @StateObject private var viewModel: ViewModel = ViewModel()
     @StateObject private var subscriptionManager = SubscriptionManager()
