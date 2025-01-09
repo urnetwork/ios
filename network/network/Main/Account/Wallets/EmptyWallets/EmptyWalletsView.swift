@@ -7,10 +7,15 @@
 
 import SwiftUI
 import URnetworkSdk
+import CryptoKit
 
 struct EmptyWalletsView: View {
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var accountWalletsViewModel: AccountWalletsViewModel
+    
     @Binding var displayExternalWalletSheet: Bool
+    
+    @StateObject var viewModel: ViewModel = ViewModel()
     
     var body: some View {
         VStack {
@@ -35,23 +40,53 @@ struct EmptyWalletsView: View {
             .font(themeManager.currentTheme.secondaryBodyFont)
             .foregroundColor(themeManager.currentTheme.textMutedColor)
             
-            Spacer()
+            Spacer().frame(height: 24)
             
-            UrButton(
-                text: "Set up Circle wallet", action: {}
-            )
+            VStack {
+                
+                Spacer().frame(height: 8)
             
-            Spacer().frame(height: 16)
+                // TODO: use Solflare icon
+                UrButton(
+                    text: "Link Solflare Wallet", action: {
+                        viewModel.connectSolflareWallet()
+                    }
+                )
+                
+                Spacer().frame(height: 16)
+                
+                UrButton(
+                    text: "Connect external wallet",
+                    action: {
+                        displayExternalWalletSheet = true
+                    },
+                    style: .outlineSecondary
+                )
+                
+            }
             
-            UrButton(
-                text: "Connect external wallet",
-                action: {
-                    displayExternalWalletSheet = true
-                },
-                style: .outlineSecondary
-            )
+        }
+        .onAppear {
+            viewModel.createKeyPair()
+        }
+        .onReceive(viewModel.$connectedPublicKey) { walletAddress in
+            
+            if let walletAddress = walletAddress {
+                
+                // TODO: check if wallet address already present in existing wallets
+                
+                Task {
+                    await accountWalletsViewModel.connectWallet(walletAddress: walletAddress, chain: WalletChain.sol)
+                }
+                
+            }
+            
+        }
+        .onOpenURL { url in
+            viewModel.handleDeepLink(url)
         }
     }
+    
 }
 
 #Preview {

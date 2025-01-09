@@ -103,10 +103,7 @@ struct WalletsView: View {
             
             ConnectExternalWalletSheetView(
                 onSuccess: {
-                    Task {
-                        await accountWalletsViewModel.fetchAccountWallets()
-                        viewModel.displayExternalWalletSheet = false
-                    }
+                    viewModel.displayExternalWalletSheet = false
                 },
                 api: api
             )

@@ -2,15 +2,30 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>UISupportedInterfaceOrientations~ipad</key>
+	<key>CFBundleURLTypes</key>
 	<array>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationPortrait</string>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.338638865390-tdgpupo59durdck5es80iukafh0or4uq</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>urnetwork</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>urnetwork</string>
+			</array>
+		</dict>
 	</array>
-	<key>UISupportedInterfaceOrientations~iphone</key>
+	<key>GIDClientID</key>
+	<string>338638865390-tdgpupo59durdck5es80iukafh0or4uq.apps.googleusercontent.com</string>
+	<key>NEVPNConfiguration</key>
 	<array>
-		<string>UIInterfaceOrientationPortrait</string>
+		<string>com.bringyour.network.extension</string>
 	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
@@ -24,25 +39,10 @@
 		<string>ABCGravity-ExtraCondensed.otf</string>
 		<string>ABCGravity-Extended.otf</string>
 	</array>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.338638865390-tdgpupo59durdck5es80iukafh0or4uq</string>
-			</array>
-		</dict>
-	</array>
-	<key>NEVPNConfiguration</key>
-	<array>
-		<string>com.bringyour.network.extension</string>
-	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>processing</string>
 		<string>networking</string>
 	</array>
-	<key>GIDClientID</key>
-	<string>338638865390-tdgpupo59durdck5es80iukafh0or4uq.apps.googleusercontent.com</string>
 </dict>
 </plist>
