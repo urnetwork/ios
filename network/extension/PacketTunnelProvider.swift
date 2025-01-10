@@ -134,10 +134,10 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             return
         }
         
-        guard let networkSpace = device.getNetworkSpace() else {
-            completionHandler(nil)
-            return
-        }
+//        guard let networkSpace = device.getNetworkSpace() else {
+//            completionHandler(nil)
+//            return
+//        }
         
         // FIXME packet receive will need to surface ipv4 or ipv6
         let packetReceiverSub = device.add(PacketReceiver { [weak self] data in
