@@ -21,10 +21,12 @@ enum LoginError: Error {
     case googleLoginFailed
     case googleNoResult
     case googleNoIdToken
+    case inProgress
 }
 
 extension LoginInitialView {
     
+    @MainActor
     class ViewModel: ObservableObject {
         
         private var api: SdkBringYourApi?
@@ -41,6 +43,15 @@ extension LoginInitialView {
         
         // TODO: deprecate this
         @Published private(set) var loginErrorMessage: String?
+        
+        /**
+         * Guest mode
+         */
+        @Published private(set) var isCreatingGuestNetwork: Bool = false
+        @Published var presentGuestNetworkSheet: Bool = false
+        @Published var termsAgreed: Bool = false
+        
+        let termsLink = "https://ur.io/terms"
         
         let domain = "LoginInitialViewModel"
         
@@ -219,6 +230,82 @@ extension LoginInitialView.ViewModel {
         args.authJwtType = "google"
         
         return await authLogin(args: args)
+        
+    }
+    
+}
+
+// MARK: create guest network
+extension LoginInitialView.ViewModel {
+    
+    func createGuestNetwork() async -> LoginNetworkResult {
+        
+        print("create guest network")
+        
+        if self.isCreatingGuestNetwork {
+            return .failure(LoginError.inProgress)
+        }
+        
+        self.isCreatingGuestNetwork = true
+        
+        do {
+            
+            let result: LoginNetworkResult = try await withCheckedThrowingContinuation { [weak self] continuation in
+                
+                guard let self = self else { return }
+                
+                let callback = NetworkCreateCallback { result, err in
+                    
+                    if let err = err {
+                        continuation.resume(throwing: err)
+                        return
+                    }
+                    
+                    if let result = result {
+                        
+                        if let resultError = result.error {
+
+                            continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: resultError.message]))
+                            
+                            return
+                            
+                        }
+                        
+                        if let network = result.network {
+                            print("result.network exists! good to go")
+                            
+                            continuation.resume(returning: .successWithJwt(network.byJwt))
+                            return
+                            
+                        } else {
+                            continuation.resume(throwing: NSError(domain: self.domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "No network object found in result"]))
+                            return
+                        }
+                        
+                    }
+                    
+                }
+                
+                let args = SdkNetworkCreateArgs()
+                args.terms = true
+                args.guestMode = true
+                
+                api?.networkCreate(args, callback: callback)
+                
+            }
+            
+            DispatchQueue.main.async {
+                self.isCreatingGuestNetwork = false
+            }
+            
+            return result
+            
+        } catch(let error) {
+            DispatchQueue.main.async {
+                self.isCreatingGuestNetwork = false
+            }
+            return .failure(error)
+        }
         
     }
     

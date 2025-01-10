@@ -76,6 +76,9 @@
     "Circle" : {
 
     },
+    "Commitment issues?" : {
+
+    },
     "Connect" : {
 
     },
@@ -125,6 +128,9 @@
 
     },
     "Enter a Solana or Matic USDC wallet address" : {
+
+    },
+    "Enter URnetwork" : {
 
     },
     "Enter wallet address" : {
@@ -311,6 +317,12 @@
 
     },
     "Transfer funds" : {
+
+    },
+    "Try guest mode" : {
+
+    },
+    "Try Guest Mode" : {
 
     },
     "Unpaid megabytes provided" : {
