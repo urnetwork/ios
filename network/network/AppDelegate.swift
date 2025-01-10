@@ -16,4 +16,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return .portrait
         }
     }
+    
+    
+    
+}
+
+func mainImmediateBlocking(callback: ()->Void) {
+    if Thread.isMainThread {
+        callback()
+    } else {
+        DispatchQueue.main.sync {
+            callback()
+        }
+    }
 }

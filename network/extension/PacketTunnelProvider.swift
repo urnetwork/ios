@@ -45,6 +45,11 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         logger.info("PacketTunnelProvider init")
     }
     
+    deinit {
+        self.device?.cancel()
+        self.device = nil
+    }
+    
     
     override func startTunnel(options: [String : NSObject]? = nil, completionHandler: @escaping ((any Error)?) -> Void) {
         logger.info("PacketTunnelProvider start")
