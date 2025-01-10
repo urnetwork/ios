@@ -17,9 +17,6 @@ struct AccountRootView: View {
     var navigate: (AccountNavigationPath) -> Void
     var logout: () -> Void
     var api: SdkBringYourApi
-
-    // TODO: pull this from device
-    var isGuest: Bool = false
     
     @StateObject private var viewModel: ViewModel = ViewModel()
     @StateObject private var subscriptionManager = SubscriptionManager()
@@ -36,6 +33,8 @@ struct AccountRootView: View {
     
     
     var body: some View {
+        
+        let isGuest = deviceManager.parsedJwt?.guestMode ?? true
 
         VStack {
             
@@ -47,7 +46,7 @@ struct AccountRootView: View {
                 Spacer()
                 
                 AccountMenu(
-                    isGuest: false,
+                    isGuest: isGuest,
                     logout: logout,
                     api: api
                 )
