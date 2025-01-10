@@ -87,8 +87,6 @@ class DeviceManager: ObservableObject {
     
     private func updateParsedJwt() {
         
-        print("update parsed jwt hit")
-        
         guard let localState = networkSpace?.getAsyncLocalState()?.getLocalState() else {
             parsedJwt = nil
             return
@@ -101,24 +99,6 @@ class DeviceManager: ObservableObject {
             parsedJwt = nil
         }
     }
-    
-//    var parsedJwt: SdkByJwt? {
-//        guard let localState = asyncLocalState?.getLocalState() else {
-//            return nil
-//        }
-//        
-//        do {
-//            let jwt = try localState.parseByJwt()
-//            return jwt
-//            
-//        } catch (let error) {
-//        
-//            print("error parsing jwt: \(error)")
-//            return nil
-//            
-//        }
-//        
-//    }
     
     var routeLocal: Bool {
         return device?.getRouteLocal() ?? false
