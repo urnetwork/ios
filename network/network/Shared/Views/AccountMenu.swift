@@ -13,7 +13,7 @@ struct AccountMenu: View {
     // TODO: handle isGuest
     var isGuest: Bool
     var logout: () -> Void
-    var api: SdkBringYourApi
+    var api: SdkApi
     
     var body: some View {
     
@@ -54,6 +54,6 @@ struct AccountMenu: View {
     AccountMenu(
         isGuest: false,
         logout: {},
-        api: SdkBringYourApi()
+        api: SdkApi()
     )
 }

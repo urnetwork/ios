@@ -122,10 +122,10 @@ extension ConnectView {
         var requestReview: (() -> Void)?
         
         
-        var api: SdkBringYourApi
+        var api: SdkApi
         var connectViewController: SdkConnectViewController?
         
-        init(api: SdkBringYourApi, connectViewController: SdkConnectViewController?) {
+        init(api: SdkApi, connectViewController: SdkConnectViewController?) {
             self.api = api
             self.connectViewController = connectViewController
             self.addGridListener()

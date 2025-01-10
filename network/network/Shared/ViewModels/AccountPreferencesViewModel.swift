@@ -35,9 +35,9 @@ class AccountPreferencesViewModel: ObservableObject {
     
     let domain = "AccountPreferencesViewModel"
     
-    var api: SdkBringYourApi?
+    var api: SdkApi?
     
-    init(api: SdkBringYourApi?) {
+    init(api: SdkApi?) {
         self.api = api
         self.fetchAccountPreferences()
     }

@@ -16,7 +16,8 @@ struct AccountRootView: View {
     
     var navigate: (AccountNavigationPath) -> Void
     var logout: () -> Void
-    var api: SdkBringYourApi
+    var api: SdkApi
+
     
     @StateObject private var viewModel: ViewModel = ViewModel()
     @StateObject private var subscriptionManager = SubscriptionManager()
@@ -24,7 +25,7 @@ struct AccountRootView: View {
     init(
         navigate: @escaping (AccountNavigationPath) -> Void,
         logout: @escaping () -> Void,
-        api: SdkBringYourApi
+        api: SdkApi
     ) {
         self.navigate = navigate
         self.logout = logout

@@ -18,13 +18,13 @@ struct LoginInitialView: View {
     @EnvironmentObject var deviceManager: DeviceManager
     @StateObject private var viewModel: ViewModel
     
-    var api: SdkBringYourApi?
+    var api: SdkApi?
     var navigate: (LoginInitialNavigationPath) -> Void
     var cancel: (() -> Void)?
     var handleSuccess: (_ jwt: String) async -> Void
     
     init(
-        api: SdkBringYourApi?,
+        api: SdkApi?,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
         cancel: (() -> Void)? = nil,
         handleSuccess: @escaping (_ jwt: String) async -> Void

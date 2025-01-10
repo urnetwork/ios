@@ -19,7 +19,7 @@ extension LoginPasswordView {
     
     class ViewModel: ObservableObject {
         
-        private var api: SdkBringYourApi?
+        private var api: SdkApi?
         
         @Published private(set) var isValid: Bool = false
         
@@ -33,7 +33,7 @@ extension LoginPasswordView {
         
         private let domain = "LoginPassword.ViewModel"
         
-        init(api: SdkBringYourApi?) {
+        init(api: SdkApi?) {
             self.api = api
         }
         

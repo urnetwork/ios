@@ -223,7 +223,7 @@ struct SettingsView: View {
 #Preview {
     
     let themeManager = ThemeManager.shared
-    let accountPreferenceViewModel = AccountPreferencesViewModel(api: SdkBringYourApi())
+    let accountPreferenceViewModel = AccountPreferencesViewModel(api: SdkApi())
     
     SettingsView(
         clientId: nil,

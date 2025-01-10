@@ -26,7 +26,7 @@ struct CreateNetworkVerifyView: View {
     
     init(
         userAuth: String,
-        api: SdkBringYourApi,
+        api: SdkApi,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
         handleSuccess: @escaping (_ jwt: String) async -> Void
     ) {
@@ -197,7 +197,7 @@ struct CreateNetworkVerifyView: View {
     ZStack {
         CreateNetworkVerifyView(
             userAuth: "",
-            api: SdkBringYourApi(),
+            api: SdkApi(),
             navigate: {_ in },
             handleSuccess: {_ in }
         )

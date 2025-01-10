@@ -14,7 +14,7 @@ struct ProfileView: View {
     
     var back: () -> Void
     
-    init(api: SdkBringYourApi, back: @escaping () -> Void) {
+    init(api: SdkApi, back: @escaping () -> Void) {
         _viewModel = StateObject.init(wrappedValue: ViewModel(
             api: api
         ))
@@ -28,7 +28,7 @@ struct ProfileView: View {
 
 #Preview {
     ProfileView(
-        api: SdkBringYourApi(),
+        api: SdkApi(),
         back: {}
     )
 }

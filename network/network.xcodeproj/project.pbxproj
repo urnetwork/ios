@@ -17,6 +17,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		D1AF93BB2D2E6EAC00281A0E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D1B95A472CEBDD6900542E0E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D1B95A802CEBE76400542E0E;
+			remoteInfo = URnetworkVPN;
+		};
 		D1B95A612CEBDD6A00542E0E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D1B95A472CEBDD6900542E0E /* Project object */;
@@ -186,6 +193,7 @@
 			);
 			dependencies = (
 				D1B95A8B2CEBE76400542E0E /* PBXTargetDependency */,
+				D1AF93BC2D2E6EAC00281A0E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				D1B95A512CEBDD6900542E0E /* network */,
@@ -446,6 +454,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		D1AF93BC2D2E6EAC00281A0E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D1B95A802CEBE76400542E0E /* URnetworkVPN */;
+			targetProxy = D1AF93BB2D2E6EAC00281A0E /* PBXContainerItemProxy */;
+		};
 		D1B95A622CEBDD6A00542E0E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D1B95A4E2CEBDD6900542E0E /* URnetwork */;
@@ -771,7 +784,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.bringyour.network.extension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
+				SKIP_INSTALL = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -799,7 +812,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.bringyour.network.extension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
+				SKIP_INSTALL = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

@@ -10,8 +10,8 @@ import URnetworkSdk
 
 struct MainTabView: View {
     
-    var api: SdkBringYourApi
-    var device: SdkBringYourDevice
+    var api: SdkApi
+    var device: SdkDeviceRemote
     var logout: () -> Void
     var connectViewController: SdkConnectViewController?
     @Binding var provideWhileDisconnected: Bool
@@ -24,8 +24,8 @@ struct MainTabView: View {
     @State private var selectedTab = 0
     
     init(
-        api: SdkBringYourApi,
-        device: SdkBringYourDevice,
+        api: SdkApi,
+        device: SdkDeviceRemote,
         logout: @escaping () -> Void,
         provideWhileDisconnected: Binding<Bool>
     ) {

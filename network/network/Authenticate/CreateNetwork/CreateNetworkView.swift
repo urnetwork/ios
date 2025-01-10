@@ -30,7 +30,7 @@ struct CreateNetworkView: View {
         authLoginArgs: SdkAuthLoginArgs,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
         handleSuccess: @escaping (_ jwt: String) async -> Void,
-        api: SdkBringYourApi
+        api: SdkApi
     ) {
         
         var authType: AuthType = .password
@@ -221,7 +221,7 @@ struct CreateNetworkView: View {
             authLoginArgs: SdkAuthLoginArgs(),
             navigate: {_ in },
             handleSuccess: {_ in },
-            api: SdkBringYourApi()
+            api: SdkApi()
         )
     }
     .environmentObject(ThemeManager.shared)

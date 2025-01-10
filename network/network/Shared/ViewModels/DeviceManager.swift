@@ -22,9 +22,9 @@ class DeviceManager: ObservableObject {
         }
     }
     
-    @Published private(set) var api: SdkBringYourApi?
+    @Published private(set) var api: SdkApi?
     
-    @Published private(set) var device: SdkBringYourDevice? {
+    @Published private(set) var device: SdkDeviceRemote? {
         didSet {
             DispatchQueue.main.async {
                 self.provideWhileDisconnected = self.device?.getProvideWhileDisconnected() ?? false
@@ -154,20 +154,26 @@ class DeviceManager: ObservableObject {
         device?.setVpnInterfaceWhileOffline(value)
     }
     
-    func setApi(_ api: SdkBringYourApi?) {
+    func setApi(_ api: SdkApi?) {
         self.api = api
     }
     
-    func setDevice(_ device: SdkBringYourDevice?) {
+    func setDevice(_ device: SdkDeviceRemote?) {
         self.device = device
     }
     
 }
 
 private class NetworkSpaceUpdateCallback: NSObject, URnetworkSdk.SdkNetworkSpaceUpdateProtocol {
+    var c: (URnetworkSdk.SdkNetworkSpaceValues) -> Void
+
+    init(c: @escaping (URnetworkSdk.SdkNetworkSpaceValues) -> Void) {
+        self.c = c
+    }
+
     func update(_ values: URnetworkSdk.SdkNetworkSpaceValues?) {
-        guard let _ = values else {
-            return
+        if let values {
+            c(values)
         }
     }
 }
@@ -201,28 +207,25 @@ extension DeviceManager {
         
         let deviceSpecs = self.getDeviceSpecs()
         let networkSpaceManager = URnetworkSdk.SdkNewNetworkSpaceManager(storagePath)
-        let networkSpaceUpdateCallback = NetworkSpaceUpdateCallback()
-        
-        let networkSpaceValues = SdkNetworkSpaceValues()
-        
-        // TODO: this should be moved into a config
-        networkSpaceValues.envSecret = ""
-        networkSpaceValues.bundled = true
-        networkSpaceValues.netExposeServerIps = true
-        networkSpaceValues.netExposeServerHostNames = true
-        networkSpaceValues.linkHostName = "ur.io"
-        networkSpaceValues.migrationHostName = "bringyour.com"
-        networkSpaceValues.store = ""
-        networkSpaceValues.wallet = "circle"
-        networkSpaceValues.ssoGoogle = false
-        
-        networkSpaceUpdateCallback.update(networkSpaceValues)
         
         let hostName = "ur.network"
         let envName = "main"
         let networkSpaceKey = URnetworkSdk.SdkNewNetworkSpaceKey(hostName, envName)
         
-        networkSpaceManager?.updateNetworkSpace(networkSpaceKey, callback: networkSpaceUpdateCallback)
+        networkSpaceManager?.updateNetworkSpace(networkSpaceKey, callback: NetworkSpaceUpdateCallback(
+            c: { networkSpaceValues in
+                // TODO: this should be moved into a config
+                networkSpaceValues.envSecret = ""
+                networkSpaceValues.bundled = true
+                networkSpaceValues.netExposeServerIps = true
+                networkSpaceValues.netExposeServerHostNames = true
+                networkSpaceValues.linkHostName = "ur.io"
+                networkSpaceValues.migrationHostName = "bringyour.com"
+                networkSpaceValues.store = ""
+                networkSpaceValues.wallet = "circle"
+                networkSpaceValues.ssoGoogle = false
+            }
+        ))
             
         self.networkSpace = networkSpaceManager?.getNetworkSpace(networkSpaceKey)
         
@@ -292,13 +295,9 @@ extension DeviceManager {
                 var newDeviceError: NSError?
                 
                 
-                let device = SdkNewBringYourDeviceWithDefaults(
+                let device = SdkNewDeviceRemoteWithDefaults(
                     networkSpace,
                     clientJwt,
-                    self.deviceDescription,
-                    deviceSpec,
-                    self.getAppVersion(),
-                    instanceId,
                     &newDeviceError
                 )
                 
@@ -316,7 +315,7 @@ extension DeviceManager {
                     device.loadProvideSecretKeys(providerSecretKeys)
                 } else {
                     device.initProvideSecretKeys()
-                    device.loadProvideSecretKeys(device.getProvideSecretKeys())
+                    // FIXME save secret keys to local state
                 }
                 
                 device.setProvidePaused(true)

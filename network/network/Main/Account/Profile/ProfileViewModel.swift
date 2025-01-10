@@ -12,9 +12,9 @@ extension ProfileView {
     
     class ViewModel: ObservableObject {
         
-        var api: SdkBringYourApi
+        var api: SdkApi
         
-        init(api: SdkBringYourApi) {
+        init(api: SdkApi) {
             self.api = api
         }
         

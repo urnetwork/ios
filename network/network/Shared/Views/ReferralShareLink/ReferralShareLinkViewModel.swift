@@ -20,11 +20,11 @@ extension ReferralShareLink {
         
         let domain = "ReferSheetViewModel"
         
-        init(api: SdkBringYourApi) {
+        init(api: SdkApi) {
             self.fetchReferralLink(api)
         }
         
-        func fetchReferralLink(_ api: SdkBringYourApi) {
+        func fetchReferralLink(_ api: SdkApi) {
             
             if isLoading {
                 return

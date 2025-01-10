@@ -9,6 +9,9 @@ import NetworkExtension
 import URnetworkSdk
 import OSLog
 
+// see https://developer.apple.com/documentation/networkextension/nepackettunnelprovider
+// discussion on how the PacketTunnelProvider is excluded from the routes it sets up:
+// see https://forums.developer.apple.com/forums/thread/677180
 class PacketTunnelProvider: NEPacketTunnelProvider {
     
     /**
@@ -18,91 +21,218 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     private let logger = Logger(
         subsystem: "com.bringyour.network.extension",
         category: "PacketTunnel"
+        
     )
-    private var active = true
+    
+//    private var active = true
+    
+//    private var tunnel: SdkTunnel?
+    
+    private var deviceConfiguration: [String: String]?
+    private var device: SdkDeviceLocal?
+//    private var tunnelDone: DispatchSemaphore?
+    
+//    private var packetReceiverSub: SdkSubProtocol?
+////
+//    private var networkSpaceManager: SdkNetworkSpaceManager?
+    
+    
+    
+    
     
     override init() {
         super.init()
-        logger.debug("PacketTunnelProvider init")
+        logger.info("PacketTunnelProvider init")
     }
     
+    
     override func startTunnel(options: [String : NSObject]? = nil, completionHandler: @escaping ((any Error)?) -> Void) {
+        logger.info("PacketTunnelProvider start")
         
-        let packetReceiver = PacketReceiver { [weak self] data in
-            guard let self = self, self.active else {
-                return
-            }
-            self.packetFlow.writePackets([data], withProtocols: [AF_INET as NSNumber])
+        
+        
+        guard let providerConfiguration = (protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration else {
+            logger.info( "PacketTunnelProvider start failed - no providerConfiguration")
+            completionHandler(nil)
+            return
         }
         
-        // TODO: add PacketReceiver as a listener to device
+        
+        guard let byJwt = providerConfiguration["by_jwt"] as? String else {
+            completionHandler(nil)
+            return
+        }
+        
+        guard let networkSpaceJson = providerConfiguration["network_space"] as? String else {
+            completionHandler(nil)
+            return
+        }
+        
+        guard let rpcPublicKey = providerConfiguration["rpc_public_key"] as? String else {
+            completionHandler(nil)
+            return
+        }
+        
+        let deviceConfiguration = [
+            "by_jwt": byJwt,
+            "network_space": networkSpaceJson,
+            "rpc_public_key": rpcPublicKey
+        ]
+        
+        if let device = self.device {
+            if self.deviceConfiguration == deviceConfiguration && !device.getDone() {
+                // already running
+                completionHandler(nil)
+                return
+            }
+        }
         
         
-        // Configure network settings
-        let networkSettings = NEPacketTunnelNetworkSettings(tunnelRemoteAddress: "65.49.70.71")
+        // create new device with latest config
+        
+        self.deviceConfiguration = deviceConfiguration
+        
+        let networkSpaceManager = SdkNewNetworkSpaceManagerNoStorage()
+//            let documentsPath = FileManager.default.urls(for: .documentDirectory,
+//                                                                in: .userDomainMask)[0].path()
+//            let networkSpaceManager = SdkNewNetworkSpaceManager(documentsPath)
+        
+        var networkSpace: SdkNetworkSpace?
+        do {
+            try networkSpace = networkSpaceManager?.importNetworkSpace(fromJson: networkSpaceJson)
+        } catch {
+            completionHandler(error)
+            return
+        }
+        
+        self.device?.cancel()
+        
+        self.reasserting = true
+        
+        let instanceId = SdkNewId()
+        var err: NSError?
+        self.device = SdkNewDeviceLocalWithDefaults(
+            networkSpace,
+            byJwt,
+            "ios-network-extension",
+            // FIXME model
+            "iPhone",
+            // FIXME version
+            "0.0.0",
+            instanceId,
+            true,
+            &err
+        )
+        if let err {
+            completionHandler(err)
+            return
+        }
+        
+        
+        guard let device = self.device else {
+            completionHandler(nil)
+            return
+        }
+        
+//        guard let networkSpace = device.getNetworkSpace() else {
+//            completionHandler(nil)
+//            return
+//        }
+        
+        // FIXME packet receive will need to surface ipv4 or ipv6
+        let packetReceiverSub = device.add(PacketReceiver { [weak self] data in
+            self?.packetFlow.writePackets([data], withProtocols: [AF_INET as NSNumber])
+        })
+        
+        let close = {
+            packetReceiverSub?.close()
+            device.close()
+        }
+        
+            
+            // Configure network settings
+            // FIXME why remote address? can we remove this?
+            //   FIXME the remote address IS needed else error
+        let networkSettings = NEPacketTunnelNetworkSettings(tunnelRemoteAddress: "127.0.0.1")//networkSpace.getHostName())//"127.0.0.1")
+            //        let networkSettings = NEPacketTunnelNetworkSettings()
+            
+        
         
         // IPv4 Configuration
         let ipv4Settings = NEIPv4Settings(addresses: ["169.254.2.1"], subnetMasks: ["255.255.255.0"])
         ipv4Settings.includedRoutes = [NEIPv4Route.default()]
         
-        // Add custom routes for handling all traffic
-        let customRoutes: [NEIPv4Route] = [
-            NEIPv4Route(destinationAddress: "224.0.0.0", subnetMask: "240.0.0.0"),
-            NEIPv4Route(destinationAddress: "0.0.0.0", subnetMask: "128.0.0.0"),
-            NEIPv4Route(destinationAddress: "128.0.0.0", subnetMask: "128.0.0.0")
-        ]
-        ipv4Settings.includedRoutes?.append(contentsOf: customRoutes)
+        
         
         networkSettings.ipv4Settings = ipv4Settings
         
+        let ipv6Settings = NEIPv6Settings()
+        networkSettings.ipv6Settings = ipv6Settings
+        
         // DNS Settings
         let dnsSettings = NEDNSSettings(servers: ["1.1.1.1", "8.8.8.8"])
-        dnsSettings.matchDomains = [""] // Match all domains
+//        dnsSettings.dnsProtocol = NEDNSProtocol.HTTPS
+        
+//        dnsSettings.matchDomains = [""] // Match all domains
         networkSettings.dnsSettings = dnsSettings
         
+        networkSettings.mtu = 1440
+//        networkSettings.tunnelOverheadBytes = 0
+        
+        
+        
+        // see https://forums.developer.apple.com/forums/thread/661560
         // Apply settings and start packet flow
-        setTunnelNetworkSettings(networkSettings) { [weak self] error in
+        setTunnelNetworkSettings(networkSettings) { error in
             if let error = error {
-                self?.logger.debug("Failed to set tunnel network settings: \(error.localizedDescription)")
+                self.logger.error("Failed to set tunnel network settings: \(error.localizedDescription)")
+                close()
                 completionHandler(error)
                 return
             }
             
-            self?.logger.debug("Network settings applied successfully")
-            self?.startPacketForwarding()
-            completionHandler(nil)
-        }
-    }
-    
-    private func startPacketForwarding() {
-        logger.debug("Starting packet forwarding")
-        readPackets()
-    }
-    
-    private func readPackets() {
-        guard active else {
-            logger.debug("Packet forwarding inactive")
-            return
-        }
-        
-        packetFlow.readPackets { [weak self] packets, protocols in
-            guard let self = self, self.active else { return }
+            self.logger.info("Network settings applied successfully")
+            //            self?.startPacketForwarding()
+            //            completionHandler(nil)
             
-            for (index, packet) in packets.enumerated() {
-                guard let length = Int32(exactly: packet.count) else {
-                    logger.debug("Packet size error: \(packet.count)")
-                    continue
+            
+            
+            
+            Task {
+                while !device.getDone() {
+                    
+                    // see https://developer.apple.com/documentation/networkextension/nepackettunnelflow/readpackets(completionhandler:)
+                    // "Each call to this method results in a single execution of the completion handler"
+                    // FIXME why is await not needed here?
+                    /* await */ self.packetFlow.readPackets { packets, protocols in
+                        for packet in packets {
+                            device.sendPacket(packet, n: Int32(packet.count))
+                        }
+                    }
                 }
-                
-                // TODO: device send packet
-                
+                close()
             }
             
             
-            // Is this necessary?
-            // self.readPackets()
+            self.reasserting = false
+//            tunnelDone.wait()
+//            self.reasserting = true
+//            
+//            readTask.cancel()
+//            tunnelCompletionHandler(nil)
+            completionHandler(nil)
+            
         }
+        
+        
+        
+        
     }
+    
+    
+    
+    
+    
     
 //    private func setupPacketReceiving() {
 //
@@ -115,8 +245,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 //    }
 
     override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
-        self.logger.debug("Stopping tunnel with reason: \(String(describing: reason))")
-        active = false
+        self.logger.info("Stopping tunnel with reason: \(String(describing: reason))")
+        self.device?.cancel()
         completionHandler()
     }
     
@@ -132,20 +262,16 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 private class PacketReceiver: NSObject, SdkReceivePacketProtocol {
     func receivePacket(_ packet: Data?) {
         
-        guard let packet = packet else {
-            print("packet is nil")
-            return
+        if let packet {
+            c(packet)
         }
         
-        onReceiveCallback(packet)
-        
-        // provider?.packetFlow.writePackets([packet], withProtocols: [AF_INET as NSNumber])
     }
     
-    private let onReceiveCallback: (Data) -> Void
+    private let c: (Data) -> Void
     
-    init(onReceive: @escaping (Data) -> Void) {
-        self.onReceiveCallback = onReceive
+    init(c: @escaping (Data) -> Void) {
+        self.c = c
     }
     
 }

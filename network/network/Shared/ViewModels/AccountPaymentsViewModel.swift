@@ -22,9 +22,9 @@ class AccountPaymentsViewModel: ObservableObject {
     @Published private(set) var totalPayoutsUsdc: Double = 0.0
     @Published private(set) var payments: [SdkAccountPayment] = []
     
-    var api: SdkBringYourApi?
+    var api: SdkApi?
     
-    init(api: SdkBringYourApi?) {
+    init(api: SdkApi?) {
         self.api = api
         self.initPayments()
     }

@@ -29,9 +29,9 @@ extension FeedbackView {
         @Published private(set) var isSending: Bool = false
         let domain = "[FeedbackViewModel]"
         
-        var api: SdkBringYourApi?
+        var api: SdkApi?
         
-        init(api: SdkBringYourApi?) {
+        init(api: SdkApi?) {
             self.api = api
         }
         

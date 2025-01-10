@@ -16,7 +16,7 @@ struct WalletsView: View {
     
     var payoutWalletId: SdkId?
     var navigate: (AccountNavigationPath) -> Void
-    var api: SdkBringYourApi?
+    var api: SdkApi?
     
     @StateObject private var viewModel: ViewModel = ViewModel()
     @StateObject private var connectWalletProviderViewModel = ConnectWalletProviderViewModel()

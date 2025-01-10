@@ -14,7 +14,7 @@ struct ConnectWalletNavigationStack: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     
-    var api: SdkBringYourApi?
+    var api: SdkApi?
     @Binding var presentConnectWalletSheet: Bool
     
     var body: some View {

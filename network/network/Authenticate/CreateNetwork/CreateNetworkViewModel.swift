@@ -31,7 +31,7 @@ extension CreateNetworkView {
     @MainActor
     class ViewModel: ObservableObject {
         
-        private var api: SdkBringYourApi
+        private var api: SdkApi
         private var networkNameValidationVc: SdkNetworkNameValidationViewController?
         private static let networkNameTooShort: LocalizedStringKey = "Network names must be 6 characters or more"
         private static let networkNameUnavailable: LocalizedStringKey = "This network name is already taken"
@@ -42,7 +42,7 @@ extension CreateNetworkView {
         
         private var authType: AuthType
         
-        init(api: SdkBringYourApi, authType: AuthType) {
+        init(api: SdkApi, authType: AuthType) {
             self.api = api
             self.authType = authType
             

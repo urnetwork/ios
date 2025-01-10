@@ -24,13 +24,13 @@ extension EnterWalletAddressView {
         @Published var chain = WalletChain.invalid
         @Published var isValidWalletAddress: Bool = false
         
-        private var api: SdkBringYourApi?
+        private var api: SdkApi?
         private var cancellables = Set<AnyCancellable>()
         private var debounceTimer: AnyCancellable?
         
         let domain = "[ConnectExternalWalletSheetViewModel]"
         
-        init(api: SdkBringYourApi?) {
+        init(api: SdkApi?) {
             self.api = api
             
             // when wallet address changes

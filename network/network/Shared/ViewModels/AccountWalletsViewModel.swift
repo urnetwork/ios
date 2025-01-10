@@ -54,9 +54,9 @@ class AccountWalletsViewModel: ObservableObject {
      */
     @Published var isCreatingWallet: Bool = false
     
-    var api: SdkBringYourApi?
+    var api: SdkApi?
     
-    init(api: SdkBringYourApi?) {
+    init(api: SdkApi?) {
         self.api = api
         self.initAccountWallets()
         self.initTransferStats()
