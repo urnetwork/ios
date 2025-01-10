@@ -76,13 +76,13 @@
     "Circle" : {
 
     },
+    "Commitment issues?" : {
+
+    },
     "Connect" : {
 
     },
-    "Connect an external wallet" : {
-
-    },
-    "Connect external wallet" : {
+    "Connect wallet" : {
 
     },
     "Connect Wallet" : {
@@ -128,6 +128,12 @@
 
     },
     "Enter a Solana or Matic USDC wallet address" : {
+
+    },
+    "Enter URnetwork" : {
+
+    },
+    "Enter wallet address" : {
 
     },
     "Enter your phone number or email" : {
@@ -193,6 +199,9 @@
     "or" : {
       "comment" : "Referring to the two options 'Get started' *or* 'Login with Apple'"
     },
+    "Other" : {
+
+    },
     "Password" : {
 
     },
@@ -206,6 +215,9 @@
 
     },
     "Pending" : {
+
+    },
+    "Phantom" : {
 
     },
     "Plan" : {
@@ -253,9 +265,6 @@
     "Send us your feedback directly or " : {
 
     },
-    "Set up Circle wallet" : {
-
-    },
     "Settings" : {
 
     },
@@ -269,6 +278,9 @@
 
     },
     "Sign out" : {
+
+    },
+    "Solflare" : {
 
     },
     "Start earning" : {
@@ -298,13 +310,19 @@
     "This network name is already taken" : {
 
     },
-    "To start earning, connect your cryptocurrency wallet to URnetwork or set one up with Circle." : {
+    "To start earning, connect your Solana wallet to URnetwork." : {
 
     },
     "total payouts" : {
 
     },
     "Transfer funds" : {
+
+    },
+    "Try guest mode" : {
+
+    },
+    "Try Guest Mode" : {
 
     },
     "Unpaid megabytes provided" : {

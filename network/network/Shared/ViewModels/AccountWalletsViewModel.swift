@@ -49,6 +49,11 @@ class AccountWalletsViewModel: ObservableObject {
     
     @Published private(set) var unpaidMegaBytes: String = ""
     
+    /**
+     * For connecting a new wallet
+     */
+    @Published var isCreatingWallet: Bool = false
+    
     var api: SdkApi?
     
     init(api: SdkApi?) {
@@ -237,4 +242,79 @@ extension AccountWalletsViewModel {
         }
         
     }
+}
+
+
+// MARK: connect wallet
+extension AccountWalletsViewModel {
+    
+    func connectWallet(walletAddress: String, chain: WalletChain) async -> Result<Void, Error> {
+        
+        if isCreatingWallet {
+            return .failure(CreateWalletError.isLoading)
+        }
+        
+        if chain == .invalid {
+            return .failure(CreateWalletError.invalidChain)
+        }
+        
+        isCreatingWallet = true
+        
+        do {
+            
+            let result: SdkCreateAccountWalletResult = try await withCheckedThrowingContinuation { [weak self] continuation in
+                
+                guard let self = self else { return }
+                
+                let callback = CreateAccountWalletCallback { result, err in
+                    
+                    if let err = err {
+                        continuation.resume(throwing: err)
+                        return
+                    }
+                    
+                    guard let result = result else {
+                        continuation.resume(throwing: NSError(domain: self.domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "SdkCreateAccountWalletResult result is nil"]))
+                        return
+                    }
+                    
+                    continuation.resume(returning: result)
+                }
+                
+                let args = SdkCreateAccountWalletArgs()
+                args.blockchain = chain.rawValue
+                args.walletAddress = walletAddress
+                
+                api?.createAccountWallet(args, callback: callback)
+            }
+            
+            isCreatingWallet = false
+            await self.fetchAccountWallets()
+            return .success(())
+            
+        } catch(let error) {
+            isCreatingWallet = false
+            return .failure(error)
+        }
+        
+    }
+    
+}
+
+private class CreateAccountWalletCallback: SdkCallback<SdkCreateAccountWalletResult, SdkCreateAccountWalletCallbackProtocol>, SdkCreateAccountWalletCallbackProtocol {
+    func result(_ result: SdkCreateAccountWalletResult?, err: Error?) {
+        handleResult(result, err: err)
+    }
+}
+
+private class ValidateAddressCallback: SdkCallback<SdkWalletValidateAddressResult, SdkWalletValidateAddressCallbackProtocol>, SdkWalletValidateAddressCallbackProtocol {
+    func result(_ result: SdkWalletValidateAddressResult?, err: Error?) {
+        handleResult(result, err: err)
+    }
+}
+
+enum CreateWalletError: Error {
+    case isLoading
+    case invalidChain
+    case invalidAddress
 }

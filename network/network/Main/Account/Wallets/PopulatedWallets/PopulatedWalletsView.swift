@@ -14,8 +14,8 @@ struct PopulatedWalletsView: View {
     @EnvironmentObject var accountWalletsViewModel: AccountWalletsViewModel
     
     var payoutWalletId: SdkId?
-    @Binding var displayExternalWalletSheet: Bool
     var navigate: (AccountNavigationPath) -> Void
+    @Binding var presentConnectWalletSheet: Bool
     
     var body: some View {
         
@@ -40,7 +40,7 @@ struct PopulatedWalletsView: View {
                     Spacer()
                     
                     Button(action: {
-                        displayExternalWalletSheet = true
+                        presentConnectWalletSheet = true
                     }) {
                         Image(systemName: "plus")
                             .foregroundColor(themeManager.currentTheme.textMutedColor)
@@ -185,7 +185,7 @@ private struct WalletListItem: View {
     
     PopulatedWalletsView(
         payoutWalletId: nil,
-        displayExternalWalletSheet: .constant(false),
-        navigate: {_ in }
+        navigate: {_ in },
+        presentConnectWalletSheet: .constant(false)
     )
 }

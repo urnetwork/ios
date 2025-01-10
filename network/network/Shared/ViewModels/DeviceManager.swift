@@ -18,6 +18,7 @@ class DeviceManager: ObservableObject {
         didSet {
             print("network space set: get api url: \(networkSpace?.getApiUrl() ?? "none")")
             setApi(networkSpace?.getApi())
+            updateParsedJwt()
         }
     }
     
@@ -80,6 +81,23 @@ class DeviceManager: ObservableObject {
     
     var asyncLocalState: SdkAsyncLocalState? {
         return networkSpace?.getAsyncLocalState()
+    }
+    
+    @Published private(set) var parsedJwt: SdkByJwt?
+    
+    private func updateParsedJwt() {
+        
+        guard let localState = networkSpace?.getAsyncLocalState()?.getLocalState() else {
+            parsedJwt = nil
+            return
+        }
+        
+        do {
+            parsedJwt = try localState.parseByJwt()
+        } catch {
+            print("error parsing jwt: \(error)")
+            parsedJwt = nil
+        }
     }
     
     var routeLocal: Bool {

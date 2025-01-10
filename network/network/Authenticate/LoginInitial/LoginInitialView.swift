@@ -37,6 +37,8 @@ struct LoginInitialView: View {
     
     var body: some View {
         
+        let deviceExists = deviceManager.device != nil
+        
         GeometryReader { geometry in
             
             let isLandscape = geometry.size.width > geometry.size.height
@@ -57,7 +59,9 @@ struct LoginInitialView: View {
                             handleAppleLoginResult: handleAppleLoginResult,
                             handleGoogleSignInButton: handleGoogleSignInButton,
                             isValidUserAuth: viewModel.isValidUserAuth,
-                            isCheckingUserAuth: viewModel.isCheckingUserAuth
+                            isCheckingUserAuth: viewModel.isCheckingUserAuth,
+                            deviceExists: deviceExists,
+                            presentGuestNetworkSheet: $viewModel.presentGuestNetworkSheet
                         )
                         .frame(width: geometry.size.width / 2, alignment: .leading)
                         
@@ -78,7 +82,9 @@ struct LoginInitialView: View {
                             handleAppleLoginResult: handleAppleLoginResult,
                             handleGoogleSignInButton: handleGoogleSignInButton,
                             isValidUserAuth: viewModel.isValidUserAuth,
-                            isCheckingUserAuth: viewModel.isCheckingUserAuth
+                            isCheckingUserAuth: viewModel.isCheckingUserAuth,
+                            deviceExists: deviceExists,
+                            presentGuestNetworkSheet: $viewModel.presentGuestNetworkSheet
                         )
                         
                     }
@@ -88,6 +94,21 @@ struct LoginInitialView: View {
                     .frame(maxWidth: .infinity)
                     
                 }
+                
+            }
+            .sheet(isPresented: $viewModel.presentGuestNetworkSheet) {
+                
+                GuestModeSheet(
+                    termsAgreed: $viewModel.termsAgreed,
+                    isCreatingGuestNetwork: viewModel.isCreatingGuestNetwork,
+                    onCreateGuestNetwork: {
+                        Task {
+                            let result = await viewModel.createGuestNetwork()
+                            await self.handleCreateGuestNetworkResult(result)
+                        }
+                    }
+                )
+                .presentationDetents([.height(264)])
                 
             }
             .scrollIndicators(.hidden)
@@ -110,6 +131,23 @@ struct LoginInitialView: View {
             }
         }
         
+    }
+    
+    private func handleCreateGuestNetworkResult(_ result: LoginNetworkResult) async {
+        switch result {
+            
+        case .successWithJwt(let jwt):
+            viewModel.presentGuestNetworkSheet = false
+            await handleSuccess(jwt)
+            break
+        case .failure(let error):
+            print("CreateNetworkView: handleResult: \(error.localizedDescription)")
+            break
+        default:
+            print("neither success with jwt or failure")
+            break
+            
+        }
     }
     
     private func handleAppleLoginResult(_ result: Result<ASAuthorization, any Error>) async {
@@ -179,6 +217,10 @@ private struct LoginInitialFormView: View {
     var handleGoogleSignInButton: () async -> Void
     var isValidUserAuth: Bool
     var isCheckingUserAuth: Bool
+    var deviceExists: Bool
+    // var isGuestMode: Bool
+    
+    @Binding var presentGuestNetworkSheet: Bool
     
     var body: some View {
         
@@ -247,6 +289,30 @@ private struct LoginInitialFormView: View {
             UrGoogleSignInButton(
                 action: handleGoogleSignInButton
             )
+            
+            Spacer()
+                .frame(height: 24)
+            
+            if !deviceExists {
+                // if a device exists, it means they are already in guest mode and trying to upgrade their account
+                // restrict access to create guest network from within authed guest network
+             
+                HStack {
+                    Text("Commitment issues?")
+                        .font(themeManager.currentTheme.bodyFont)
+                        .foregroundColor(themeManager.currentTheme.textMutedColor)
+                    
+                    Button(action: {
+                        presentGuestNetworkSheet = true
+                    }) {
+                        Text("Try Guest Mode")
+                            .font(themeManager.currentTheme.bodyFont)
+                            .foregroundColor(themeManager.currentTheme.textColor)
+                    }
+                    
+                }
+                
+            }
             
         }
         .frame(maxWidth: 400)

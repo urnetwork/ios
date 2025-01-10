@@ -15,12 +15,6 @@ private class NetworkCheckCallback: SdkCallback<SdkNetworkCheckResult, SdkNetwor
     }
 }
 
-private class NetworkCreateCallback: SdkCallback<SdkNetworkCreateResult, SdkNetworkCreateCallbackProtocol>, SdkNetworkCreateCallbackProtocol {
-    func result(_ result: SdkNetworkCreateResult?, err: Error?) {
-        handleResult(result, err: err)
-    }
-}
-
 private class UpgradeGuestCallback: SdkCallback<SdkUpgradeGuestResult, SdkUpgradeGuestCallbackProtocol>, SdkUpgradeGuestCallbackProtocol {
     func result(_ result: SdkUpgradeGuestResult?, err: Error?) {
         handleResult(result, err: err)
