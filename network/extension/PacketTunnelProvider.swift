@@ -24,13 +24,13 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         
     )
     
-    // FIXME lock
 //    private var active = true
     
 //    private var tunnel: SdkTunnel?
     
     private var deviceConfiguration: [String: String]?
     private var device: SdkDeviceLocal?
+//    private var tunnelDone: DispatchSemaphore?
     
 //    private var packetReceiverSub: SdkSubProtocol?
 ////
@@ -43,28 +43,13 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     override init() {
         super.init()
         logger.info("PacketTunnelProvider init")
-        
-        print("INIT TUNNEL")
-        
-        
-//        let documentsPath = FileManager.default.urls(for: .documentDirectory,
-//                                                     in: .userDomainMask)[0].path()
-////
-////
-//        networkSpaceManager = SdkNewNetworkSpaceManager(documentsPath)
-        // FIXME use no storage
-//        networkSpaceManager = SdkNewNetworkSpaceManagerNoStorage()
     }
     
     
     override func startTunnel(options: [String : NSObject]? = nil, completionHandler: @escaping ((any Error)?) -> Void) {
         logger.info("PacketTunnelProvider start")
-        print("START TUNNEL")
         
-//        device?.close()
-//        
-//        
-//        var err: NSError?
+        
         
         guard let providerConfiguration = (protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration else {
             logger.info( "PacketTunnelProvider start failed - no providerConfiguration")
@@ -103,7 +88,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         }
         
         
-        // restart device with latest config
+        // create new device with latest config
         
         self.deviceConfiguration = deviceConfiguration
         
@@ -154,25 +139,14 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             return
         }
         
-//        self.tunnel?.cancel()
-//        guard let tunnel = SdkNewTunnel() else {
-//            completionHandler(nil)
-//            return
-//        }
-//        self.tunnel = tunnel
-        
-        
-        
         // FIXME packet receive will need to surface ipv4 or ipv6
-        let packetReceiverSub = device.add(PacketReceiver { data in
-            self.packetFlow.writePackets([data], withProtocols: [AF_INET as NSNumber])
+        let packetReceiverSub = device.add(PacketReceiver { [weak self] data in
+            self?.packetFlow.writePackets([data], withProtocols: [AF_INET as NSNumber])
         })
         
-        let handlerDone = { (err: Error?) in
-//            tunnel.close()
-            device.close()
+        let close = {
             packetReceiverSub?.close()
-            completionHandler(err)
+            device.close()
         }
         
             
@@ -212,7 +186,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         setTunnelNetworkSettings(networkSettings) { error in
             if let error = error {
                 self.logger.error("Failed to set tunnel network settings: \(error.localizedDescription)")
-                handlerDone(error)
+                close()
+                completionHandler(error)
                 return
             }
             
@@ -220,30 +195,42 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             //            self?.startPacketForwarding()
             //            completionHandler(nil)
             
-            self.reasserting = false
             
-            while !device.getDone() {
-                
-                
-                // see https://developer.apple.com/documentation/networkextension/nepackettunnelflow/readpackets(completionhandler:)
-                // "Each call to this method results in a single execution of the completion handler"
-                self.packetFlow.readPackets { packets, protocols in
+            
+            
+            Task {
+                while !device.getDone() {
                     
-                    for packet in packets {
-                        device.sendPacket(packet, n: Int32(packet.count))
+                    // see https://developer.apple.com/documentation/networkextension/nepackettunnelflow/readpackets(completionhandler:)
+                    // "Each call to this method results in a single execution of the completion handler"
+                    // FIXME why is await not needed here?
+                    /* await */ self.packetFlow.readPackets { packets, protocols in
+                        for packet in packets {
+                            device.sendPacket(packet, n: Int32(packet.count))
+                        }
                     }
-                    
-                    
                 }
+                close()
             }
             
-            handlerDone(nil)
+            
+            self.reasserting = false
+//            tunnelDone.wait()
+//            self.reasserting = true
+//            
+//            readTask.cancel()
+//            tunnelCompletionHandler(nil)
+            completionHandler(nil)
+            
         }
         
         
         
         
     }
+    
+    
+    
     
     
     
@@ -259,8 +246,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
     override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
         self.logger.info("Stopping tunnel with reason: \(String(describing: reason))")
-        print("STOP TUNNEL")
-//        self.tunnel?.cancel()
         self.device?.cancel()
         completionHandler()
     }

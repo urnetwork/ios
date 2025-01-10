@@ -22,80 +22,7 @@ class VPNManager {
         self.addListeners()
     }
     
-    private func loadOrCreateManager() {
-        // Load all configurations first
-        NETunnelProviderManager.loadAllFromPreferences { [weak self] (managers, error) in
-            if let error = error {
-                print("Error loading managers: \(error.localizedDescription)")
-                return
-            }
-            
-            // Use existing manager or create new one
-            let manager = managers?.first ?? NETunnelProviderManager()
-            self?.tunnelManager = manager
-            self?.setup()
-        }
-    }
-    
-    func setup() {
-        guard let tunnelManager = tunnelManager else {
-            return
-        }
-        
-        guard let networkSpace = device.getNetworkSpace() else {
-            return
-        }
-        
-        // FIXME provider configuration:
-        // 1. byJwt
-        // 2. rpc public cert
-        // 3. network space
-        var err: NSError?
-        let networkSpaceJson = networkSpace.toJson(&err)
-        if let err {
-            print("Error converting network space to json: \(err.localizedDescription)")
-            return
-        }
-        
-        let tunnelProtocol = NETunnelProviderProtocol()
-        // Use the same as remote address in PacketTunnelProvider
-        // value from connect resolvedHost
-        tunnelProtocol.serverAddress = networkSpace.getHostName()//"127.0.0.1"
-        tunnelProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
-        tunnelProtocol.disconnectOnSleep = false
-        // see https://developer.apple.com/documentation/networkextension/nevpnprotocol/includeallnetworks
-        tunnelProtocol.includeAllNetworks = true
-        
-        // this is needed for casting, etc.
-        tunnelProtocol.excludeLocalNetworks = true
-        tunnelProtocol.providerConfiguration = [
-            "by_jwt": device.getApi()?.getByJwt() as Any,
-            "rpc_public_key": "test",
-            "network_space": networkSpaceJson as Any,
-        ]
-        
-        tunnelManager.protocolConfiguration = tunnelProtocol
-        tunnelManager.localizedDescription = "URnetwork [\(networkSpace.getHostName()) \(networkSpace.getEnvName())]"
-        tunnelManager.isEnabled = true
-        
-        tunnelManager.saveToPreferences { [weak self] error in
-            if let error = error {
-                print("Error saving preferences: \(error.localizedDescription)")
-                return
-            }
-            print("VPN configuration saved successfully")
-            
-            // see https://forums.developer.apple.com/forums/thread/25928
-            tunnelManager.loadFromPreferences { [weak self] error in
-                
-                self?.connect()
-            }
-            
-            
-            
-            
-        }
-    }
+ 
     
     func addListeners() {
         
@@ -109,6 +36,21 @@ class VPNManager {
         }
         
         device.add(connectChangeListener)
+        
+        
+        
+        // FIXME on remote disconnect, call updateVpnService
+        // FIXME if we are supposed to be connected, that will restart the vpn
+        /*
+        let remoteConnectChangeListener = RemoteConnectChangeListener { [weak self] remoteConnect in
+            if !remoteConnect {
+                // recheck the last known state to make sure remote is not supposed to be active
+                self.updateVpnService()
+            }
+        }
+        
+        device.add(remoteConnectListener)
+        */
     }
     
     private func updateVpnService() {
@@ -141,6 +83,83 @@ class VPNManager {
         // Retrieve the password reference from the keychain
         return nil
     }
+    
+    private func loadOrCreateManager() {
+        // Load all configurations first
+        NETunnelProviderManager.loadAllFromPreferences { [weak self] (managers, error) in
+            if let error = error {
+                print("Error loading managers: \(error.localizedDescription)")
+                return
+            }
+            
+            // Use existing manager or create new one
+            let manager = managers?.first ?? NETunnelProviderManager()
+            self?.tunnelManager = manager
+            self?.setup()
+        }
+    }
+    
+    
+       
+   func setup() {
+       guard let tunnelManager = tunnelManager else {
+           return
+       }
+       
+       guard let networkSpace = device.getNetworkSpace() else {
+           return
+       }
+       
+       // FIXME provider configuration:
+       // 1. byJwt
+       // 2. rpc public cert
+       // 3. network space
+       var err: NSError?
+       let networkSpaceJson = networkSpace.toJson(&err)
+       if let err {
+           print("Error converting network space to json: \(err.localizedDescription)")
+           return
+       }
+       
+       let tunnelProtocol = NETunnelProviderProtocol()
+       // Use the same as remote address in PacketTunnelProvider
+       // value from connect resolvedHost
+       tunnelProtocol.serverAddress = networkSpace.getHostName()//"127.0.0.1"
+       tunnelProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
+       tunnelProtocol.disconnectOnSleep = false
+       // see https://developer.apple.com/documentation/networkextension/nevpnprotocol/includeallnetworks
+       tunnelProtocol.includeAllNetworks = true
+       
+       // this is needed for casting, etc.
+       tunnelProtocol.excludeLocalNetworks = true
+       tunnelProtocol.providerConfiguration = [
+           "by_jwt": device.getApi()?.getByJwt() as Any,
+           "rpc_public_key": "test",
+           "network_space": networkSpaceJson as Any,
+       ]
+       
+       tunnelManager.protocolConfiguration = tunnelProtocol
+       tunnelManager.localizedDescription = "URnetwork [\(networkSpace.getHostName()) \(networkSpace.getEnvName())]"
+       tunnelManager.isEnabled = true
+       
+       tunnelManager.saveToPreferences { [weak self] error in
+           if let error = error {
+               print("Error saving preferences: \(error.localizedDescription)")
+               return
+           }
+           print("VPN configuration saved successfully")
+           
+           // see https://forums.developer.apple.com/forums/thread/25928
+           tunnelManager.loadFromPreferences { [weak self] error in
+               
+               self?.connect()
+           }
+           
+           
+           
+           
+       }
+   }
     
     func connect() {
         
