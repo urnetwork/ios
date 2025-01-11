@@ -10,7 +10,6 @@ import URnetworkSdk
 
 struct AccountMenu: View {
     
-    // TODO: handle isGuest
     var isGuest: Bool
     var logout: () -> Void
     var api: SdkApi
@@ -23,17 +22,13 @@ struct AccountMenu: View {
                 Button(action: {}) {
                     Label("Create account", systemImage: "person.crop.circle.badge.plus")
                 }
-            } else {
-                Button(action: {
-                    logout()
-                }) {
-                    Label("Sign out", systemImage: "rectangle.portrait.and.arrow.right")
-                }
             }
             
-//            ShareLink(item: URL(string: "https://ur.io/app?bonus=\(referralCodeViewModel.referralCode ?? "")")!, subject: Text("URnetwork Referral Code"), message: Text("All the content in the world from URnetwork")) {
-//                Label("Share URnetwork", systemImage: "square.and.arrow.up")
-//            }
+            Button(action: {
+                logout()
+            }) {
+                Label("Sign out", systemImage: "rectangle.portrait.and.arrow.right")
+            }
             
             ReferralShareLink(api: api) {
                 Label("Share URnetwork", systemImage: "square.and.arrow.up")
