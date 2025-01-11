@@ -34,12 +34,14 @@ struct ConnectView: View {
     
     var body: some View {
         
+        let isGuest = deviceManager.parsedJwt?.guestMode ?? true
+        
         VStack {
             
             HStack {
                 Spacer()
                 AccountMenu(
-                    isGuest: false,
+                    isGuest: isGuest,
                     logout: logout,
                     api: api
                 )

@@ -17,6 +17,7 @@ struct AccountNavStackView: View {
     @StateObject var accountWalletsViewModel: AccountWalletsViewModel
     @StateObject var accountPaymentsViewModel: AccountPaymentsViewModel
     @StateObject var payoutWalletViewModel: PayoutWalletViewModel
+    @StateObject private var networkUserViewModel: NetworkUserViewModel
     
     var api: SdkApi
     var device: SdkDeviceRemote
@@ -48,6 +49,8 @@ struct AccountNavStackView: View {
             )
         )
         
+        _networkUserViewModel = StateObject(wrappedValue: NetworkUserViewModel(api: api))
+        
         self.device = device
         self._provideWhileDisconnected = provideWhileDisconnected
         self.logout = logout
@@ -69,7 +72,8 @@ struct AccountNavStackView: View {
                 case .profile:
                     ProfileView(
                         api: api,
-                        back: viewModel.back
+                        back: viewModel.back,
+                        userAuth: networkUserViewModel.networkUser?.userAuth
                     )
                     .toolbar {
                         ToolbarItem(placement: .principal) {
