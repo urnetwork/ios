@@ -28,7 +28,7 @@ class VPNManager {
     
     
     init(device: SdkDeviceRemote) {
-        print("VPN Manager init hit")
+        print("VPN Manager init")
         self.device = device
 //        self.loadOrCreateManager()
         
@@ -75,9 +75,12 @@ class VPNManager {
                 }
             }
         })
+        
+        updateVpnService()
     }
     
     deinit {
+        print("VPN Manager deinit")
         
         self.routeLocalSub?.close()
         self.routeLocalSub = nil
