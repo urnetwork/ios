@@ -14,44 +14,98 @@ class VPNManager {
     var device: SdkDeviceRemote
     var tunnelManager: NETunnelProviderManager?
     
+    var routeLocalSub: SdkSubProtocol?
+    
+    var deviceProvideSub: SdkSubProtocol?
+    
+    var deviceProvidePausedSub: SdkSubProtocol?
+    
+    var deviceOflineSub: SdkSubProtocol?
+    
+    var deviceConnectSub: SdkSubProtocol?
+    
+    var deviceRemoteSub: SdkSubProtocol?
+    
+    
     init(device: SdkDeviceRemote) {
-        print("VPN Manager init hit")
+        print("VPN Manager init")
         self.device = device
 //        self.loadOrCreateManager()
         
-        self.addListeners()
+        self.routeLocalSub = device.add(RouteLocalChangeListener { [weak self] routeLocal in
+            mainImmediateBlocking {
+                self?.updateVpnService()
+            }
+        })
+        
+        self.deviceProvideSub = device.add(ProvideChangeListener { [weak self] provideEnabled in
+            mainImmediateBlocking {
+                self?.updateVpnService()
+            }
+        })
+        
+        self.deviceProvidePausedSub = device.add(ProvidePausedChangeListener { [weak self] providePaused in
+            mainImmediateBlocking {
+                self?.updateVpnService()
+            }
+        })
+        
+        self.deviceOflineSub = device.add(OfflineChangeListener { [weak self] offline, vpnInterfaceWhileOffline in
+            mainImmediateBlocking {
+                self?.updateVpnService()
+            }
+        })
+        
+        self.deviceConnectSub = device.add(ConnectChangeListener { [weak self] connectEnabled in
+            mainImmediateBlocking {
+                self?.updateVpnService()
+            }
+        })
+        
+        
+        self.deviceRemoteSub = device.add(RemoteChangeListener { [weak self] remoteConnected in
+            guard let self = self else {
+                return
+            }
+            
+            mainImmediateBlocking {
+                if !remoteConnected {
+                    // recheck the last known state to make sure remote is not supposed to be active
+                    self.updateVpnService()
+                }
+            }
+        })
+        
+        updateVpnService()
+    }
+    
+    deinit {
+        print("VPN Manager deinit")
+        
+        self.routeLocalSub?.close()
+        self.routeLocalSub = nil
+        
+        self.deviceProvideSub?.close()
+        self.deviceProvideSub = nil
+        
+        self.deviceProvidePausedSub?.close()
+        self.deviceProvidePausedSub = nil
+        
+        self.deviceOflineSub?.close()
+        self.deviceOflineSub = nil
+        
+        self.deviceConnectSub?.close()
+        self.deviceConnectSub = nil
     }
     
  
     
-    func addListeners() {
-        
-        let connectChangeListener = ConnectChangedListener { [weak self] connectEnabled in
-            
-            guard let self = self else { return }
-            
-            print("connect changed: \(connectEnabled)")
-            self.updateVpnService()
-            
-        }
-        
-        device.add(connectChangeListener)
-        
-        
-        
-        // FIXME on remote disconnect, call updateVpnService
-        // FIXME if we are supposed to be connected, that will restart the vpn
-        /*
-        let remoteConnectChangeListener = RemoteConnectChangeListener { [weak self] remoteConnect in
-            if !remoteConnect {
-                // recheck the last known state to make sure remote is not supposed to be active
-                self.updateVpnService()
-            }
-        }
-        
-        device.add(remoteConnectListener)
-        */
+    private func getPasswordReference() -> Data? {
+        // Retrieve the password reference from the keychain
+        return nil
     }
+    
+    
     
     private func updateVpnService() {
         
@@ -66,100 +120,116 @@ class VPNManager {
             // TODO: handle wakelock & wifi lock
             
             
-            self.loadOrCreateManager()
+            self.start()
             
             
         } else {
             
             print("stop vpn")
-            self.disconnect()
+            self.stop()
             
         }
         
         
     }
     
-    private func getPasswordReference() -> Data? {
-        // Retrieve the password reference from the keychain
-        return nil
-    }
     
-    private func loadOrCreateManager() {
+    
+    
+    private func start() {
         // Load all configurations first
         NETunnelProviderManager.loadAllFromPreferences { [weak self] (managers, error) in
             if let error = error {
                 print("Error loading managers: \(error.localizedDescription)")
                 return
             }
+            guard let self = self else {
+                return
+            }
             
             // Use existing manager or create new one
-            let manager = managers?.first ?? NETunnelProviderManager()
-            self?.tunnelManager = manager
-            self?.setup()
+            let tunnelManager = managers?.first ?? NETunnelProviderManager()
+            self.tunnelManager = tunnelManager
+            
+            guard let networkSpace = self.device.getNetworkSpace() else {
+                return
+            }
+            
+            
+            // FIXME provider configuration:
+            // 1. byJwt
+            // 2. rpc public cert
+            // 3. network space
+            var err: NSError?
+            let networkSpaceJson = networkSpace.toJson(&err)
+            if let err {
+                print("Error converting network space to json: \(err.localizedDescription)")
+                return
+            }
+            
+            let tunnelProtocol = NETunnelProviderProtocol()
+            // Use the same as remote address in PacketTunnelProvider
+            // value from connect resolvedHost
+            tunnelProtocol.serverAddress = networkSpace.getHostName()//"127.0.0.1"
+            tunnelProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
+            tunnelProtocol.disconnectOnSleep = false
+            // see https://developer.apple.com/documentation/networkextension/nevpnprotocol/includeallnetworks
+            tunnelProtocol.includeAllNetworks = true
+            
+            // this is needed for casting, etc.
+            tunnelProtocol.excludeLocalNetworks = true
+            tunnelProtocol.providerConfiguration = [
+                "by_jwt": self.device.getApi()?.getByJwt() as Any,
+                "rpc_public_key": "test",
+                "network_space": networkSpaceJson as Any,
+            ]
+            
+            tunnelManager.protocolConfiguration = tunnelProtocol
+            tunnelManager.localizedDescription = "URnetwork [\(networkSpace.getHostName()) \(networkSpace.getEnvName())]"
+            tunnelManager.isEnabled = true
+            tunnelManager.isOnDemandEnabled = true
+            
+            tunnelManager.saveToPreferences { [weak self] error in
+                if let error = error {
+                    print("Error saving preferences: \(error.localizedDescription)")
+                    return
+                }
+                print("VPN configuration saved successfully")
+                
+                // see https://forums.developer.apple.com/forums/thread/25928
+                tunnelManager.loadFromPreferences { [weak self] error in
+                    
+                    self?.connect()
+                }
+                
+                
+                
+                
+            }
         }
     }
     
-    
-       
-   func setup() {
-       guard let tunnelManager = tunnelManager else {
-           return
-       }
-       
-       guard let networkSpace = device.getNetworkSpace() else {
-           return
-       }
-       
-       // FIXME provider configuration:
-       // 1. byJwt
-       // 2. rpc public cert
-       // 3. network space
-       var err: NSError?
-       let networkSpaceJson = networkSpace.toJson(&err)
-       if let err {
-           print("Error converting network space to json: \(err.localizedDescription)")
-           return
-       }
-       
-       let tunnelProtocol = NETunnelProviderProtocol()
-       // Use the same as remote address in PacketTunnelProvider
-       // value from connect resolvedHost
-       tunnelProtocol.serverAddress = networkSpace.getHostName()//"127.0.0.1"
-       tunnelProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
-       tunnelProtocol.disconnectOnSleep = false
-       // see https://developer.apple.com/documentation/networkextension/nevpnprotocol/includeallnetworks
-       tunnelProtocol.includeAllNetworks = true
-       
-       // this is needed for casting, etc.
-       tunnelProtocol.excludeLocalNetworks = true
-       tunnelProtocol.providerConfiguration = [
-           "by_jwt": device.getApi()?.getByJwt() as Any,
-           "rpc_public_key": "test",
-           "network_space": networkSpaceJson as Any,
-       ]
-       
-       tunnelManager.protocolConfiguration = tunnelProtocol
-       tunnelManager.localizedDescription = "URnetwork [\(networkSpace.getHostName()) \(networkSpace.getEnvName())]"
-       tunnelManager.isEnabled = true
-       
-       tunnelManager.saveToPreferences { [weak self] error in
-           if let error = error {
-               print("Error saving preferences: \(error.localizedDescription)")
-               return
-           }
-           print("VPN configuration saved successfully")
-           
-           // see https://forums.developer.apple.com/forums/thread/25928
-           tunnelManager.loadFromPreferences { [weak self] error in
-               
-               self?.connect()
-           }
-           
-           
-           
-           
-       }
-   }
+    private func stop() {
+        guard let tunnelManager = tunnelManager else {
+            return
+        }
+        
+        tunnelManager.isEnabled = false
+        tunnelManager.isOnDemandEnabled = false
+        
+        tunnelManager.saveToPreferences { [weak self] error in
+            
+            // see https://forums.developer.apple.com/forums/thread/25928
+            tunnelManager.loadFromPreferences { [weak self] error in
+                
+                self?.disconnect()
+            }
+            
+            
+            
+            
+        }
+    }
     
     func connect() {
         
@@ -187,17 +257,85 @@ class VPNManager {
         print("VPN connection stopped")
     }
     
+    
 }
 
-private class ConnectChangedListener: NSObject, SdkConnectChangeListenerProtocol {
-    
-    private let callback: (_ connectEnabled: Bool) -> Void
 
-    init(callback: @escaping (_ connectEnabled: Bool) -> Void) {
-        self.callback = callback
+private class RouteLocalChangeListener: NSObject, SdkRouteLocalChangeListenerProtocol {
+    
+    private let c: (_ routeLocal: Bool) -> Void
+
+    init(c: @escaping (_ routeLocal: Bool) -> Void) {
+        self.c = c
+    }
+    
+    func routeLocalChanged(_ routeLocal: Bool) {
+        c(routeLocal)
+    }
+}
+
+private class ProvideChangeListener: NSObject, SdkProvideChangeListenerProtocol {
+    
+    private let c: (_ provideEnabled: Bool) -> Void
+
+    init(c: @escaping (_ provideEnabled: Bool) -> Void) {
+        self.c = c
+    }
+    
+    func provideChanged(_ provideEnabled: Bool) {
+        c(provideEnabled)
+    }
+}
+
+private class ProvidePausedChangeListener: NSObject, SdkProvidePausedChangeListenerProtocol {
+    
+    private let c: (_ providePaused: Bool) -> Void
+
+    init(c: @escaping (_ providePaused: Bool) -> Void) {
+        self.c = c
+    }
+    
+    func providePausedChanged(_ providePaused: Bool) {
+        c(providePaused)
+    }
+}
+
+private class OfflineChangeListener: NSObject, SdkOfflineChangeListenerProtocol {
+    
+    private let c: (_ offline: Bool, _ vpnInterfaceWhileOffline: Bool) -> Void
+
+    init(c: @escaping (_ offline: Bool, _ vpnInterfaceWhileOffline: Bool) -> Void) {
+        self.c = c
+    }
+    
+    func offlineChanged(_ offline: Bool, vpnInterfaceWhileOffline: Bool) {
+        c(offline, vpnInterfaceWhileOffline)
+    }
+}
+
+private class ConnectChangeListener: NSObject, SdkConnectChangeListenerProtocol {
+    
+    private let c: (_ connectEnabled: Bool) -> Void
+
+    init(c: @escaping (_ connectEnabled: Bool) -> Void) {
+        self.c = c
     }
     
     func connectChanged(_ connectEnabled: Bool) {
-        callback(connectEnabled)
+        c(connectEnabled)
     }
 }
+
+private class RemoteChangeListener: NSObject, SdkRemoteChangeListenerProtocol {
+    
+    private let c: (_ remoteConnected: Bool) -> Void
+
+    init(c: @escaping (_ remoteConnected: Bool) -> Void) {
+        self.c = c
+    }
+    
+    func remoteChanged(_ remoteConnected: Bool) {
+        c(remoteConnected)
+    }
+}
+
