@@ -20,9 +20,10 @@ struct ConnectView: View {
     var logout: () -> Void
     var api: SdkApi
     
-    init(api: SdkApi, logout: @escaping () -> Void, connectViewController: SdkConnectViewController?) {
+    init(api: SdkApi, logout: @escaping () -> Void, device: SdkDeviceRemote?, connectViewController: SdkConnectViewController?) {
         _viewModel = StateObject.init(wrappedValue: ViewModel(
             api: api,
+            device: device,
             connectViewController: connectViewController
         ))
         self.logout = logout
@@ -158,6 +159,7 @@ struct ConnectView: View {
     ConnectView(
         api: SdkApi(),
         logout: {},
+        device: nil,
         connectViewController: nil
     )
 }

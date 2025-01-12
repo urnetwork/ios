@@ -97,10 +97,10 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         
         self.deviceConfiguration = deviceConfiguration
         
-        let networkSpaceManager = SdkNewNetworkSpaceManagerNoStorage()
-//            let documentsPath = FileManager.default.urls(for: .documentDirectory,
-//                                                                in: .userDomainMask)[0].path()
-//            let networkSpaceManager = SdkNewNetworkSpaceManager(documentsPath)
+//        let networkSpaceManager = SdkNewNetworkSpaceManagerNoStorage()
+            let documentsPath = FileManager.default.urls(for: .documentDirectory,
+                                                                in: .userDomainMask)[0].path()
+            let networkSpaceManager = SdkNewNetworkSpaceManager(documentsPath)
         
         var networkSpace: SdkNetworkSpace?
         do {
@@ -139,18 +139,55 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             return
         }
         
-//        guard let networkSpace = device.getNetworkSpace() else {
-//            completionHandler(nil)
-//            return
-//        }
+        guard let networkSpace = device.getNetworkSpace() else {
+            completionHandler(nil)
+            return
+        }
+        
+        guard let localState = networkSpace.getAsyncLocalState()?.getLocalState() else {
+            completionHandler(nil)
+            return
+        }
+        
+        // load initial device settings
+        // these will be in effect until the app connects and sets the user values
+        
+        // FIXME this needs to be set to true with a connectivity listener
+        device.setProvidePaused(true)
+        if let location = localState.getConnectLocation() {
+            device.setConnectLocation(location)
+        }
+        device.setProvideMode(localState.getProvideMode())
+        device.setRouteLocal(localState.getRouteLocal())
+        
+        
+        let locationChangeSub = device.add(ConnectLocationChangeListener { location in
+            try? localState.setConnectLocation(location)
+        })
+        let provideChangeSub = device.add(ProvideChangeListener { provideEnabled in
+            var provideMode: Int
+            if provideEnabled {
+                provideMode = SdkProvideModePublic
+            } else {
+                provideMode = SdkProvideModeNone
+            }
+            try? localState.setProvideMode(provideMode)
+        })
+        let routeLocalChangeSub = device.add(RouteLocalChangeListener { routeLocal in
+            try? localState.setRouteLocal(routeLocal)
+        })
+        
         
         // FIXME packet receive will need to surface ipv4 or ipv6
-        let packetReceiverSub = device.add(PacketReceiver { [weak self] data in
-            self?.packetFlow.writePackets([data], withProtocols: [AF_INET as NSNumber])
+        let packetReceiverSub = device.add(PacketReceiver { data in
+            self.packetFlow.writePackets([data], withProtocols: [AF_INET as NSNumber])
         })
         
         let close = {
             packetReceiverSub?.close()
+            routeLocalChangeSub?.close()
+            provideChangeSub?.close()
+            locationChangeSub?.close()
             device.close()
         }
         
@@ -205,7 +242,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             
             Task {
                 while !device.getDone() {
-                    
                     // see https://developer.apple.com/documentation/networkextension/nepackettunnelflow/readpackets(completionhandler:)
                     // "Each call to this method results in a single execution of the completion handler"
                     // FIXME why is await not needed here?
@@ -280,3 +316,45 @@ private class PacketReceiver: NSObject, SdkReceivePacketProtocol {
     }
     
 }
+
+
+private class ConnectLocationChangeListener: NSObject, SdkConnectLocationChangeListenerProtocol {
+    
+    private let c: (_ location: SdkConnectLocation?) -> Void
+
+    init(c: @escaping (_ location: SdkConnectLocation?) -> Void) {
+        self.c = c
+    }
+    
+    func connectLocationChanged(_ location: SdkConnectLocation?) {
+        c(location)
+    }
+}
+
+
+private class ProvideChangeListener: NSObject, SdkProvideChangeListenerProtocol {
+    
+    private let c: (_ provideEnabled: Bool) -> Void
+
+    init(c: @escaping (_ provideEnabled: Bool) -> Void) {
+        self.c = c
+    }
+    
+    func provideChanged(_ provideEnabled: Bool) {
+        c(provideEnabled)
+    }
+}
+
+private class RouteLocalChangeListener: NSObject, SdkRouteLocalChangeListenerProtocol {
+    
+    private let c: (_ routeLocal: Bool) -> Void
+
+    init(c: @escaping (_ routeLocal: Bool) -> Void) {
+        self.c = c
+    }
+    
+    func routeLocalChanged(_ routeLocal: Bool) {
+        c(routeLocal)
+    }
+}
+

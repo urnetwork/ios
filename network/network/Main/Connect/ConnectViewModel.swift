@@ -123,9 +123,10 @@ extension ConnectView {
         
         
         var api: SdkApi
+        var device: SdkDeviceRemote?
         var connectViewController: SdkConnectViewController?
         
-        init(api: SdkApi, connectViewController: SdkConnectViewController?) {
+        init(api: SdkApi, device: SdkDeviceRemote?, connectViewController: SdkConnectViewController?) {
             self.api = api
             self.connectViewController = connectViewController
             self.addGridListener()
@@ -133,6 +134,8 @@ extension ConnectView {
             self.addSelectedLocationListener()
             
             self.updateConnectionStatus()
+            
+            self.selectedProvider = device?.getConnectLocation()
             
             // when search changes
             // debounce and fire search
@@ -150,6 +153,7 @@ extension ConnectView {
          */
         func connect(_ provider: SdkConnectLocation) {
             connectViewController?.connect(provider)
+            try? device?.getNetworkSpace()?.getAsyncLocalState()?.getLocalState()?.setConnectLocation(provider)
             bottomSheetPosition = .absoluteBottom(164)
         }
         
@@ -373,47 +377,52 @@ extension ConnectView.ViewModel {
             }
             
             DispatchQueue.main.async {
-             
-                self.grid = self.connectViewController?.getGrid()
-                
-                if let grid = self.grid {
-                    self.gridWidth = grid.getWidth()
-                    self.windowCurrentSize = grid.getWindowCurrentSize()
-                    
-                    let gridPointList = grid.getProviderGridPointList()
-                    
-                    guard let gridPointList = gridPointList else {
-                        print("grid point list is nil")
-                        return
-                    }
-                    
-                    var gridPoints: [SdkId: SdkProviderGridPoint] = [:]
-                    
-                    for i in 0..<gridPointList.len() {
-                        
-                        let gridPoint = gridPointList.get(i)
-                        
-                        if let gridPoint = gridPoint, let clientId = gridPoint.clientId {
-                            gridPoints[clientId] = gridPoint
-                            
-                            let state = gridPoint.state
-                            print("grid point \(clientId.idStr) state is \(state)")
-                        }
-                        
-                    }
-                    
-                    self.gridPoints = gridPoints
-                    
-                } else {
-                    self.windowCurrentSize = 0
-                    self.gridPoints = [:]
-                    self.gridWidth = 0
-                }
+                self.updateGrid()
                 
             }
             
         }
         connectViewController?.add(listener)
+        updateGrid()
+    }
+    
+    private func updateGrid() {
+        
+           self.grid = self.connectViewController?.getGrid()
+           
+           if let grid = self.grid {
+               self.gridWidth = grid.getWidth()
+               self.windowCurrentSize = grid.getWindowCurrentSize()
+               
+               let gridPointList = grid.getProviderGridPointList()
+               
+               guard let gridPointList = gridPointList else {
+                   print("grid point list is nil")
+                   return
+               }
+               
+               var gridPoints: [SdkId: SdkProviderGridPoint] = [:]
+               
+               for i in 0..<gridPointList.len() {
+                   
+                   let gridPoint = gridPointList.get(i)
+                   
+                   if let gridPoint = gridPoint, let clientId = gridPoint.clientId {
+                       gridPoints[clientId] = gridPoint
+                       
+                       let state = gridPoint.state
+                       print("grid point \(clientId.idStr) state is \(state)")
+                   }
+                   
+               }
+               
+               self.gridPoints = gridPoints
+               
+           } else {
+               self.windowCurrentSize = 0
+               self.gridPoints = [:]
+               self.gridWidth = 0
+           }
     }
     
 }

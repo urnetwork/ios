@@ -175,9 +175,14 @@ class VPNManager {
             tunnelProtocol.disconnectOnSleep = false
             // see https://developer.apple.com/documentation/networkextension/nevpnprotocol/includeallnetworks
             tunnelProtocol.includeAllNetworks = true
-            
             // this is needed for casting, etc.
             tunnelProtocol.excludeLocalNetworks = true
+            if #available(iOS 17.4, *) {
+                tunnelProtocol.excludeDeviceCommunication = true
+            }
+            
+            tunnelProtocol.enforceRoutes = true
+            
             tunnelProtocol.providerConfiguration = [
                 "by_jwt": self.device.getApi()?.getByJwt() as Any,
                 "rpc_public_key": "test",
