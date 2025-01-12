@@ -19,8 +19,15 @@ struct ConnectView: View {
     
     var logout: () -> Void
     var api: SdkApi
+    @ObservedObject var providerListSheetViewModel: ProviderListSheetViewModel
     
-    init(api: SdkApi, logout: @escaping () -> Void, device: SdkDeviceRemote?, connectViewController: SdkConnectViewController?) {
+    init(
+        api: SdkApi,
+        logout: @escaping () -> Void,
+        device: SdkDeviceRemote?,
+        connectViewController: SdkConnectViewController?,
+        providerListSheetViewModel: ProviderListSheetViewModel
+    ) {
         _viewModel = StateObject.init(wrappedValue: ViewModel(
             api: api,
             device: device,
@@ -28,6 +35,7 @@ struct ConnectView: View {
         ))
         self.logout = logout
         self.api = api
+        self.providerListSheetViewModel = providerListSheetViewModel
         
         // adds clear button to search providers text field
         UITextField.appearance().clearButtonMode = .whileEditing
@@ -90,8 +98,8 @@ struct ConnectView: View {
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .bottomSheet(
-            bottomSheetPosition: $viewModel.bottomSheetPosition,
-            switchablePositions: viewModel.bottomSheetSwitchablePositions,
+            bottomSheetPosition: $providerListSheetViewModel.bottomSheetPosition,
+            switchablePositions: providerListSheetViewModel.bottomSheetSwitchablePositions,
             headerContent: {
                 
                 VStack {
@@ -142,8 +150,10 @@ struct ConnectView: View {
             
             ProviderListSheetView(
                 selectedProvider: viewModel.selectedProvider,
-                connect: viewModel.connect,
-                // setSelectedProvider: viewModel.setSelectedProvider,
+                connect: { provider in
+                    viewModel.connect(provider)
+                    providerListSheetViewModel.closeBottomSheet()
+                },
                 providerCountries: viewModel.providerCountries,
                 providerPromoted: viewModel.providerPromoted,
                 providerDevices: viewModel.providerDevices,
@@ -168,6 +178,7 @@ struct ConnectView: View {
         api: SdkApi(),
         logout: {},
         device: nil,
-        connectViewController: nil
+        connectViewController: nil,
+        providerListSheetViewModel: ProviderListSheetViewModel()
     )
 }

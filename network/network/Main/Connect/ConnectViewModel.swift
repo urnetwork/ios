@@ -70,13 +70,7 @@ enum ConnectionStatus: String {
 extension ConnectView {
     
     class ViewModel: ObservableObject {
-        
-        /**
-         * Bottom sheet
-         */
-        @Published var bottomSheetPosition: BottomSheetPosition = .absoluteBottom(164)
-        let bottomSheetSwitchablePositions: [BottomSheetPosition] = [.absoluteBottom(164), .relativeTop(0.95)]
-        
+         
         /**
          * Provider groups
          */
@@ -104,10 +98,6 @@ extension ConnectView {
          * Selected Provider
          */
         @Published private(set) var selectedProvider: SdkConnectLocation?
-        
-//        func connectBestAvailable() {
-//            connectViewController?.connectBestAvailable()
-//        }
         
         /**
          * Search
@@ -154,7 +144,6 @@ extension ConnectView {
         func connect(_ provider: SdkConnectLocation) {
             connectViewController?.connect(provider)
             try? device?.getNetworkSpace()?.getAsyncLocalState()?.getLocalState()?.setConnectLocation(provider)
-            bottomSheetPosition = .absoluteBottom(164)
         }
         
         /**

@@ -17,11 +17,25 @@ struct MainTabView: View {
     @Binding var provideWhileDisconnected: Bool
     
     @State private var opacity: Double = 0
+    @StateObject var providerListSheetViewModel: ProviderListSheetViewModel = ProviderListSheetViewModel()
     
     var vpnManager: VPNManager
     
     @EnvironmentObject var themeManager: ThemeManager
+    
+    @State private var previousSelectedTab: Int = 0
+    
     @State private var selectedTab = 0
+    
+    private var tabSelection: Binding<Int> {
+        Binding(
+            get: { selectedTab },
+            set: { newValue in
+                self.selectedTab = newValue
+                handleTabChange(newValue)
+            }
+        )
+    }
     
     init(
         api: SdkApi,
@@ -44,7 +58,7 @@ struct MainTabView: View {
     
     var body: some View {
         
-        TabView(selection: $selectedTab) {
+        TabView(selection: tabSelection) {
             
             /**
              * Connect View
@@ -53,7 +67,8 @@ struct MainTabView: View {
                 api: api,
                 logout: logout,
                 device: device,
-                connectViewController: connectViewController
+                connectViewController: connectViewController,
+                providerListSheetViewModel: providerListSheetViewModel
             )
             .background(themeManager.currentTheme.backgroundColor)
             .tabItem {
@@ -133,6 +148,24 @@ struct MainTabView: View {
         UITabBar.appearance().scrollEdgeAppearance = appearance
         UITabBar.appearance().standardAppearance = appearance
     
+    }
+    
+    private func handleTabChange(_ newValue: Int) {
+        print("tab changed to \(newValue)")
+        
+        print("selected tab is: \(self.selectedTab)")
+        print("previously selected tab is: \(self.previousSelectedTab)")
+        
+        if newValue == 0 && self.previousSelectedTab == 0 {
+            /**
+             * double tapping the connect button should close out the location list sheet if it is open
+             */
+            providerListSheetViewModel.closeBottomSheet()
+            
+        }
+        
+        self.previousSelectedTab = self.selectedTab
+        
     }
     
 }
