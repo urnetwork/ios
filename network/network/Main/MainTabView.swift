@@ -52,6 +52,7 @@ struct MainTabView: View {
             ConnectView(
                 api: api,
                 logout: logout,
+                device: device,
                 connectViewController: connectViewController
             )
             .background(themeManager.currentTheme.backgroundColor)

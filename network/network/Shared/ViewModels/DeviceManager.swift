@@ -283,14 +283,15 @@ extension DeviceManager {
             
             if let localState = localState {
                 
-                let instanceId = localState.getInstanceId()
+//                let instanceId = localState.getInstanceId()
                 let routeLocal = localState.getRouteLocal()
                 let connectLocation = localState.getConnectLocation()
                 let canShowRatingDialog = localState.getCanShowRatingDialog()
                 let provideWhileDisconnected = localState.getProvideWhileDisconnected()
                 let provideMode = provideWhileDisconnected ? SdkProvideModePublic : localState.getProvideMode()
-                let vpnInterfaceWhileOffline = localState.getVpnInterfaceWhileOffline()
                 let canRefer = localState.getCanRefer()
+                // note ios does not allow VPN interface while offline, due to the existing interface conditions
+                // ignore `vpnInterfaceWhileOffline`
                 
                 var newDeviceError: NSError?
                 
@@ -314,18 +315,32 @@ extension DeviceManager {
                 if let providerSecretKeys = localState.getProvideSecretKeys() {
                     device.loadProvideSecretKeys(providerSecretKeys)
                 } else {
+                    var providerSecretKeysSub: SdkSubProtocol?
+                    providerSecretKeysSub = device.add(ProvideSecretKeysListener { provideSecretKeysList in
+                        try? localState.setProvideSecretKeys(provideSecretKeysList)
+                        providerSecretKeysSub?.close()
+                    })
                     device.initProvideSecretKeys()
-                    // FIXME save secret keys to local state
                 }
                 
-                device.setProvidePaused(true)
+                // note the network extension controls listening for connectivity and provide paused
+                // ignore `providePaused`
                 device.setRouteLocal(routeLocal)
                 device.setProvideMode(provideMode)
-                device.setConnectLocation(connectLocation)
                 device.setCanShowRatingDialog(canShowRatingDialog)
                 device.setProvideWhileDisconnected(provideWhileDisconnected)
-                device.setVpnInterfaceWhileOffline(vpnInterfaceWhileOffline)
                 device.setCanRefer(canRefer)
+                
+                // FIXME when starting with network service active, it looks like remote connected but get connect location is nil. WTF need to debug this
+                // only set the location if the current location is not already equivalent
+                // this avoid resetting the connection
+                if let remoteLocation = device.getConnectLocation() {
+                    if !remoteLocation.equals(connectLocation) {
+                        device.setConnectLocation(connectLocation)
+                    }
+                } else {
+                    device.setConnectLocation(connectLocation)
+                }
                 
                 DispatchQueue.main.async {
                     self.device = device
@@ -530,5 +545,19 @@ extension DeviceManager {
         return "\(systemVersion) \(deviceModel) \(deviceName)"
     }
     
+}
+
+
+private class ProvideSecretKeysListener: NSObject, SdkProvideSecretKeysListenerProtocol {
+    
+    private let c: (_ provideSecretKeysList: SdkProvideSecretKeyList?) -> Void
+
+    init(c: @escaping (_ provideSecretKeysList: SdkProvideSecretKeyList?) -> Void) {
+        self.c = c
+    }
+    
+    func provideSecretKeysChanged(_ provideSecretKeysList: SdkProvideSecretKeyList?) {
+        c(provideSecretKeysList)
+    }
 }
 
