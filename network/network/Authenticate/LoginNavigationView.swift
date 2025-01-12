@@ -38,7 +38,7 @@ struct LoginNavigationView: View {
                             handleSuccess: handleSuccess,
                             api: api
                         )
-                            .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
+                        .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                     case .createNetwork(let authLoginArgs):
                         CreateNetworkView(
                             authLoginArgs: authLoginArgs,
@@ -46,21 +46,22 @@ struct LoginNavigationView: View {
                             handleSuccess: handleSuccess,
                             api: api
                         )
-                            .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
+                        .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                     case .verify(let userAuth):
                         CreateNetworkVerifyView(
                             userAuth: userAuth,
                             api: api,
-                            navigate: viewModel.navigate,
+                            backToRoot: viewModel.backToRoot,
                             handleSuccess: handleSuccess
                         )
-                            .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
+                        .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                 case .resetPassword(let userAuth):
                     ResetPasswordView(
                         userAuth: userAuth,
                         popNavigationStack: viewModel.back,
                         api: api
                     )
+                    .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                 }
             }
         }

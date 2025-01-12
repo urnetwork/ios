@@ -21,17 +21,17 @@ struct CreateNetworkVerifyView: View {
     // Keyboard state
     @FocusState private var isKeyboardShowing: Bool
     
-    var navigate: (LoginInitialNavigationPath) -> Void
+    var backToRoot: () -> Void
     var handleSuccess: (_ jwt: String) async -> Void
     
     init(
         userAuth: String,
         api: SdkApi,
-        navigate: @escaping (LoginInitialNavigationPath) -> Void,
+        backToRoot: @escaping () -> Void,
         handleSuccess: @escaping (_ jwt: String) async -> Void
     ) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api, userAuth: userAuth))
-        self.navigate = navigate
+        self.backToRoot = backToRoot
         self.handleSuccess = handleSuccess
     }
     
@@ -128,6 +128,18 @@ struct CreateNetworkVerifyView: View {
                     }
                     
                 }
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: {
+                            // path = NavigationPath() // Reset to root
+                            backToRoot()
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(themeManager.currentTheme.textColor)
+                        }
+                    }
+                }
+                .navigationBarBackButtonHidden(true)
                 .padding()
                 .frame(minHeight: geometry.size.height)
                 .frame(maxWidth: 400)
@@ -198,7 +210,7 @@ struct CreateNetworkVerifyView: View {
         CreateNetworkVerifyView(
             userAuth: "",
             api: SdkApi(),
-            navigate: {_ in },
+            backToRoot: {},
             handleSuccess: {_ in }
         )
     }

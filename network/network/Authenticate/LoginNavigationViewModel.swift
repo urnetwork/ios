@@ -27,10 +27,14 @@ extension LoginNavigationView {
         }
 
         // can be used in custom back button        
-         func back() {
-             if !navigationPath.isEmpty {
-                 navigationPath.removeLast()
-             }
-         }
+        func back() {
+            if !navigationPath.isEmpty {
+                navigationPath.removeLast()
+            }
+        }
+        
+        func backToRoot() {
+            navigationPath.removeAll()
+        }
     }
 }
