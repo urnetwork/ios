@@ -71,10 +71,16 @@ struct ConnectView: View {
              */
             viewModel.requestReview = {
                 Task {
-                 
-                    if deviceManager.device?.getShouldShowRatingDialog() ?? false {
-                        try await Task.sleep(for: .seconds(2))
-                        requestReview()
+                    
+                    if let device = deviceManager.device {
+                        
+                        if device.getShouldShowRatingDialog() {
+                            try await Task.sleep(for: .seconds(2))
+                            requestReview()
+                            
+                            device.setCanShowRatingDialog(false)
+                        }
+
                     }
                     
                 }
