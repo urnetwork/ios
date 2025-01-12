@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 import NetworkExtension
 import URnetworkSdk
 
@@ -117,8 +118,8 @@ class VPNManager {
         if (provideEnabled || connectEnabled || !routeLocal) {
             print("start vpn")
             
-            // TODO: handle wakelock & wifi lock
-            
+            // see https://developer.apple.com/documentation/uikit/uiapplication/isidletimerdisabled
+            UIApplication.shared.isIdleTimerDisabled = true
             
             self.start()
             
@@ -127,6 +128,8 @@ class VPNManager {
             
             print("stop vpn")
             self.stop()
+            
+            UIApplication.shared.isIdleTimerDisabled = false
             
         }
         
@@ -187,6 +190,7 @@ class VPNManager {
                 "by_jwt": self.device.getApi()?.getByJwt() as Any,
                 "rpc_public_key": "test",
                 "network_space": networkSpaceJson as Any,
+                "instance_id": self.device.getInstanceId()?.string() as Any,
             ]
             
             tunnelManager.protocolConfiguration = tunnelProtocol
