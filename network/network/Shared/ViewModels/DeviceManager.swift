@@ -16,7 +16,6 @@ class DeviceManager: ObservableObject {
     
     @Published private(set) var networkSpace: SdkNetworkSpace? {
         didSet {
-            print("network space set: get api url: \(networkSpace?.getApiUrl() ?? "none")")
             setApi(networkSpace?.getApi())
             updateParsedJwt()
         }
@@ -26,9 +25,12 @@ class DeviceManager: ObservableObject {
     
     @Published private(set) var device: SdkDeviceRemote? {
         didSet {
+            
             DispatchQueue.main.async {
                 self.provideWhileDisconnected = self.device?.getProvideWhileDisconnected() ?? false
             }
+            
+            updateParsedJwt()
         }
     }
     
@@ -250,7 +252,6 @@ extension DeviceManager {
                     }
         
                 } else {
-                    print("not ok")
                     
                     DispatchQueue.main.async {
                         self.deviceInitialized = true
@@ -417,8 +418,8 @@ private class SetJWTLocalStateCallback: NSObject, SdkCommitCallbackProtocol {
         if success {
             
             self.initDevice(clientJwt, deviceSpecs)
-            
             continuation.resume(returning: ())
+            
         } else {
             continuation.resume(throwing: NSError(domain: "SetJWTLocalStateCallback", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to set client JWT"]))
         }

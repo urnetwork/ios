@@ -13,6 +13,7 @@ struct AccountRootView: View {
     @Environment(\.openURL) private var openURL
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var deviceManager: DeviceManager
+    @EnvironmentObject var snackbarManager: UrSnackbarManager
     
     var navigate: (AccountNavigationPath) -> Void
     var logout: () -> Void
@@ -69,18 +70,19 @@ struct AccountRootView: View {
                 
                 HStack(alignment: .firstTextBaseline) {
                     
-                    Text("Guest")
+                    Text(isGuest ? "Guest" : "Free")
                         .font(themeManager.currentTheme.titleCondensedFont)
                         .foregroundColor(themeManager.currentTheme.textColor)
                     
                     Spacer()
-                    
-                    Button(action: {
-                        viewModel.isPresentedUpgradeSheet = true
-                    }) {
-                        Text("Create account")
-                            .font(themeManager.currentTheme.secondaryBodyFont)
-                    }
+  
+                    // TODO: add back in when upgrade subscription work complete
+//                    Button(action: {
+//                        viewModel.isPresentedUpgradeSheet = true
+//                    }) {
+//                        Text("Create account")
+//                            .font(themeManager.currentTheme.secondaryBodyFont)
+//                    }
                     
                 }
                 
@@ -257,12 +259,11 @@ struct AccountRootView: View {
                 },
                 
                 handleSuccess: { jwt in
-                    
+                    Task {
+                        await handleSuccessWithJwt(jwt)
+                        viewModel.isPresentedCreateAccount = false
+                    }
                 }
-                
-//                onSuccess: {
-//                    viewModel.isPresentedCreateAccount = false
-//                }
             )
         }
 //        .fullScreenCover(isPresented: $viewModel.isPresentedReferralSheet) {
@@ -281,6 +282,24 @@ struct AccountRootView: View {
 //        
 //        }
     }
+    
+    private func handleSuccessWithJwt(_ jwt: String) async {
+        
+        let result = await deviceManager.authenticateNetworkClient(jwt)
+        
+        if case .failure(let error) = result {
+            print("[AccountRootView] handleSuccessWithJwt: \(error.localizedDescription)")
+            
+            snackbarManager.showSnackbar(message: "There was an error creating your network. Please try again later.")
+            
+            return
+        }
+        
+        // TODO: fade out login flow
+        // TODO: create navigation view model and switch to main app instead of checking deviceManager.device
+        
+    }
+    
 }
 
 private struct AccountNavLink: View {
