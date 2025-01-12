@@ -128,9 +128,9 @@ struct ConnectButtonView: View {
                         disconnect()
                     },
                     style: .outlineSecondary,
-                    enabled: connectionStatus == .connected
+                    enabled: connectionStatus != .disconnected
                 )
-                .opacity(connectionStatus == .connected ? 1 : 0)
+                .opacity(connectionStatus != .disconnected ? 1 : 0)
                 .animation(.easeInOut(duration: 0.5), value: connectionStatus)
                 
             }
