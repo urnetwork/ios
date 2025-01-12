@@ -294,12 +294,19 @@ extension DeviceManager {
                 // note ios does not allow VPN interface while offline, due to the existing interface conditions
                 // ignore `vpnInterfaceWhileOffline`
                 
+                var instanceId = localState.getInstanceId()
+                if instanceId == nil {
+                    instanceId = SdkNewId()
+                    try? localState.setInstanceId(instanceId)
+                }
+                
                 var newDeviceError: NSError?
                 
                 
                 let device = SdkNewDeviceRemoteWithDefaults(
                     networkSpace,
                     clientJwt,
+                    instanceId,
                     &newDeviceError
                 )
                 
@@ -332,7 +339,6 @@ extension DeviceManager {
                 device.setProvideWhileDisconnected(provideWhileDisconnected)
                 device.setCanRefer(canRefer)
                 
-                // FIXME when starting with network service active, it looks like remote connected but get connect location is nil. WTF need to debug this
                 // only set the location if the current location is not already equivalent
                 // this avoid resetting the connection
                 if let remoteLocation = device.getConnectLocation() {

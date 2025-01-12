@@ -78,10 +78,26 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             return
         }
         
+        
+        var err: NSError?
+        
+        let instanceId = SdkParseId(providerConfiguration["instance_id"] as? String, &err)
+        if let err {
+            completionHandler(err)
+            return
+        }
+        guard let instanceId = instanceId else {
+            completionHandler(nil)
+            return
+        }
+        
+        
+        
         let deviceConfiguration = [
             "by_jwt": byJwt,
             "network_space": networkSpaceJson,
-            "rpc_public_key": rpcPublicKey
+            "rpc_public_key": rpcPublicKey,
+            "instance_id": instanceId.string(),
         ]
         
         if let device = self.device {
@@ -93,7 +109,13 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         }
         
         
+        self.reasserting = true
+        
+        
         // create new device with latest config
+        
+        self.device?.cancel()
+        self.device = nil
         
         self.deviceConfiguration = deviceConfiguration
         
@@ -110,18 +132,22 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             return
         }
         
-        self.device?.cancel()
+        guard let networkSpace = networkSpace else {
+            completionHandler(nil)
+            return
+        }
         
-        self.reasserting = true
+        guard let localState = networkSpace.getAsyncLocalState()?.getLocalState() else {
+            completionHandler(nil)
+            return
+        }
         
-        let instanceId = SdkNewId()
-        var err: NSError?
+        
         self.device = SdkNewDeviceLocalWithDefaults(
             networkSpace,
             byJwt,
             "ios-network-extension",
-            // FIXME model
-            "iPhone",
+            deviceModel() ?? "ios-unknown",
             // FIXME version
             "0.0.0",
             instanceId,
@@ -139,15 +165,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             return
         }
         
-        guard let networkSpace = device.getNetworkSpace() else {
-            completionHandler(nil)
-            return
-        }
         
-        guard let localState = networkSpace.getAsyncLocalState()?.getLocalState() else {
-            completionHandler(nil)
-            return
-        }
         
         // load initial device settings
         // these will be in effect until the app connects and sets the user values
@@ -178,6 +196,14 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         })
         
         
+        let pathMonitor = NWPathMonitor.init(prohibitedInterfaceTypes: [.loopback, .other])
+        let pathMonitorQueue = DispatchQueue(label: "com.bringyour.network.extension.pathMonitor")
+        pathMonitor.pathUpdateHandler = { path in
+            device.setProvidePaused(!canProvideOnNetwork(path: path))
+        }
+        pathMonitor.start(queue: pathMonitorQueue)
+        
+        
         // FIXME packet receive will need to surface ipv4 or ipv6
         let packetReceiverSub = device.add(PacketReceiver { data in
             self.packetFlow.writePackets([data], withProtocols: [AF_INET as NSNumber])
@@ -185,6 +211,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         
         let close = {
             packetReceiverSub?.close()
+            pathMonitor.cancel()
             routeLocalChangeSub?.close()
             provideChangeSub?.close()
             locationChangeSub?.close()
@@ -269,7 +296,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         
         
     }
-    
+   
     
     
     
@@ -358,3 +385,33 @@ private class RouteLocalChangeListener: NSObject, SdkRouteLocalChangeListenerPro
     }
 }
 
+
+
+
+func canProvideOnNetwork(path: Network.NWPath) ->  Bool {
+    if path.isExpensive || path.isConstrained {
+        return false
+    } else if 0 < path.availableInterfaces.count {
+        let primaryInterface = path.availableInterfaces[0]
+        switch primaryInterface.type {
+        case .wifi, .wiredEthernet:
+            return true
+        default:
+            return false
+        }
+    } else {
+        // no interfaces
+        return false
+    }
+}
+
+func deviceModel() -> String? {
+    var systemInfo = utsname()
+    uname(&systemInfo)
+    let modelCode = withUnsafePointer(to: &systemInfo.machine) { uptr in
+        uptr.withMemoryRebound(to: CChar.self, capacity: 1) {
+            ptr in String.init(validatingUTF8: ptr)
+        }
+    }
+    return modelCode
+}
