@@ -164,7 +164,7 @@ struct ConnectView: View {
                         providerListSheetViewModel.isPresented = false
                     },
                     connectBestAvailable: {
-                        viewModel.connect()
+                        viewModel.connectBestAvailable()
                         providerListSheetViewModel.isPresented = false
                     },
                     providerCountries: viewModel.providerCountries,
