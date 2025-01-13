@@ -75,6 +75,7 @@ struct AccountNavStackView: View {
                         back: viewModel.back,
                         userAuth: networkUserViewModel.networkUser?.userAuth
                     )
+                    .background(themeManager.currentTheme.backgroundColor)
                     .toolbar {
                         ToolbarItem(placement: .principal) {
                             Text("Profile")
