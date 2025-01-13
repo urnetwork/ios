@@ -81,6 +81,7 @@ struct ProfileView: View {
             
             Spacer()
         }
+        .background(themeManager.currentTheme.backgroundColor)
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
