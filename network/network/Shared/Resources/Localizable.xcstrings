@@ -64,10 +64,16 @@
     "Are you sure you want to remove this wallet?" : {
 
     },
+    "Available providers" : {
+
+    },
     "Balance" : {
 
     },
     "Become a" : {
+
+    },
+    "Best available provider" : {
 
     },
     "Change" : {
@@ -250,7 +256,7 @@
     "Review URnetwork" : {
 
     },
-    "Search" : {
+    "Search providers" : {
 
     },
     "Send" : {
