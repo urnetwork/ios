@@ -7,7 +7,6 @@
 
 import SwiftUI
 import URnetworkSdk
-import BottomSheet
 
 struct ConnectView: View {
     
@@ -70,7 +69,62 @@ struct ConnectView: View {
             )
             
             Spacer()
+            
+            Button(action: {
+                providerListSheetViewModel.isPresented = true
+            }) {
 
+                HStack {
+                    
+                    if let selectedProvider = viewModel.selectedProvider, selectedProvider.connectLocationId?.bestAvailable != true {
+   
+                        Image("ur.symbols.tab.connect")
+                            .renderingMode(.template)
+                            .resizable()
+                            .frame(width: 32, height: 32)
+                            .foregroundColor(viewModel.getProviderColor(selectedProvider))
+                        
+                        Spacer().frame(width: 16)
+                        
+                        VStack(alignment: .leading) {
+                            Text(selectedProvider.name)
+                                .font(themeManager.currentTheme.bodyFont)
+                                .foregroundColor(themeManager.currentTheme.textColor)
+                            
+                            
+                            Text("\(selectedProvider.providerCount) providers")
+                                .font(themeManager.currentTheme.secondaryBodyFont)
+                                .foregroundColor(themeManager.currentTheme.textMutedColor)
+                            
+                        }
+                    } else {
+           
+                        Image("ur.symbols.tab.connect")
+                            .renderingMode(.template)
+                            .resizable()
+                            .frame(width: 32, height: 32)
+                            .foregroundColor(.urCoral)
+                        
+                        Spacer().frame(width: 16)
+                        
+                        VStack(alignment: .leading) {
+                            Text("Best available provider")
+                                .font(themeManager.currentTheme.bodyFont)
+                                .foregroundColor(themeManager.currentTheme.textColor)
+                        }
+                        
+                    }
+                    
+                    Spacer().frame(width: 8)
+                    
+                }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 16)
+                
+            }
+            .background(themeManager.currentTheme.tintedBackgroundBase)
+            .clipShape(.capsule)
+            
         }
         .onAppear {
             
@@ -88,7 +142,7 @@ struct ConnectView: View {
                             
                             device.setCanShowRatingDialog(false)
                         }
-
+                        
                     }
                     
                 }
@@ -97,80 +151,60 @@ struct ConnectView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .bottomSheet(
-            bottomSheetPosition: $providerListSheetViewModel.bottomSheetPosition,
-            switchablePositions: providerListSheetViewModel.bottomSheetSwitchablePositions,
-            headerContent: {
-                
-                VStack {
-                 
-                    if let selectedProvider = viewModel.selectedProvider, selectedProvider.connectLocationId?.bestAvailable != true {
-                        ProviderListItemView(
-                            name: selectedProvider.name,
-                            providerCount: selectedProvider.providerCount,
-                            color: viewModel.getProviderColor(selectedProvider),
-                            isSelected: false,
-                            connect: {
-                                viewModel.connect()
-                            }
-                        )
-                    } else {
-                        ProviderListItemView(
-                            name: "Best available provider",
-                            providerCount: nil,
-                            color: Color.urCoral,
-                            isSelected: false,
-                            connect: {
-                                viewModel.connect()
-                            }
-                        )
+        .sheet(isPresented: $providerListSheetViewModel.isPresented) {
+            
+            NavigationStack {
+                    
+                ProviderListSheetView(
+                    selectedProvider: viewModel.selectedProvider,
+                    connect: { provider in
+                        viewModel.connect(provider)
+                        providerListSheetViewModel.isPresented = false
+                    },
+                    connectBestAvailable: {
+                        viewModel.connect()
+                        providerListSheetViewModel.isPresented = false
+                    },
+                    providerCountries: viewModel.providerCountries,
+                    providerPromoted: viewModel.providerPromoted,
+                    providerDevices: viewModel.providerDevices,
+                    providerRegions: viewModel.providerRegions,
+                    providerCities: viewModel.providerCities,
+                    providerBestSearchMatches: viewModel.providerBestSearchMatches
+                )
+                .navigationBarTitleDisplayMode(.inline)
+                .searchable(
+                    text: $viewModel.searchQuery,
+                    placement: .navigationBarDrawer(displayMode: .always),
+                    prompt: "Search providers"
+                )
+                .toolbar {
+                    
+                    ToolbarItem(placement: .principal) {
+                        Text("Available providers")
+                            .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
                     }
                     
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(themeManager.currentTheme.textFaintColor)
-                        TextField("", text: $viewModel.searchQuery, prompt: Text("Search")
-                                  // placeholder color
-                            .foregroundColor(themeManager.currentTheme.textFaintColor)
-                        )
-                        // color of entered text
-                        .foregroundColor(themeManager.currentTheme.textMutedColor)
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button(action: {
+                            providerListSheetViewModel.isPresented = false
+                        }) {
+                            Image(systemName: "xmark")
+                        }
                     }
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 5)
-                    .background(RoundedRectangle(cornerRadius: 10).fill(themeManager.currentTheme.tintedBackgroundBase))
-                    .padding(.horizontal, 16)
-                    
-                    Spacer().frame(height: 16)
-                    
                 }
+                .refreshable {
+                    let _ = await viewModel.filterLocations(viewModel.searchQuery)
+                }
+
                 
             }
-        ) {
-            
-            ProviderListSheetView(
-                selectedProvider: viewModel.selectedProvider,
-                connect: { provider in
-                    viewModel.connect(provider)
-                    providerListSheetViewModel.closeBottomSheet()
-                },
-                providerCountries: viewModel.providerCountries,
-                providerPromoted: viewModel.providerPromoted,
-                providerDevices: viewModel.providerDevices,
-                providerRegions: viewModel.providerRegions,
-                providerCities: viewModel.providerCities,
-                providerBestSearchMatches: viewModel.providerBestSearchMatches
-            )
+            .background(themeManager.currentTheme.backgroundColor)
+
             
         }
-        .dragIndicatorColor(themeManager.currentTheme.textFaintColor)
-        .customBackground(
-            themeManager.currentTheme.backgroundColor
-                .cornerRadius(12)
-                .shadow(color: themeManager.currentTheme.borderBaseColor, radius: 1, x: 0, y: 0)
-        )
-        .enableAppleScrollBehavior()
     }
+        
 }
 
 #Preview {

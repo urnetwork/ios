@@ -14,7 +14,7 @@ struct ProviderListSheetView: View {
     
     var selectedProvider: SdkConnectLocation?
     var connect: (SdkConnectLocation) -> Void
-    // var setSelectedProvider: (SdkConnectLocation?) -> Void
+    var connectBestAvailable: () -> Void
     
     /**
      * Provider lists
@@ -28,8 +28,7 @@ struct ProviderListSheetView: View {
     
     
     var body: some View {
-        // using a VStack instead of list due to https://github.com/lucaszischka/BottomSheet/issues/169#issuecomment-2526693338
-        VStack {
+        List {
             
             ProviderListGroup(
                 groupName: "Best Search Matches",
@@ -41,7 +40,9 @@ struct ProviderListSheetView: View {
                 groupName: "Promoted Locations",
                 providers: providerPromoted,
                 selectedProvider: selectedProvider,
-                connect: connect
+                connect: connect,
+                connectBestAvailable: connectBestAvailable,
+                isPromotedLocations: true
             )
             ProviderListGroup(
                 groupName: "Countries",
@@ -68,6 +69,8 @@ struct ProviderListSheetView: View {
                 connect: connect
             )
         }
+        .listStyle(.plain)
+        .background(themeManager.currentTheme.backgroundColor)
     }
 }
 
@@ -79,20 +82,38 @@ private struct ProviderListGroup: View {
     var providers: [SdkConnectLocation]
     var selectedProvider: SdkConnectLocation?
     var connect: (SdkConnectLocation) -> Void
+    var connectBestAvailable: () -> Void = {}
+    var isPromotedLocations: Bool = false
     
     var body: some View {
         if !providers.isEmpty {
             Section(
                 header: HStack {
                     Text(groupName)
+                        .textCase(nil) // for some reason, header text is all caps by default in swiftui
                         .font(themeManager.currentTheme.bodyFont)
                         .foregroundColor(themeManager.currentTheme.textColor)
                     
                     Spacer()
                 }
                     .padding(.horizontal, 16)
-                    .padding(.top, 8)
+                    .padding(.vertical, 8)
             ) {
+                
+                if isPromotedLocations {
+                    ProviderListItemView(
+                        name: "Best available provider",
+                        providerCount: nil,
+                        color: Color.urCoral,
+                        isSelected: false,
+                        connect: {
+                            connectBestAvailable()
+                        }
+                    )
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                }
+                
                 ForEach(providers, id: \.connectLocationId) { provider in
                     ProviderListItemView(
                         name: provider.name,
@@ -103,9 +124,11 @@ private struct ProviderListGroup: View {
                             connect(provider)
                         }
                     )
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
                 }
             }
-            
+            .listRowBackground(Color.clear)
         }
     }
     
@@ -176,6 +199,7 @@ private struct ProviderListGroup: View {
         ProviderListSheetView(
             selectedProvider: nil,
             connect: {_ in },
+            connectBestAvailable: {},
             providerCountries: providerCountries,
             providerPromoted: [],
             providerDevices: [],
