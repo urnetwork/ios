@@ -298,7 +298,7 @@ extension ConnectView.ViewModel {
         }
     }
     
-    private func filterLocations(_ query: String) async -> Result<Void, Error> {
+    func filterLocations(_ query: String) async -> Result<Void, Error> {
         
         if query.isEmpty {
             return await self.getAllProviders()

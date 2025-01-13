@@ -199,6 +199,7 @@ struct AccountRootView: View {
                             
                             Image(systemName: "pencil")
                                 .foregroundColor(themeManager.currentTheme.textMutedColor)
+                                .frame(width: 24)
                             
                             Spacer().frame(width: 16)
                             
