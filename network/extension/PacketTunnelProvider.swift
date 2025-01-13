@@ -391,8 +391,7 @@ private class RouteLocalChangeListener: NSObject, SdkRouteLocalChangeListenerPro
 func canProvideOnNetwork(path: Network.NWPath) ->  Bool {
     if path.isExpensive || path.isConstrained {
         return false
-    } else if 0 < path.availableInterfaces.count {
-        let primaryInterface = path.availableInterfaces[0]
+    } else if let primaryInterface = path.availableInterfaces.first {
         switch primaryInterface.type {
         case .wifi, .wiredEthernet:
             return true

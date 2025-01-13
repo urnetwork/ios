@@ -10,10 +10,18 @@ import UIKit
 import NetworkExtension
 import URnetworkSdk
 
+enum TunnelRequestStatus {
+    case started
+    case stopped
+    case none
+}
+
 class VPNManager {
     
     var device: SdkDeviceRemote
-    var tunnelManager: NETunnelProviderManager?
+//    var tunnelManager: NETunnelProviderManager?
+    
+    var tunnelRequestStatus: TunnelRequestStatus = .none
     
     var routeLocalSub: SdkSubProtocol?
     
@@ -140,6 +148,20 @@ class VPNManager {
     
     
     private func start() {
+        
+//        if let tunnelManager = self.tunnelManager {
+//            let status = tunnelManager.connection.status
+//            switch status {
+//            case .connected, .connecting:
+//                return
+//            default:
+//                break
+//            }
+//        }
+        if self.tunnelRequestStatus == .started {
+            return
+        }
+        
         // Load all configurations first
         NETunnelProviderManager.loadAllFromPreferences { [weak self] (managers, error) in
             if let error = error {
@@ -152,11 +174,12 @@ class VPNManager {
             
             // Use existing manager or create new one
             let tunnelManager = managers?.first ?? NETunnelProviderManager()
-            self.tunnelManager = tunnelManager
+//            self.tunnelManager = tunnelManager
             
             guard let networkSpace = self.device.getNetworkSpace() else {
                 return
             }
+            
             
             
             // FIXME provider configuration:
@@ -213,7 +236,63 @@ class VPNManager {
                 // see https://forums.developer.apple.com/forums/thread/25928
                 tunnelManager.loadFromPreferences { [weak self] error in
                     
-                    self?.connect()
+                    self?.connect(tunnelManager: tunnelManager)
+                }
+                
+                
+                
+                
+            }
+        }
+    }	
+    
+    private func stop() {
+        if self.tunnelRequestStatus == .stopped {
+            return
+        }
+        
+        
+//        guard let tunnelManager = self.tunnelManager else {
+//            return
+//        }
+//        
+//        let status = tunnelManager.connection.status
+//        switch status {
+//        case .disconnected, .disconnecting:
+//            return
+//        default:
+//            break
+//        }
+        
+        
+        NETunnelProviderManager.loadAllFromPreferences { [weak self] (managers, error) in
+            if let error = error {
+                print("Error loading managers: \(error.localizedDescription)")
+                return
+            }
+            guard let self = self else {
+                return
+            }
+            
+            // Use existing manager or create new one
+            guard let tunnelManager = managers?.first else {
+                return
+            }
+            
+            
+            tunnelManager.isEnabled = false
+            tunnelManager.isOnDemandEnabled = false
+            
+            tunnelManager.saveToPreferences { [weak self] error in
+                if let error = error {
+                    // when changing locations quickly, another change might have intercepted this save
+                    return
+                }
+                
+                // see https://forums.developer.apple.com/forums/thread/25928
+                tunnelManager.loadFromPreferences { [weak self] error in
+                    
+                    self?.disconnect(tunnelManager: tunnelManager)
                 }
                 
                 
@@ -223,38 +302,15 @@ class VPNManager {
         }
     }
     
-    private func stop() {
-        guard let tunnelManager = tunnelManager else {
+    func connect(tunnelManager: NETunnelProviderManager) {
+        if self.tunnelRequestStatus == .started {
             return
         }
-        
-        tunnelManager.isEnabled = false
-        tunnelManager.isOnDemandEnabled = false
-        
-        tunnelManager.saveToPreferences { [weak self] error in
-            if let error = error {
-                // when changing locations quickly, another change might have intercepted this save
-                return
-            }
-            
-            // see https://forums.developer.apple.com/forums/thread/25928
-            tunnelManager.loadFromPreferences { [weak self] error in
-                
-                self?.disconnect()
-            }
-            
-            
-            
-            
-        }
-    }
-    
-    func connect() {
-        
+        self.tunnelRequestStatus = .started
         
         do {
             
-            try self.tunnelManager?.connection.startVPNTunnel()
+            try tunnelManager.connection.startVPNTunnel()
             print("VPN connection started")
             
             self.device.sync()
@@ -270,8 +326,13 @@ class VPNManager {
         }
     }
     
-    func disconnect() {
-        self.tunnelManager?.connection.stopVPNTunnel()
+    func disconnect(tunnelManager: NETunnelProviderManager) {
+        if self.tunnelRequestStatus == .stopped {
+            return
+        }
+        self.tunnelRequestStatus = .stopped
+        
+        tunnelManager.connection.stopVPNTunnel()
         print("VPN connection stopped")
     }
     
