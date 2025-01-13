@@ -193,6 +193,7 @@ class VPNManager {
                 "instance_id": self.device.getInstanceId()?.string() as Any,
             ]
             
+            
             tunnelManager.protocolConfiguration = tunnelProtocol
             tunnelManager.localizedDescription = "URnetwork [\(networkSpace.getHostName()) \(networkSpace.getEnvName())]"
             tunnelManager.isEnabled = true
@@ -203,7 +204,8 @@ class VPNManager {
             
             tunnelManager.saveToPreferences { [weak self] error in
                 if let error = error {
-                    print("Error saving preferences: \(error.localizedDescription)")
+                    // when changing locations quickly, another change might have intercepted this save
+//                    print("Error saving preferences: \(error.localizedDescription)")
                     return
                 }
                 print("VPN configuration saved successfully")
@@ -230,6 +232,10 @@ class VPNManager {
         tunnelManager.isOnDemandEnabled = false
         
         tunnelManager.saveToPreferences { [weak self] error in
+            if let error = error {
+                // when changing locations quickly, another change might have intercepted this save
+                return
+            }
             
             // see https://forums.developer.apple.com/forums/thread/25928
             tunnelManager.loadFromPreferences { [weak self] error in
