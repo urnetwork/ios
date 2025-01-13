@@ -320,6 +320,8 @@ extension CreateNetworkView {
                     args.userName = ""
                     args.networkName = networkName.trimmingCharacters(in: .whitespacesAndNewlines)
                     args.terms = termsAgreed
+                    args.verifyOtpNumeric = true
+                    
                     
                     if let userAuth = userAuth {
                         args.userAuth = userAuth

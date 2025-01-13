@@ -103,6 +103,7 @@ extension LoginPasswordView {
                     let args = SdkAuthLoginWithPasswordArgs()
                     args.userAuth = userAuth
                     args.password = self.password
+                    args.verifyOtpNumeric = true
                     
                     if let api = api {
                         
