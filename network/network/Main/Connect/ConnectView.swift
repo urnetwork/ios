@@ -12,6 +12,7 @@ struct ConnectView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var deviceManager: DeviceManager
+    @EnvironmentObject var snackbarManager: UrSnackbarManager
     @Environment(\.requestReview) private var requestReview
     
     @StateObject private var viewModel: ViewModel
@@ -51,7 +52,8 @@ struct ConnectView: View {
                 AccountMenu(
                     isGuest: isGuest,
                     logout: logout,
-                    api: api
+                    api: api,
+                    isPresentedCreateAccount: $viewModel.isPresentedCreateAccount
                 )
             }
             .frame(height: 32)
@@ -203,6 +205,40 @@ struct ConnectView: View {
 
             
         }
+        
+        // upgrade guest account flow
+        .fullScreenCover(isPresented: $viewModel.isPresentedCreateAccount) {
+            LoginNavigationView(
+                api: api,
+                cancel: {
+                    viewModel.isPresentedCreateAccount = false
+                },
+                
+                handleSuccess: { jwt in
+                    Task {
+                        await handleSuccessWithJwt(jwt)
+                        viewModel.isPresentedCreateAccount = false
+                    }
+                }
+            )
+        }
+    }
+    
+    private func handleSuccessWithJwt(_ jwt: String) async {
+        
+        let result = await deviceManager.authenticateNetworkClient(jwt)
+        
+        if case .failure(let error) = result {
+            print("[ContentView] handleSuccessWithJwt: \(error.localizedDescription)")
+            
+            snackbarManager.showSnackbar(message: "There was an error creating your network. Please try again later.")
+            
+            return
+        }
+        
+        // TODO: fade out login flow
+        // TODO: create navigation view model and switch to main app instead of checking deviceManager.device
+        
     }
         
 }

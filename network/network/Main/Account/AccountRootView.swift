@@ -50,7 +50,8 @@ struct AccountRootView: View {
                 AccountMenu(
                     isGuest: isGuest,
                     logout: logout,
-                    api: api
+                    api: api,
+                    isPresentedCreateAccount: $viewModel.isPresentedCreateAccount
                 )
                 
             }
@@ -267,21 +268,6 @@ struct AccountRootView: View {
                 }
             )
         }
-//        .fullScreenCover(isPresented: $viewModel.isPresentedReferralSheet) {
-//            NavigationView {
-//                ReferSheet(api: api)
-//                    .toolbar {
-//                        ToolbarItem(placement: .destructiveAction) {
-//                            Button(action: {
-//                                viewModel.isPresentedReferralSheet = false
-//                            }) {
-//                                Image(systemName: "xmark")
-//                            }
-//                        }
-//                    }
-//            }
-//        
-//        }
     }
     
     private func handleSuccessWithJwt(_ jwt: String) async {

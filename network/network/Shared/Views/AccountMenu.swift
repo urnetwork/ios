@@ -13,13 +13,16 @@ struct AccountMenu: View {
     var isGuest: Bool
     var logout: () -> Void
     var api: SdkApi
+    @Binding var isPresentedCreateAccount: Bool
     
     var body: some View {
     
         Menu {
             
             if isGuest {
-                Button(action: {}) {
+                Button(action: {
+                    isPresentedCreateAccount = true
+                }) {
                     Label("Create account", systemImage: "person.crop.circle.badge.plus")
                 }
             }
@@ -49,6 +52,7 @@ struct AccountMenu: View {
     AccountMenu(
         isGuest: false,
         logout: {},
-        api: SdkApi()
+        api: SdkApi(),
+        isPresentedCreateAccount: .constant(false)
     )
 }

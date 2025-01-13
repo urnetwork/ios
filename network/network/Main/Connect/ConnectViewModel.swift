@@ -110,6 +110,11 @@ extension ConnectView {
          */
         var requestReview: (() -> Void)?
         
+        /**
+         * Upgrade guest account sheet
+         */
+        @Published var isPresentedCreateAccount: Bool = false
+        
         
         var api: SdkApi
         var device: SdkDeviceRemote?
