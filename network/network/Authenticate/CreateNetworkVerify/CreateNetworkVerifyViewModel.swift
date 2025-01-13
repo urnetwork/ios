@@ -28,6 +28,7 @@ private class AuthVerifySendCallback: SdkCallback<SdkAuthVerifySendResult, SdkAu
 
 extension CreateNetworkVerifyView {
     
+    @MainActor
     class ViewModel: ObservableObject {
         
         private var api: SdkApi?
