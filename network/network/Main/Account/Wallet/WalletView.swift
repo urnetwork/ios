@@ -15,17 +15,12 @@ struct WalletView: View {
     @EnvironmentObject var snackbarManager: UrSnackbarManager
     
     var wallet: SdkAccountWallet
-    let isCircleWallet: Bool
     let isPayoutWallet: Bool
     let payments: [SdkAccountPayment]
     let promptRemoveWallet: (SdkId) -> Void
     let fetchPayments: () async -> Void
     
     var walletName: String {
-        
-        if isCircleWallet {
-            return "Circle"
-        }
         
         if wallet.blockchain == "SOL" {
             return "Solana"
@@ -44,7 +39,6 @@ struct WalletView: View {
         fetchPayments: @escaping () async -> Void
     ) {
         self.wallet = wallet
-        self.isCircleWallet = wallet.walletType == SdkWalletTypeCircleUserControlled
         self.isPayoutWallet = payoutWalletId?.cmp(wallet.walletId) == 0
         self.payments = payments
         self.promptRemoveWallet = promptRemoveWallet
@@ -60,7 +54,7 @@ struct WalletView: View {
                     
                     VStack(alignment: .leading) {
                         WalletIcon(
-                            isCircleWallet: isCircleWallet, blockchain: wallet.blockchain
+                            blockchain: wallet.blockchain
                         )
                     }
                     
@@ -74,11 +68,9 @@ struct WalletView: View {
                         
                         HStack {
                             
-                            if !isCircleWallet {
-                                Text("***\(String(wallet.walletAddress.suffix(6)))")
-                                    .font(themeManager.currentTheme.toolbarTitleFont)
-                                    .foregroundColor(themeManager.currentTheme.textColor)
-                            }
+                            Text("***\(String(wallet.walletAddress.suffix(6)))")
+                                .font(themeManager.currentTheme.toolbarTitleFont)
+                                .foregroundColor(themeManager.currentTheme.textColor)
                             
                             Spacer()
 
@@ -92,45 +84,7 @@ struct WalletView: View {
                     
                 }
                 
-                // Commented out for testing
-                if isCircleWallet {
-                    
-                    Spacer().frame(height: 16)
-                    
-                    VStack {
-                     
-                        HStack {
-                            
-                            UrLabel(text: "Balance")
-                            
-                            Spacer()
-                            
-                        }
-                        
-                        HStack(alignment: .firstTextBaseline) {
-                            
-                            // TODO: populate circle wallet balance
-                            Text("$1.23")
-                                .font(themeManager.currentTheme.titleCondensedFont)
-                                .foregroundColor(themeManager.currentTheme.textColor)
-                            
-                            Text("USDC")
-                                .font(themeManager.currentTheme.secondaryBodyFont)
-                                .foregroundColor(themeManager.currentTheme.textMutedColor)
-                            
-                            Spacer()
-                            
-                        }
-                        
-                    }
-                    .padding()
-                    .background(themeManager.currentTheme.tintedBackgroundBase)
-                    .cornerRadius(12)
-                    
-                }
-                
                 Spacer().frame(height: 16)
-                
                 
                 /**
                  * Actions
@@ -146,34 +100,25 @@ struct WalletView: View {
                         Spacer().frame(height: 8)
                         
                     }
-                    
-                    if isCircleWallet {
                         
-                        UrButton(text: "Transfer funds", action: {})
-                        Spacer().frame(height: 8)
-                        
-                    } else {
-                        
-                        UrButton(
-                            text: "Remove wallet",
-                            action: {
+                    UrButton(
+                        text: "Remove wallet",
+                        action: {
+                            
+                            guard let walletId = wallet.walletId else {
                                 
-                                guard let walletId = wallet.walletId else {
-                                    
-                                    // TODO: snackbar error
-                                    
-                                    return
-                                }
+                                // TODO: snackbar error
                                 
-                                promptRemoveWallet(walletId)
-                            },
-                            style: .outlineSecondary
-                        )
+                                return
+                            }
+                            
+                            promptRemoveWallet(walletId)
+                        },
+                        style: .outlineSecondary
+                    )
                         
-                    }
-                    
                 }
-                
+                    
                 Spacer().frame(height: 32)
                 
                 /**
@@ -187,6 +132,8 @@ struct WalletView: View {
                 
             }
             .padding()
+            .frame(maxWidth: 400)
+            .frame(maxWidth: .infinity)
             
         }
         .refreshable {

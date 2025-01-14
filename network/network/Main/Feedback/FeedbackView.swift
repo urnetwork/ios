@@ -20,6 +20,8 @@ struct FeedbackView: View {
         ))
     }
     
+    let isTablet = UIDevice.current.userInterfaceIdiom == .pad
+    
     var body: some View {
         
         VStack {
@@ -53,7 +55,11 @@ struct FeedbackView: View {
                 enabled: !viewModel.isSending
             )
 
-            Spacer()
+            if isTablet {
+                Spacer().frame(height: 32)
+            } else {
+                Spacer()
+            }
             
             UrButton(
                 text: "Send",
@@ -69,6 +75,7 @@ struct FeedbackView: View {
             
         }
         .padding()
+        .frame(maxWidth: 400)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(themeManager.currentTheme.backgroundColor)
     }
