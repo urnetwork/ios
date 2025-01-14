@@ -176,6 +176,8 @@ class VPNManager {
             tunnelProtocol.includeAllNetworks = true
             // this is needed for casting, etc.
             tunnelProtocol.excludeLocalNetworks = true
+            tunnelProtocol.excludeCellularServices = true
+            tunnelProtocol.excludeAPNs = true
             if #available(iOS 17.4, *) {
                 tunnelProtocol.excludeDeviceCommunication = true
             }
