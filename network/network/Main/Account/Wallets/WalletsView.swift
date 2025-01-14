@@ -118,7 +118,7 @@ struct WalletsHeader: View {
         VStack {
          
             HStack {
-                Text("URwallet")
+                Text("Connected wallets")
                     .font(themeManager.currentTheme.titleFont)
                     .foregroundColor(themeManager.currentTheme.textColor)
                 

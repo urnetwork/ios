@@ -110,10 +110,10 @@ struct AccountRootView: View {
                     
                     Spacer()
                     
-                    Button(action: {}) {
-                        Text("Start earning")
-                            .font(themeManager.currentTheme.secondaryBodyFont)
-                    }
+//                    Button(action: {}) {
+//                        Text("Start earning")
+//                            .font(themeManager.currentTheme.secondaryBodyFont)
+//                    }
                     
                 }
                 

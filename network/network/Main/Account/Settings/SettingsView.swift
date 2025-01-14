@@ -40,28 +40,29 @@ struct SettingsView: View {
                     }
                     
                     Spacer().frame(height: 64)
-                    
-                    HStack {
-                        UrLabel(text: "Plan")
-                        
-                        Spacer()
-                    }
-                    
-                    HStack {
-                        
-                        Text("URnetwork Member")
-                            .font(themeManager.currentTheme.bodyFont)
-                            .foregroundColor(themeManager.currentTheme.textColor)
-                        
-                        
-                        Spacer()
-                        Button(action: {}) {
-                            Text("Change")
-                        }
-                        
-                    }
-                    
-                    Spacer().frame(height: 32)
+  
+                    // TODO: add this back in for subscription
+//                    HStack {
+//                        UrLabel(text: "Plan")
+//                        
+//                        Spacer()
+//                    }
+//                    
+//                    HStack {
+//                        
+//                        Text("URnetwork Member")
+//                            .font(themeManager.currentTheme.bodyFont)
+//                            .foregroundColor(themeManager.currentTheme.textColor)
+//                        
+//                        
+//                        Spacer()
+//                        Button(action: {}) {
+//                            Text("Change")
+//                        }
+//                        
+//                    }
+//                    
+//                    Spacer().frame(height: 32)
                     
                     HStack {
                         UrLabel(text: "URid")
