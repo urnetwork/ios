@@ -52,6 +52,9 @@ struct ConnectCanvasConnectingStateView: View {
                 viewModel.updateGridPoints(gridPoints, gridWidth: newWidth)
             }
         }
+        .onAppear {
+            viewModel.updateGridPoints(gridPoints, gridWidth: gridWidth)
+        }
         
     }
 }
