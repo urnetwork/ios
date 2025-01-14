@@ -77,7 +77,7 @@ struct WelcomeAnimation: View {
                 Image("OnboardingBackground")
                     .resizable()
                     .scaledToFill()
-                    .frame(minWidth: 0)
+                    .frame(minWidth: 0, minHeight: 0)
                     .ignoresSafeArea()
                     .opacity(backgroundOpacity)
                 
@@ -167,6 +167,7 @@ struct WelcomeAnimation: View {
                     .padding()
                     
                 }
+                .frame(maxWidth: 400)
                 .offset(y: welcomeOffset) // Apply the offset to move the VStack offscreen
                 .onAppear {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
