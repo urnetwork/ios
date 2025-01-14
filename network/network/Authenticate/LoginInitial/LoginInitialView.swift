@@ -228,7 +228,7 @@ private struct LoginInitialFormView: View {
          
             UrTextField(
                 text: $userAuth,
-                label: "Email or phone",
+                label: "Email or phone number",
                 placeholder: "Enter your phone number or email",
                 onTextChange: { newValue in
                     // Filter whitespace
