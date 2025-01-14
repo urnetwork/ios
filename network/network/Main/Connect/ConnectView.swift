@@ -139,10 +139,9 @@ struct ConnectView: View {
                     if let device = deviceManager.device {
                         
                         if device.getShouldShowRatingDialog() {
+                            device.setCanShowRatingDialog(false)
                             try await Task.sleep(for: .seconds(2))
                             requestReview()
-                            
-                            device.setCanShowRatingDialog(false)
                         }
                         
                     }
