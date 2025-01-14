@@ -218,6 +218,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         let dnsSettings = NEDNSSettings(servers: ["1.1.1.1", "8.8.8.8"])
         networkSettings.dnsSettings = dnsSettings
         
+        // default URnetwork MTU
         networkSettings.mtu = 1440
         
         
