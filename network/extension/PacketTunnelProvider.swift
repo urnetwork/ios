@@ -215,7 +215,10 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         networkSettings.ipv6Settings = ipv6Settings
         
         // DNS Settings
-        let dnsSettings = NEDNSSettings(servers: ["1.1.1.1", "8.8.8.8"])
+//        let dnsSettings = NEDNSSettings(servers: ["1.1.1.1", "8.8.8.8"])
+        // use settings from connect/net_http_doh
+        let dnsSettings = NEDNSOverHTTPSSettings(servers: ["1.1.1.1", "9.9.9.9"])
+        dnsSettings.serverURL = URL(string: "https://1.1.1.1/dns-query")
         networkSettings.dnsSettings = dnsSettings
         
         // default URnetwork MTU
