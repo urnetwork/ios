@@ -40,8 +40,8 @@
 		<string>ABCGravity-Extended.otf</string>
 	</array>
 	<key>UIBackgroundModes</key>
-	<array>
-		<string>networking</string>
-	</array>
+	<array/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
 </dict>
 </plist>
