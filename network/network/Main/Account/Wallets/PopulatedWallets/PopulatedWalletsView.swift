@@ -12,8 +12,8 @@ struct PopulatedWalletsView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var accountPaymentsViewModel: AccountPaymentsViewModel
     @EnvironmentObject var accountWalletsViewModel: AccountWalletsViewModel
+    @EnvironmentObject var payoutWalletViewModel: PayoutWalletViewModel
     
-    var payoutWalletId: SdkId?
     var navigate: (AccountNavigationPath) -> Void
     @Binding var presentConnectWalletSheet: Bool
     
@@ -62,7 +62,7 @@ struct PopulatedWalletsView: View {
                             
                             WalletListItem(
                                 wallet: wallet,
-                                payoutWalletId: payoutWalletId
+                                payoutWalletId: payoutWalletViewModel.payoutWalletId
                             )
                             .onTapGesture {
                                 navigate(.wallet(wallet))
@@ -184,7 +184,6 @@ private struct WalletListItem: View {
 #Preview {
     
     PopulatedWalletsView(
-        payoutWalletId: nil,
         navigate: {_ in },
         presentConnectWalletSheet: .constant(false)
     )

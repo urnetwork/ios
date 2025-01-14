@@ -13,8 +13,8 @@ struct WalletsView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var accountPaymentsViewModel: AccountPaymentsViewModel
     @EnvironmentObject var accountWalletsViewModel: AccountWalletsViewModel
+    @EnvironmentObject var payoutWalletViewModel: PayoutWalletViewModel
     
-    var payoutWalletId: SdkId?
     var navigate: (AccountNavigationPath) -> Void
     var api: SdkApi?
     
@@ -55,8 +55,6 @@ struct WalletsView: View {
                         )
                         
                         PopulatedWalletsView(
-                            payoutWalletId: payoutWalletId,
-                            // displayExternalWalletSheet: $viewModel.displayExternalWalletSheet,
                             navigate: navigate,
                             presentConnectWalletSheet: $viewModel.presentConnectWalletSheet
                         )
@@ -77,6 +75,10 @@ struct WalletsView: View {
         }
         .onReceive(connectWalletProviderViewModel.$connectedPublicKey) { walletAddress in
             
+            /**
+             * Once we receive an address from the wallet, here we associate the address with the network
+             */
+            
             if let walletAddress = walletAddress {
                 
                 // TODO: check if wallet address already present in existing wallets
@@ -84,6 +86,7 @@ struct WalletsView: View {
                 Task {
                     // TODO: error handling on connect wallet
                     let _ = await accountWalletsViewModel.connectWallet(walletAddress: walletAddress, chain: WalletChain.sol)
+                    await payoutWalletViewModel.fetchPayoutWallet()
                     viewModel.presentConnectWalletSheet = false
                 }
                 
@@ -163,7 +166,6 @@ struct WalletsHeader: View {
     let themeManager = ThemeManager.shared
     
     WalletsView(
-        payoutWalletId: nil,
         navigate: {_ in}
     )
         .environmentObject(themeManager)

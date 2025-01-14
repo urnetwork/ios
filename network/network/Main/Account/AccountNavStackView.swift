@@ -99,8 +99,6 @@ struct AccountNavStackView: View {
                     
                 case .wallets:
                     WalletsView(
-                        // wallets: accountWalletsViewModel.wallets,
-                        payoutWalletId: payoutWalletViewModel.payoutWalletId,
                         navigate: viewModel.navigate,
                         api: api
                     )
@@ -113,6 +111,7 @@ struct AccountNavStackView: View {
                         .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
                         .environmentObject(accountPaymentsViewModel)
                         .environmentObject(accountWalletsViewModel)
+                        .environmentObject(payoutWalletViewModel)
                     
                 case .wallet(let wallet):
                     
