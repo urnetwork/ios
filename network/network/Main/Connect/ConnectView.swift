@@ -155,7 +155,7 @@ struct ConnectView: View {
         .sheet(isPresented: $providerListSheetViewModel.isPresented) {
             
             NavigationStack {
-                    
+                
                 ProviderListSheetView(
                     selectedProvider: viewModel.selectedProvider,
                     connect: { provider in
@@ -196,6 +196,11 @@ struct ConnectView: View {
                 }
                 .refreshable {
                     let _ = await viewModel.filterLocations(viewModel.searchQuery)
+                }
+                .onAppear {
+                    Task {
+                        let _ = await viewModel.filterLocations(viewModel.searchQuery)
+                    }
                 }
 
                 
