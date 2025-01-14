@@ -46,7 +46,7 @@ class PayoutWalletViewModel: ObservableObject {
         }
     }
     
-    private func fetchPayoutWallet() async {
+    func fetchPayoutWallet() async {
         
         if isFetchingPayoutWallet {
             return
