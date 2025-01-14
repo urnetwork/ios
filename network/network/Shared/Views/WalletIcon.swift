@@ -8,14 +8,9 @@
 import SwiftUI
 
 struct WalletIcon: View {
-    var isCircleWallet: Bool
     var blockchain: String
     
     var backgroundGradient: Gradient {
-        
-        if isCircleWallet {
-            return Gradient(colors: [Color(hex: "#68D7FA"), Color(hex: "#7EF1B3")])
-        }
         
         if blockchain == "SOL" {
             return Gradient(colors: [Color(hex: "#9945FF"), Color(hex: "#14F195")])
@@ -27,10 +22,6 @@ struct WalletIcon: View {
     
     var logoPath: String {
         
-        if isCircleWallet {
-            return "circle.logo"
-        }
-        
         if blockchain == "SOL" {
             return "solana.logo"
         }
@@ -41,10 +32,6 @@ struct WalletIcon: View {
     }
     
     var logoWidth: CGFloat {
-        
-        if isCircleWallet {
-            return 24
-        }
         
         if blockchain == "SOL" {
             return 24
@@ -75,7 +62,6 @@ struct WalletIcon: View {
 
 #Preview {
     WalletIcon(
-        isCircleWallet: false,
         blockchain: "SOL"
     )
 }

@@ -99,7 +99,6 @@ private struct WalletListItem: View {
     var payoutWalletId: SdkId?
     
     var body: some View {
-        let isCircleWallet = wallet.walletType == SdkWalletTypeCircleUserControlled
         let isPayoutWallet = payoutWalletId?.cmp(wallet.walletId) == 0
         
         VStack {
@@ -107,7 +106,7 @@ private struct WalletListItem: View {
             HStack {
                 
                 VStack {
-                    WalletIcon(isCircleWallet: isCircleWallet, blockchain: wallet.blockchain)
+                    WalletIcon(blockchain: wallet.blockchain)
                     Spacer()
                 }
                 
@@ -150,20 +149,10 @@ private struct WalletListItem: View {
             Spacer()
             
             HStack(alignment: .center) {
-                
-                if isCircleWallet {
                     
-                    Text("Circle")
-                        .font(themeManager.currentTheme.secondaryBodyFont)
-                        .foregroundColor(themeManager.currentTheme.textMutedColor)
-                    
-                } else {
-                    
-                    Text(wallet.blockchain)
-                        .font(themeManager.currentTheme.secondaryBodyFont)
-                        .foregroundColor(themeManager.currentTheme.textMutedColor)
-                    
-                }
+                Text(wallet.blockchain)
+                    .font(themeManager.currentTheme.secondaryBodyFont)
+                    .foregroundColor(themeManager.currentTheme.textMutedColor)
                 
                 Spacer()
                 
