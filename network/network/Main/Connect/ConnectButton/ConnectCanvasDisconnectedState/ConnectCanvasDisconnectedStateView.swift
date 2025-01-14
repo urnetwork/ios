@@ -18,20 +18,27 @@ struct ConnectCanvasDisconnectedStateView: View {
         
         ZStack {
             
-            Circle()
-                .fill(Color.urElectricBlue)
-                .frame(width: 56, height: 56)
-                .scaleEffect(pulseScale)
-                .opacity(pulseOpacity)
-                .onAppear {
-                    withAnimation(
+            ZStack {
+             
+                Circle()
+                    .fill(Color.urElectricBlue)
+                    .frame(width: 56, height: 56)
+                    .scaleEffect(pulseScale)
+                    .opacity(pulseOpacity)
+                    .animation(
                         Animation.easeOut(duration: 1.5)
-                            .repeatForever(autoreverses: false)
-                    ) {
-                        pulseScale = 1.5
-                        pulseOpacity = 0
-                    }
-                }
+                            .repeatForever(autoreverses: false),
+                        value: pulseScale
+                    )
+                
+            }
+            .frame(width: 84, height: 84)
+            .contentShape(Rectangle())
+            .onAppear {
+                pulseScale = 1.5
+                pulseOpacity = 0
+            }
+            
             
             Circle()
                 .stroke(Color.urElectricBlue, lineWidth: 4)
