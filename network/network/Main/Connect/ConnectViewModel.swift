@@ -161,6 +161,10 @@ extension ConnectView {
             }
         }
         
+        func connectBestAvailable() {
+            connectViewController?.connectBestAvailable()
+        }
+        
         func disconnect() {
             connectViewController?.disconnect()
         }
