@@ -11260,7 +11260,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "unbezahlte bereitgestellte Megabytes"
+            "value" : "Unbezahlte bereitgestellte Megabytes"
           }
         },
         "el" : {
@@ -11272,25 +11272,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "unpaid megabytes provided"
+            "value" : "Unpaid megabytes provided"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "megabytes proporcionados sin pagar"
+            "value" : "Megabytes proporcionados sin pagar"
           }
         },
         "es-419" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "megabytes proporcionados sin pagar"
+            "value" : "Megabytes proporcionados sin pagar"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "mégaoctets fournis non payés"
+            "value" : "Mégaoctets fournis non payés"
           }
         },
         "he" : {
@@ -11308,13 +11308,13 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "megabyte yang disediakan belum dibayar"
+            "value" : "Megabyte yang disediakan belum dibayar"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "megabyte forniti non pagati"
+            "value" : "Megabyte forniti non pagati"
           }
         },
         "ja" : {
@@ -11332,19 +11332,19 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "dostarczone nieopłacone megabajty"
+            "value" : "Dostarczone nieopłacone megabajty"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "megabytes fornecidos não pagos"
+            "value" : "Megabytes fornecidos não pagos"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "megabytes fornecidos não pagos"
+            "value" : "Megabytes fornecidos não pagos"
           }
         },
         "ru" : {
@@ -11356,7 +11356,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "obetalda megabyte tillhandahållna"
+            "value" : "Obetalda megabyte tillhandahållna"
           }
         },
         "th" : {
@@ -11374,7 +11374,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "megabyte đã cung cấp chưa thanh toán"
+            "value" : "Megabyte đã cung cấp chưa thanh toán"
           }
         },
         "zh-Hans" : {
