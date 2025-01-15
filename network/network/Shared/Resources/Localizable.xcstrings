@@ -11265,7 +11265,7 @@
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "απλήρωτα megabytes που παρασχέθηκαν"
           }
         },
@@ -11295,13 +11295,13 @@
         },
         "he" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "מגה-בייט שסופקו וטרם שולמו"
           }
         },
         "hi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "प्रदान किए गए अवैतनिक मेगाबाइट"
           }
         },
@@ -11319,13 +11319,13 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "未払いの提供メガバイト"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "제공된 미지급 메가바이트"
           }
         },
@@ -11349,7 +11349,7 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "неоплаченные предоставленные мегабайты"
           }
         },
@@ -11361,13 +11361,13 @@
         },
         "th" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "เมกะไบต์ที่ให้บริการแต่ยังไม่ได้ชำระ"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "неоплачені надані мегабайти"
           }
         },
@@ -11379,13 +11379,13 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "未支付的已提供MB数据"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "未支付的已提供MB數據"
           }
         }
