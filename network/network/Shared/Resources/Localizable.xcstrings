@@ -11253,7 +11253,7 @@
       "localizations" : {
         "ar" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ميغابايت غير مدفوعة مقدمة"
           }
         },
