@@ -11253,139 +11253,139 @@
       "localizations" : {
         "ar" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "ميغابايت غير مدفوعة مقدمة"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "unbezahlte bereitgestellte Megabytes"
+            "value" : "Unbezahlte bereitgestellte Megabytes"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "απλήρωτα megabytes που παρασχέθηκαν"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "unpaid megabytes provided"
+            "value" : "Unpaid megabytes provided"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "megabytes proporcionados sin pagar"
+            "value" : "Megabytes proporcionados sin pagar"
           }
         },
         "es-419" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "megabytes proporcionados sin pagar"
+            "value" : "Megabytes proporcionados sin pagar"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "mégaoctets fournis non payés"
+            "value" : "Mégaoctets fournis non payés"
           }
         },
         "he" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "מגה-בייט שסופקו וטרם שולמו"
           }
         },
         "hi" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "प्रदान किए गए अवैतनिक मेगाबाइट"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "megabyte yang disediakan belum dibayar"
+            "value" : "Megabyte yang disediakan belum dibayar"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "megabyte forniti non pagati"
+            "value" : "Megabyte forniti non pagati"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "未払いの提供メガバイト"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "제공된 미지급 메가바이트"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "dostarczone nieopłacone megabajty"
+            "value" : "Dostarczone nieopłacone megabajty"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "megabytes fornecidos não pagos"
+            "value" : "Megabytes fornecidos não pagos"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "megabytes fornecidos não pagos"
+            "value" : "Megabytes fornecidos não pagos"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "неоплаченные предоставленные мегабайты"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "obetalda megabyte tillhandahållna"
+            "value" : "Obetalda megabyte tillhandahållna"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "เมกะไบต์ที่ให้บริการแต่ยังไม่ได้ชำระ"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "неоплачені надані мегабайти"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "megabyte đã cung cấp chưa thanh toán"
+            "value" : "Megabyte đã cung cấp chưa thanh toán"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "未支付的已提供MB数据"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "未支付的已提供MB數據"
           }
         }

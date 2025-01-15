@@ -29,17 +29,24 @@ struct WalletsView: View {
                 /**
                  * Empty wallet view
                  */
-                VStack {
+                GeometryReader { geometry in
                     
-                    WalletsHeader(
-                        unpaidMegaBytes: accountWalletsViewModel.unpaidMegaBytes
-                    )
-                    
-                    EmptyWalletsView(
-                        presentConnectWalletSheet: $viewModel.presentConnectWalletSheet
-                    )
-        
+                    ScrollView {
+                        VStack {
+                            
+                            WalletsHeader(
+                                unpaidMegaBytes: accountWalletsViewModel.unpaidMegaBytes
+                            )
+                            
+                            EmptyWalletsView(
+                                presentConnectWalletSheet: $viewModel.presentConnectWalletSheet
+                            )
+                            
+                        }
+                        .frame(minHeight: geometry.size.height)
+                    }
                 }
+                
             } else {
                 
                 /**
@@ -61,17 +68,17 @@ struct WalletsView: View {
                     }
                     
                 }
-                .refreshable {
-                    async let fetchWallets: Void = accountWalletsViewModel.fetchAccountWallets()
-                    async let fetchPayments: Void = accountPaymentsViewModel.fetchPayments()
-                    async let fetchTransferStats: Void = accountWalletsViewModel.fetchTransferStats()
-                    
-                    // Wait for all tasks to complete
-                    (_, _, _) = await (fetchWallets, fetchPayments, fetchTransferStats)
-                }
                 
             }
             
+        }
+        .refreshable {
+            async let fetchWallets: Void = accountWalletsViewModel.fetchAccountWallets()
+            async let fetchPayments: Void = accountPaymentsViewModel.fetchPayments()
+            async let fetchTransferStats: Void = accountWalletsViewModel.fetchTransferStats()
+            
+            // Wait for all tasks to complete
+            (_, _, _) = await (fetchWallets, fetchPayments, fetchTransferStats)
         }
         .onReceive(connectWalletProviderViewModel.$connectedPublicKey) { walletAddress in
             
