@@ -17,6 +17,7 @@ struct LoginInitialView: View {
     @EnvironmentObject var snackbarManager: UrSnackbarManager
     @EnvironmentObject var deviceManager: DeviceManager
     @StateObject private var viewModel: ViewModel
+    @State private var initialIsLandscape: Bool = false
     
     var api: SdkApi?
     var navigate: (LoginInitialNavigationPath) -> Void
@@ -41,12 +42,11 @@ struct LoginInitialView: View {
         
         GeometryReader { geometry in
             
-            let isLandscape = geometry.size.width > geometry.size.height
             let isTablet = UIDevice.current.userInterfaceIdiom == .pad
       
             ScrollView(.vertical) {
                 
-                if isLandscape && isTablet {
+                if initialIsLandscape && isTablet {
                     
                     HStack(alignment: .center) {
                         
@@ -128,6 +128,18 @@ struct LoginInitialView: View {
                             .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
                     }
                 }
+            }
+        }
+        .onAppear {
+            // Cache initial orientation
+            let orientation = UIDevice.current.orientation
+            initialIsLandscape = orientation.isLandscape
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+            // Only update on actual rotation events
+            let orientation = UIDevice.current.orientation
+            if orientation.isValidInterfaceOrientation {
+                initialIsLandscape = orientation.isLandscape
             }
         }
         
