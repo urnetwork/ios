@@ -608,6 +608,9 @@
         }
       }
     },
+    "Are you sure you want to delete your account?" : {
+
+    },
     "Are you sure you want to remove this wallet?" : {
       "localizations" : {
         "ar" : {
@@ -2574,6 +2577,9 @@
           }
         }
       }
+    },
+    "Delete account" : {
+
     },
     "Disconnect" : {
       "localizations" : {
