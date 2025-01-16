@@ -81,7 +81,7 @@ struct WelcomeAnimation: View {
                     .ignoresSafeArea()
                     .opacity(backgroundOpacity)
                 
-                VStack(spacing: -1) {
+                VStack(spacing: -2) {
                     
                     // top overlay
                     Rectangle()
@@ -90,9 +90,9 @@ struct WelcomeAnimation: View {
                         .ignoresSafeArea(edges: .top)
                     
                     
-                    VStack(spacing: -1) {
+                    VStack(spacing: -2) {
                         
-                        HStack(spacing: -1) {
+                        HStack(spacing: -2) {
                             // left overlay
                             Rectangle()
                                 .fill(.urBlack)
