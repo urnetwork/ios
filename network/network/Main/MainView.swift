@@ -81,7 +81,7 @@ struct WelcomeAnimation: View {
                     .ignoresSafeArea()
                     .opacity(backgroundOpacity)
                 
-                VStack(spacing: 0) {
+                VStack(spacing: -1) {
                     
                     // top overlay
                     Rectangle()
@@ -90,9 +90,9 @@ struct WelcomeAnimation: View {
                         .ignoresSafeArea(edges: .top)
                     
                     
-                    VStack {
+                    VStack(spacing: -1) {
                         
-                        HStack(spacing: 0) {
+                        HStack(spacing: -1) {
                             // left overlay
                             Rectangle()
                                 .fill(.urBlack)
@@ -102,7 +102,8 @@ struct WelcomeAnimation: View {
                             Image("GlobeMask")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(width: globeSize, height: globeSize)
+                                .frame(width: globeSize + 2, height: globeSize + 2)
+                                .offset(x: -1, y: -1)
                             
                             // right overlay
                             Rectangle()
