@@ -85,6 +85,7 @@ struct AccountNavStackView: View {
                     
                 case .settings:
                     SettingsView(
+                        api: api,
                         clientId: device.getClientId(),
                         provideWhileDisconnected: $provideWhileDisconnected,
                         accountPreferencesViewModel: accountPreferencesViewModel

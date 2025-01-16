@@ -44,6 +44,7 @@ struct ContentView: View {
                         MainView(
                             api: api,
                             device: device,
+                            // todo: we don't need to prop drill this, just access deviceManager through environment object
                             logout: deviceManager.logout,
                             welcomeAnimationComplete: $welcomeAnimationComplete
                         )

@@ -10,13 +10,26 @@ import URnetworkSdk
 
 struct SettingsView: View {
     
-    @StateObject private var viewModel: ViewModel = ViewModel()
+    @StateObject private var viewModel: ViewModel
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var snackbarManager: UrSnackbarManager
+    @EnvironmentObject var deviceManager: DeviceManager
     
     var clientId: SdkId?
     @Binding var provideWhileDisconnected: Bool
-    @StateObject var accountPreferencesViewModel: AccountPreferencesViewModel
+    @ObservedObject var accountPreferencesViewModel: AccountPreferencesViewModel
+    
+    init(
+        api: SdkApi,
+        clientId: SdkId?,
+        provideWhileDisconnected: Binding<Bool>,
+        accountPreferencesViewModel: AccountPreferencesViewModel
+    ) {
+        _viewModel = StateObject(wrappedValue: ViewModel(api: api))
+        self.clientId = clientId
+        _provideWhileDisconnected = provideWhileDisconnected
+        self.accountPreferencesViewModel = accountPreferencesViewModel
+    }
     
     var clientUrl: String {
         guard let clientId = clientId?.idStr else { return "" }
@@ -207,7 +220,15 @@ struct SettingsView: View {
                         }
                     }
                     
-                    Spacer()
+                    Spacer().frame(height: 64)
+                    
+                    Button(role: .destructive, action: {
+                        viewModel.isPresentedDeleteAccountConfirmation = true
+                    }) {
+                        Text("Delete account")
+                    }
+                    
+                    Spacer().frame(height: 12)
                     
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -218,6 +239,31 @@ struct SettingsView: View {
                 
             }
         }
+        .confirmationDialog(
+            "Are you sure you want to delete your account?",
+            isPresented: $viewModel.isPresentedDeleteAccountConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Delete account", role: .destructive) {
+                
+                Task {
+                    let result = await viewModel.deleteAccount()
+                    self.handleResult(result)
+                }
+                
+            }
+        }
+    }
+    
+    private func handleResult(_ result: Result<Void, Error>) {
+        switch result {
+        case .success:
+            deviceManager.logout()
+            break
+        case .failure(let error):
+            print("Error deleting account: \(error)")
+            snackbarManager.showSnackbar(message: "Sorry, there was an error deleting your account.")
+        }
     }
 }
 
@@ -227,6 +273,7 @@ struct SettingsView: View {
     let accountPreferenceViewModel = AccountPreferencesViewModel(api: SdkApi())
     
     SettingsView(
+        api: SdkApi(),
         clientId: nil,
         provideWhileDisconnected: .constant(true),
         accountPreferencesViewModel: accountPreferenceViewModel
