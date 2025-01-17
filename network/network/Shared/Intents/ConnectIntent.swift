@@ -37,14 +37,31 @@ struct ConnectIntent: AppIntent {
             )
         }
         
-        let connected = try await VPNService.shared.connect(device: device)
+        // let connected = try await VPNService.shared.connect(device: device)
+//        guard let vpnManager = await deviceManager.vpnManager else {
+//            return .result(dialog: "Failed to connect")
+//        }
         
-        if connected {
-            return .result(dialog: "Connecting to URnetwork")
-        } else {
+        guard let connectViewController = device.openConnectViewController() else {
             return .result(dialog: "Failed to connect")
         }
         
+        // self.connectViewController = connectViewController
+        
+        if let location = device.getConnectLocation() {
+            connectViewController.connect(location)
+        } else {
+            connectViewController.connectBestAvailable()
+        }
+        
+        return .result(dialog: "Connecting to URnetwork")
+        
+//        if connected {
+//            return .result(dialog: "Connecting to URnetwork")
+//        } else {
+//            return .result(dialog: "Failed to connect")
+//        }
+//        
     }
     
 }

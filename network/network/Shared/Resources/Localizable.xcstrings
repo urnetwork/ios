@@ -1439,7 +1439,7 @@
         }
       }
     },
-    "Connect VPN" : {
+    "Connect URnetwork VPN" : {
 
     },
     "Connect wallet" : {
@@ -1868,7 +1868,7 @@
         }
       }
     },
-    "Connecting to VPN" : {
+    "Connecting to URnetwork" : {
 
     },
     "Connections" : {
@@ -3000,6 +3000,12 @@
           }
         }
       }
+    },
+    "Disconnect URnetwork VPN" : {
+
+    },
+    "Disconnecting from URnetwork" : {
+
     },
     "Don't see it? " : {
       "comment" : "Referring to the OTP code",
@@ -4275,6 +4281,9 @@
       }
     },
     "Failed to connect" : {
+
+    },
+    "Failed to disconnect" : {
 
     },
     "Feedback" : {
@@ -7558,6 +7567,9 @@
           }
         }
       }
+    },
+    "Please login to URnetwork" : {
+
     },
     "Please login to URnetwork to connect" : {
 
@@ -12404,6 +12416,9 @@
       }
     },
     "You are already connected" : {
+
+    },
+    "You are disconnected" : {
 
     },
     "You may need to your check spam folder or unblock no-reply@ur.io" : {

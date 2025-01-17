@@ -20,9 +20,19 @@ final class VPNService {
     
     private var connectViewController: SdkConnectViewController?
     
-    private init() {}
+    private init() {
+        print("vpn service init hit")
+    }
+    
+    deinit {
+        print("deinit called")
+        connectViewController?.close()
+        vpnManager?.close()
+    }
     
     func connect(device: SdkDeviceRemote) async throws -> Bool {
+        
+        print("vpn service connect called")
         
         vpnManager = VPNManager(device: device)
         
