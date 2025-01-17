@@ -1868,10 +1868,7 @@
         }
       }
     },
-    "Connecting VPN to %@" : {
-
-    },
-    "Connecting VPN to the best available location" : {
+    "Connecting to VPN" : {
 
     },
     "Connections" : {
@@ -4276,6 +4273,9 @@
           }
         }
       }
+    },
+    "Failed to connect" : {
+
     },
     "Feedback" : {
       "localizations" : {
@@ -9846,9 +9846,6 @@
     },
     "Solflare" : {
       "shouldTranslate" : false
-    },
-    "Sorry, something went wrong connecting to URnetwork" : {
-
     },
     "Stay in touch" : {
       "localizations" : {

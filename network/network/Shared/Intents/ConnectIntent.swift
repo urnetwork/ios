@@ -13,6 +13,10 @@ struct ConnectIntent: AppIntent {
     
     static let title: LocalizedStringResource = "Connect VPN"
     
+    static var isSiriAvailable: Bool = true
+    
+    static var authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
+    
     // @Parameter(title: location)
     
     func perform() async throws -> some IntentResult & ProvidesDialog {
@@ -24,15 +28,6 @@ struct ConnectIntent: AppIntent {
         
         await deviceManager.waitForDeviceInitialization()
         
-//        let device = await deviceManager.device
-//        if device == nil {
-//            print("is device initialized? \(await deviceManager.deviceInitialized)")
-//            print("device is nil")
-//            return .result(
-//                dialog: "Device is nil. Please login to URnetwork to connect"
-//            )
-//        }
-        
         guard let device = await deviceManager.device else {
             print("device is nil")
             print("is device initialized? \(await deviceManager.deviceInitialized)")
@@ -41,35 +36,42 @@ struct ConnectIntent: AppIntent {
             )
         }
         
-        let _ = VPNManager(device: device)
-        
         if device.getConnected() {
             return .result(
                 dialog: "You are already connected"
             )
         }
         
-        guard let connectViewController = device.openConnectViewController() else {
-            return .result(
-                dialog: "Sorry, something went wrong connecting to URnetwork"
-            )
-        }
+        let connected = try await VPNService.shared.connect(device: device)
         
-        if let connectLocation = device.getConnectLocation() {
-            connectViewController.connect(connectLocation)
-            return .result(
-                // TODO: add provider name to response
-                // dialog: "VPN connected to "
-                dialog: "Connecting VPN to \(connectLocation.name)"
-            )
+        if connected {
+            return .result(dialog: "Connecting to VPN")
         } else {
-            connectViewController.connectBestAvailable()
-            return .result(
-                // TODO: add provider name to response
-                // dialog: "VPN connected to "
-                dialog: "Connecting VPN to the best available location"
-            )
+            return .result(dialog: "Failed to connect")
         }
+
+        
+//        guard let connectViewController = device.openConnectViewController() else {
+//            return .result(
+//                dialog: "Sorry, something went wrong connecting to URnetwork"
+//            )
+//        }
+//        
+//        if let connectLocation = device.getConnectLocation() {
+//            connectViewController.connect(connectLocation)
+//            return .result(
+//                // TODO: add provider name to response
+//                // dialog: "VPN connected to "
+//                dialog: "Connecting VPN to \(connectLocation.name)"
+//            )
+//        } else {
+//            connectViewController.connectBestAvailable()
+//            return .result(
+//                // TODO: add provider name to response
+//                // dialog: "VPN connected to "
+//                dialog: "Connecting VPN to the best available location"
+//            )
+//        }
         
     }
     
