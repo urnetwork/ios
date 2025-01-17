@@ -93,10 +93,13 @@ struct ConnectView: View {
                                 .font(themeManager.currentTheme.bodyFont)
                                 .foregroundColor(themeManager.currentTheme.textColor)
                             
-                            
-                            Text("\(selectedProvider.providerCount) providers")
-                                .font(themeManager.currentTheme.secondaryBodyFont)
-                                .foregroundColor(themeManager.currentTheme.textMutedColor)
+                            if selectedProvider.providerCount > 0 {
+            
+                                Text("\(selectedProvider.providerCount) providers")
+                                    .font(themeManager.currentTheme.secondaryBodyFont)
+                                    .foregroundColor(themeManager.currentTheme.textMutedColor)
+                            }
+            
                             
                         }
                     } else {
