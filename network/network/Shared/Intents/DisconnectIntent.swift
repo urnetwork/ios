@@ -27,13 +27,13 @@ struct DisconnectIntent: AppIntent {
         
         guard let device = await deviceManager.device else {
             return .result(
-                dialog: "Please login to URnetwork to connect"
+                dialog: "Please login to URnetwork"
             )
         }
         
         if !device.getConnected() {
             return .result(
-                dialog: "You are already disconnected"
+                dialog: "You are disconnected"
             )
         }
         

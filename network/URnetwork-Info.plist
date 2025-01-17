@@ -43,6 +43,7 @@
 	<array/>
 	<key>INIntentsSupported</key>
 	<array>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER).DisconnectIntent</string>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER).ConnectIntent</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
