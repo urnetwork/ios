@@ -17,7 +17,7 @@ class DeviceManager: ObservableObject {
     @Published private(set) var networkSpace: SdkNetworkSpace? {
         didSet {
 //            setApi(networkSpace?.getApi())
-            updateParsedJwt()
+            // updateParsedJwt()
         }
     }
     
@@ -27,7 +27,11 @@ class DeviceManager: ObservableObject {
         }
     }
     
-    @Published private(set) var device: SdkDeviceRemote? = nil
+    @Published private(set) var device: SdkDeviceRemote? = nil {
+        didSet {
+            updateParsedJwt()
+        }
+    }
     
     @Published private(set) var vpnManager: VPNManager? = nil
     
@@ -38,6 +42,7 @@ class DeviceManager: ObservableObject {
     }
     
     func setDevice(device: SdkDeviceRemote?) {
+        
         if self.device != device {
             self.device?.close()
             self.device = device
@@ -109,6 +114,8 @@ class DeviceManager: ObservableObject {
     
     private func updateParsedJwt() {
         
+        print("update parsed jwt")
+        
         guard let localState = networkSpace?.getAsyncLocalState()?.getLocalState() else {
             parsedJwt = nil
             return
@@ -117,7 +124,6 @@ class DeviceManager: ObservableObject {
         do {
             parsedJwt = try localState.parseByJwt()
         } catch {
-            print("error parsing jwt: \(error)")
             parsedJwt = nil
         }
     }
@@ -176,17 +182,6 @@ class DeviceManager: ObservableObject {
         device?.setVpnInterfaceWhileOffline(value)
     }
     
-//    func setApi(_ api: SdkApi?) {
-//        self.api = api
-//    }
-    
-//    func setDevice(_ device: SdkDeviceRemote?) {
-//        if self.device != device {
-//            self.device?.close()
-//            self.device = device
-//        }
-//    }
-    
 }
 
 private class NetworkSpaceUpdateCallback: NSObject, URnetworkSdk.SdkNetworkSpaceUpdateProtocol {
@@ -227,8 +222,6 @@ private class GetJwtInitDeviceCallback: NSObject, SdkGetByClientJwtCallbackProto
 extension DeviceManager {
     
     func initializeNetworkSpace(_ storagePath: String) async {
-        
-        print("initialize network space hit")
         
         let deviceSpecs = self.getDeviceSpecs()
         let networkSpaceManager = URnetworkSdk.SdkNewNetworkSpaceManager(storagePath)
@@ -449,29 +442,6 @@ private class SetJWTLocalStateCallback: NSObject, SdkCommitCallbackProtocol {
 // MARK: login/logout
 extension DeviceManager {
     
-    private class LogoutCallback: NSObject, SdkCommitCallbackProtocol {
-        
-        weak var deviceManager: DeviceManager?
-        
-        init(deviceManager: DeviceManager) {
-            self.deviceManager = deviceManager
-        }
-        
-        func complete(_ success: Bool) {
-            
-            guard let deviceManager = deviceManager else {
-                print("[LogoutCallback:complete] network store is nil")
-                return
-            }
-            
-            Task { @MainActor in
-//                deviceManager.api?.setByJwt(nil)
-//                deviceManager.setDevice(nil)
-                deviceManager.clearDevice()
-            }
-        }
-    }
-    
     func authenticateNetworkClient(_ jwt: String) async -> Result<Void, Error> {
         
         do {
@@ -544,6 +514,19 @@ extension DeviceManager {
         
     }
     
+    class SdkCommitCallback: NSObject, SdkCommitCallbackProtocol {
+        let completionHandler: (Bool) -> Void
+        
+        init(completionHandler: @escaping (Bool) -> Void) {
+            self.completionHandler = completionHandler
+            super.init()
+        }
+        
+        func complete(_ success: Bool) {
+            completionHandler(success)
+        }
+    }
+    
     func logout() {
         
         guard let asyncLocalState = asyncLocalState else {
@@ -551,9 +534,14 @@ extension DeviceManager {
             return
         }
         
-        let logoutCallback = LogoutCallback(deviceManager: self)
+        let callback = SdkCommitCallback { success in
+            Task { @MainActor in
+                self.clearDevice()
+            }
+        }
         
-        asyncLocalState.logout(logoutCallback)
+        asyncLocalState.logout(callback)
+        
     }
     
     private func getDeviceSpecs() -> String {
