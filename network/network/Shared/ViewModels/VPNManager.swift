@@ -131,6 +131,8 @@ class VPNManager {
             print("[VPNManager]stop")
             self.stop()
             
+            // check why this is in place
+            // breaking when launching from ConnectIntent
             UIApplication.shared.isIdleTimerDisabled = false
         }
     }

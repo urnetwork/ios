@@ -41,6 +41,10 @@
 	</array>
 	<key>UIBackgroundModes</key>
 	<array/>
+	<key>INIntentsSupported</key>
+	<array>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER).ConnectIntent</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 </dict>
