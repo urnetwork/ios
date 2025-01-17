@@ -84,9 +84,6 @@ class DeviceManager: ObservableObject {
         
     }
     
-//    private var isNetworkSpaceInitialized = false
-//    private var networkSpaceInitializationTask: Task<Void, Error>?
-    
     
     // TODO: check how this is used or set
     let deviceDescription = "New device"
@@ -99,20 +96,16 @@ class DeviceManager: ObservableObject {
 //        // device?.setDeviceDescription(value)
 //    }
     
-    // /var/mobile/Containers/Data/Application/FF75DF5A-AB00-4F7C-84D1-FB5B5ACB8A03/Documents/
-    // /var/mobile/Containers/Data/Application/FF75DF5A-AB00-4F7C-84D1-FB5B5ACB8A03/Documents/
-    
     init() {
         
         Task {
             await self.initializeNetworkSpace()
-            // self.isNetworkSpaceInitialized = true
         }
         
     }
     
     /**
-     * used in our intents
+     * used in app intents
      */
     func waitForDeviceInitialization() async {
         // Return early if already initialized
@@ -125,16 +118,6 @@ class DeviceManager: ObservableObject {
             }
         }
     }
-//    func ensureInitialized() async {
-//        if !isNetworkSpaceInitialized {
-//            do {
-//                try await networkSpaceInitializationTask?.value
-//            } catch(let error) {
-//                print("error ensuring network space initialized: \(error)")
-//            }
-//            
-//        }
-//    }
     
     var asyncLocalState: SdkAsyncLocalState? {
         return networkSpace?.getAsyncLocalState()
