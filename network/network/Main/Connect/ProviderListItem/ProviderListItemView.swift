@@ -32,7 +32,7 @@ struct ProviderListItemView: View {
                     .font(themeManager.currentTheme.bodyFont)
                     .foregroundColor(themeManager.currentTheme.textColor)
                 
-                if let providerCount = providerCount {
+                if let providerCount = providerCount, providerCount > 0 {
                     Text("\(providerCount) providers")
                         .font(themeManager.currentTheme.secondaryBodyFont)
                         .foregroundColor(themeManager.currentTheme.textMutedColor)
