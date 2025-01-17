@@ -16,6 +16,7 @@ enum TunnelRequestStatus {
     case none
 }
 
+@MainActor
 class VPNManager {
     
     var device: SdkDeviceRemote
@@ -40,31 +41,31 @@ class VPNManager {
         self.device = device
         
         self.routeLocalSub = device.add(RouteLocalChangeListener { [weak self] routeLocal in
-            mainImmediateBlocking {
+            DispatchQueue.main.async {
                 self?.updateVpnService()
             }
         })
         
         self.deviceProvideSub = device.add(ProvideChangeListener { [weak self] provideEnabled in
-            mainImmediateBlocking {
+            DispatchQueue.main.async {
                 self?.updateVpnService()
             }
         })
         
         self.deviceProvidePausedSub = device.add(ProvidePausedChangeListener { [weak self] providePaused in
-            mainImmediateBlocking {
+            DispatchQueue.main.async {
                 self?.updateVpnService()
             }
         })
         
         self.deviceOflineSub = device.add(OfflineChangeListener { [weak self] offline, vpnInterfaceWhileOffline in
-            mainImmediateBlocking {
+            DispatchQueue.main.async {
                 self?.updateVpnService()
             }
         })
         
         self.deviceConnectSub = device.add(ConnectChangeListener { [weak self] connectEnabled in
-            mainImmediateBlocking {
+            DispatchQueue.main.async {
                 self?.updateVpnService()
             }
         })
@@ -75,7 +76,7 @@ class VPNManager {
                 return
             }
             
-            mainImmediateBlocking {
+            DispatchQueue.main.async {
                 if !remoteConnected {
                     // recheck the last known state to make sure remote is not supposed to be active
                     self.updateVpnService()
@@ -86,18 +87,16 @@ class VPNManager {
         updateVpnService()
     }
     
-    deinit {
-        print("VPN Manager deinit")
-        
-        self.close()
-    }
+//    deinit {
+//        print("VPN Manager deinit")
+//        
+//        self.close()
+//    }
     
     func close() {
         self.stop()
         
-        DispatchQueue.main.async {
-            UIApplication.shared.isIdleTimerDisabled = false
-        }
+        UIApplication.shared.isIdleTimerDisabled = false
         
         self.routeLocalSub?.close()
         self.routeLocalSub = nil

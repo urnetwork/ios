@@ -21,12 +21,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
 }
 
-func mainImmediateBlocking(callback: ()->Void) {
-    if Thread.isMainThread {
-        callback()
-    } else {
-        DispatchQueue.main.sync {
-            callback()
-        }
-    }
-}
+//func mainImmediateBlocking(callback: ()->Void) {
+//    if Thread.isMainThread {
+//        callback()
+//    } else {
+//        DispatchQueue.main.sync {
+//            callback()
+//        }
+//    }
+//}
