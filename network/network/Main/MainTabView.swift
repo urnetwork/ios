@@ -28,6 +28,7 @@ struct MainTabView: View {
     init(
         api: SdkApi,
         device: SdkDeviceRemote,
+        vpnManager: VPNManager,
         logout: @escaping () -> Void,
         provideWhileDisconnected: Binding<Bool>
     ) {
@@ -38,7 +39,8 @@ struct MainTabView: View {
         self.connectViewController = device.openConnectViewController()
         
         // vpn manager
-        self.vpnManager = VPNManager(device: device)
+//        self.vpnManager = VPNManager(device: device)
+        self.vpnManager = vpnManager
         // vpnManager.loadOrCreateManager()
         
         setupTabBar()

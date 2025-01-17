@@ -16,28 +16,48 @@ class DeviceManager: ObservableObject {
     
     @Published private(set) var networkSpace: SdkNetworkSpace? {
         didSet {
-            setApi(networkSpace?.getApi())
+//            setApi(networkSpace?.getApi())
             updateParsedJwt()
         }
     }
     
-    @Published private(set) var api: SdkApi?
-    
-    @Published private(set) var device: SdkDeviceRemote? {
-        didSet {
-            
-            DispatchQueue.main.async {
-                self.provideWhileDisconnected = self.device?.getProvideWhileDisconnected() ?? false
-            }
-            
-            updateParsedJwt()
+    var api: SdkApi? {
+        get {
+            return self.networkSpace?.getApi()
         }
     }
+    
+    @Published private(set) var device: SdkDeviceRemote? = nil
+    
+    @Published private(set) var vpnManager: VPNManager? = nil
     
     @Published var provideWhileDisconnected: Bool = false {
         didSet {
             handleProvideWhileDisconnectedUpdate(provideWhileDisconnected)
         }
+    }
+    
+    func setDevice(device: SdkDeviceRemote?) {
+        if self.device != device {
+            self.device?.close()
+            self.device = device
+            
+            self.vpnManager?.close()
+            self.vpnManager = nil
+            
+            if let device = device {
+                self.provideWhileDisconnected = device.getProvideWhileDisconnected()
+                self.deviceInitialized = true
+                self.vpnManager = VPNManager(device: device)
+            } else {
+                self.provideWhileDisconnected = false
+                self.deviceInitialized = false
+            }
+        }
+    }
+    
+    func clearDevice() {
+        setDevice(device: nil)
     }
     
     @Published private(set) var deviceInitialized: Bool = false
@@ -156,13 +176,16 @@ class DeviceManager: ObservableObject {
         device?.setVpnInterfaceWhileOffline(value)
     }
     
-    func setApi(_ api: SdkApi?) {
-        self.api = api
-    }
+//    func setApi(_ api: SdkApi?) {
+//        self.api = api
+//    }
     
-    func setDevice(_ device: SdkDeviceRemote?) {
-        self.device = device
-    }
+//    func setDevice(_ device: SdkDeviceRemote?) {
+//        if self.device != device {
+//            self.device?.close()
+//            self.device = device
+//        }
+//    }
     
 }
 
@@ -276,8 +299,6 @@ extension DeviceManager {
         deviceSpec: String
     ) {
         
-        device?.close()
-        
         if let networkSpace = networkSpace {
             
             let localState = asyncLocalState?.getLocalState()
@@ -350,7 +371,7 @@ extension DeviceManager {
                 }
                 
                 DispatchQueue.main.async {
-                    self.device = device
+                    self.setDevice(device: device)
                 }
                 
             } else {
@@ -358,17 +379,8 @@ extension DeviceManager {
             }
             
         }
-        
-        DispatchQueue.main.async {
-            self.deviceInitialized = true
-        }
-        
     }
     
-    func clearDevice() {
-        device?.close()
-        device = nil
-    }
     
     private func getAppVersion() -> String? {
         if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
@@ -380,15 +392,15 @@ extension DeviceManager {
     }
     
     // TODO: add device listeners
-    private func setupDeviceListeners() {
-        
-        if let device = device {
-            
-            // device.add(<#T##listener: (any SdkRouteLocalChangeListenerProtocol)?##(any SdkRouteLocalChangeListenerProtocol)?#>)
-            
-        }
-        
-    }
+//    private func setupDeviceListeners() {
+//        
+//        if let device = device {
+//            
+//            // device.add(<#T##listener: (any SdkRouteLocalChangeListenerProtocol)?##(any SdkRouteLocalChangeListenerProtocol)?#>)
+//            
+//        }
+//        
+//    }
     
 }
 
@@ -453,8 +465,9 @@ extension DeviceManager {
             }
             
             Task { @MainActor in
-                deviceManager.api?.setByJwt(nil)
-                deviceManager.setDevice(nil)
+//                deviceManager.api?.setByJwt(nil)
+//                deviceManager.setDevice(nil)
+                deviceManager.clearDevice()
             }
         }
     }

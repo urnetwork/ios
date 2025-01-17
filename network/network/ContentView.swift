@@ -40,10 +40,11 @@ struct ContentView: View {
                     .opacity(opacity)
 
                 case .main:
-                    if let device = deviceManager.device {
+                    if let device = deviceManager.device, let vpnManager = deviceManager.vpnManager {
                         MainView(
                             api: api,
                             device: device,
+                            vpnManager: vpnManager,
                             // todo: we don't need to prop drill this, just access deviceManager through environment object
                             logout: deviceManager.logout,
                             welcomeAnimationComplete: $welcomeAnimationComplete
