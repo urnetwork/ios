@@ -18,6 +18,8 @@ final class VPNService {
     static let shared = VPNService()
     private var vpnManager: VPNManager?
     
+    private var connectViewController: SdkConnectViewController?
+    
     private init() {}
     
     func connect(device: SdkDeviceRemote) async throws -> Bool {
@@ -28,18 +30,30 @@ final class VPNService {
             return false
         }
         
-        if let connectLocation = device.getConnectLocation() {
-            connectViewController.connect(connectLocation)
+        self.connectViewController = connectViewController
+        
+        if let location = device.getConnectLocation() {
+            connectViewController.connect(location)
         } else {
             connectViewController.connectBestAvailable()
         }
         
         return true
+        
+
     }
     
-    func disconnect() {
-        vpnManager?.close()
-        vpnManager = nil
+    func disconnect() async throws -> Bool {
+        
+        guard let connectViewController = self.connectViewController else {
+            return false
+        }
+        
+        connectViewController.disconnect()
+        
+        self.connectViewController = nil
+        
+        return true
     }
     
 }

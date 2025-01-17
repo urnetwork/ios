@@ -1,17 +1,17 @@
 //
-//  ConnectIntent.swift
+//  DisconnectIntent.swift
 //  URnetwork
 //
-//  Created by Stuart Kuentzel on 2025/01/16.
+//  Created by Stuart Kuentzel on 2025/01/17.
 //
 
 import Foundation
 import AppIntents
 import URnetworkSdk
 
-struct ConnectIntent: AppIntent {
+struct DisconnectIntent: AppIntent {
     
-    static let title: LocalizedStringResource = "Connect URnetwork VPN"
+    static let title: LocalizedStringResource = "Disconnect URnetwork VPN"
     
     static var isSiriAvailable: Bool = true
     
@@ -31,18 +31,18 @@ struct ConnectIntent: AppIntent {
             )
         }
         
-        if device.getConnected() {
+        if !device.getConnected() {
             return .result(
-                dialog: "You are already connected"
+                dialog: "You are already disconnected"
             )
         }
         
-        let connected = try await VPNService.shared.connect(device: device)
+        let disconnected = try await VPNService.shared.disconnect()
         
-        if connected {
-            return .result(dialog: "Connecting to URnetwork")
+        if disconnected {
+            return .result(dialog: "Disconnecting from URnetwork")
         } else {
-            return .result(dialog: "Failed to connect")
+            return .result(dialog: "Failed to disconnect")
         }
         
     }

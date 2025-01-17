@@ -21,7 +21,21 @@ struct Shortcuts: AppShortcutsProvider {
                 "Connect to \(.applicationName) VPN",
                 "Connect VPN to \(.applicationName)"
             ],
-            shortTitle: "Connect VPN",
+            shortTitle: "Connect URnetwork VPN",
+            // TODO: update systemImageName
+            systemImageName: "pin"
+        )
+        
+        AppShortcut(
+            intent: DisconnectIntent(),
+            phrases: [
+                "Disconnect from \(.applicationName)",
+                "Disconnect \(.applicationName)",
+                "Disconnect \(.applicationName) VPN",
+                "Disconnect from \(.applicationName) VPN",
+                "Disconnect VPN from \(.applicationName)"
+            ],
+            shortTitle: "Disconnect URnetwork VPN",
             // TODO: update systemImageName
             systemImageName: "pin"
         )
