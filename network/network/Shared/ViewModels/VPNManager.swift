@@ -89,6 +89,16 @@ class VPNManager {
     deinit {
         print("VPN Manager deinit")
         
+        self.close()
+    }
+    
+    func close() {
+        self.stop()
+        
+        DispatchQueue.main.async {
+            UIApplication.shared.isIdleTimerDisabled = false
+        }
+        
         self.routeLocalSub?.close()
         self.routeLocalSub = nil
         
@@ -144,14 +154,14 @@ class VPNManager {
         }
         
         // Load all configurations first
-        NETunnelProviderManager.loadAllFromPreferences { [weak self] (managers, error) in
+        NETunnelProviderManager.loadAllFromPreferences { (managers, error) in
             if let error = error {
                 print("Error loading managers: \(error.localizedDescription)")
                 return
             }
-            guard let self = self else {
-                return
-            }
+//            guard let self = self else {
+//                return
+//            }
             
             // Use existing manager or create new one
             let tunnelManager = managers?.first ?? NETunnelProviderManager()
@@ -202,15 +212,15 @@ class VPNManager {
             connectRule.interfaceTypeMatch = NEOnDemandRuleInterfaceType.any
             tunnelManager.onDemandRules = [connectRule]
             
-            tunnelManager.saveToPreferences { [weak self] error in
+            tunnelManager.saveToPreferences { error in
                 if let error = error {
                     // when changing locations quickly, another change might have intercepted this save
                     return
                 }
                 
                 // see https://forums.developer.apple.com/forums/thread/25928
-                tunnelManager.loadFromPreferences { [weak self] error in
-                    self?.connect(tunnelManager: tunnelManager)
+                tunnelManager.loadFromPreferences { error in
+                    self.connect(tunnelManager: tunnelManager)
                 }
             }
         }
@@ -221,14 +231,14 @@ class VPNManager {
             return
         }
         
-        NETunnelProviderManager.loadAllFromPreferences { [weak self] (managers, error) in
+        NETunnelProviderManager.loadAllFromPreferences { (managers, error) in
             if let error = error {
                 print("[VPNManager]error loading managers: \(error.localizedDescription)")
                 return
             }
-            guard let self = self else {
-                return
-            }
+//            guard let self = self else {
+//                return
+//            }
             
             // Use existing manager or create new one
             guard let tunnelManager = managers?.first else {
@@ -239,15 +249,15 @@ class VPNManager {
             tunnelManager.isEnabled = false
             tunnelManager.isOnDemandEnabled = false
             
-            tunnelManager.saveToPreferences { [weak self] error in
+            tunnelManager.saveToPreferences { error in
                 if let error = error {
                     // when changing locations quickly, another change might have intercepted this save
                     return
                 }
                 
                 // see https://forums.developer.apple.com/forums/thread/25928
-                tunnelManager.loadFromPreferences { [weak self] error in
-                    self?.disconnect(tunnelManager: tunnelManager)
+                tunnelManager.loadFromPreferences { error in
+                    self.disconnect(tunnelManager: tunnelManager)
                 }
             }
         }
