@@ -94,7 +94,10 @@ class VPNManager {
     
     func close() {
         self.stop()
-        UIApplication.shared.isIdleTimerDisabled = false
+        
+        DispatchQueue.main.async {
+            UIApplication.shared.isIdleTimerDisabled = false
+        }
         
         self.routeLocalSub?.close()
         self.routeLocalSub = nil
