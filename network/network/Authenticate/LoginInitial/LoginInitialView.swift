@@ -163,13 +163,49 @@ struct LoginInitialView: View {
     }
     
     private func handleAppleLoginResult(_ result: Result<ASAuthorization, any Error>) async {
-        let result = await viewModel.handleAppleLoginResult(result)
-        await handleAuthLoginResult(result)
-    }
+
+        let createArgsResult = viewModel.createAppleAuthLoginArgs(result)
+        switch createArgsResult {
+        case .success(let args):
+            
+            if deviceManager.device != nil {
+        
+                // device exists, meaning we're in the guest flow
+                // link guest account to google account
+                let result = await viewModel.linkGuestToExistingSocialLogin(args: args)
+                await self.handleAuthLoginResult(result)
+                
+            } else {
+             
+                // login with apple
+                // let result = await viewModel.authLogin(args: args)
+                let result = await viewModel.authLogin(args: args)
+                await self.handleAuthLoginResult(result)
+                
+            }
+        
+        case .failure(let error):
+            print("error create args result: \(error.localizedDescription)")
+            snackbarManager.showSnackbar(message: "There was an error logging in")
+        }
+        
+     }
+    
     
     private func handleUserAuth() async {
-        let result = await viewModel.getStarted()
-        await handleAuthLoginResult(result)
+        
+        let createArgsResult = viewModel.getStarted()
+        switch createArgsResult {
+        case .success(let args):
+            
+            let result = await viewModel.authLogin(args: args)
+            await self.handleAuthLoginResult(result)
+        
+        case .failure(let error):
+            print("error create args result: \(error.localizedDescription)")
+            snackbarManager.showSnackbar(message: "There was an error logging in")
+        }
+        
     }
     
     private func handleAuthLoginResult(_ authLoginResult: AuthLoginResult) async {
@@ -177,7 +213,6 @@ struct LoginInitialView: View {
         switch authLoginResult {
             
         case .login(let authJwt):
-            
             
             await handleSuccess(authJwt)
             
@@ -207,12 +242,34 @@ struct LoginInitialView: View {
         
         do {
             let signInResult = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController)
-
-            let result = await viewModel.handleGoogleLoginResult(signInResult)
-            await handleAuthLoginResult(result)
+            
+            let createArgsResult = viewModel.createGoogleAuthLoginArgs(signInResult)
+            switch createArgsResult {
+            case .success(let args):
+                
+                if deviceManager.device != nil {
+            
+                    // device exists, meaning we're in the guest flow
+                    // link guest account to google account
+                    let result = await viewModel.linkGuestToExistingSocialLogin(args: args)
+                    await self.handleAuthLoginResult(result)
+                    
+                } else {
+                 
+                    // login with google
+                    let result = await viewModel.authLogin(args: args)
+                    await self.handleAuthLoginResult(result)
+                    
+                }
+            
+            case .failure(let error):
+                print("error create args result: \(error.localizedDescription)")
+                snackbarManager.showSnackbar(message: "There was an error logging in")
+            }
             
          } catch {
              print("Error signing in: \(error.localizedDescription)")
+             snackbarManager.showSnackbar(message: "There was an error logging in")
          }
         
     }
@@ -331,14 +388,14 @@ private struct LoginInitialFormView: View {
     }
 }
 
-#Preview {
-    ZStack {
-        LoginInitialView(
-            api: nil,
-            navigate: {_ in },
-            handleSuccess: {_ in }
-        )
-    }
-    .environmentObject(ThemeManager.shared)
-    .background(ThemeManager.shared.currentTheme.backgroundColor)
-}
+//#Preview {
+//    ZStack {
+//        LoginInitialView(
+//            api: nil,
+//            navigate: {_ in },
+//            handleSuccess: {_ in },
+//        )
+//    }
+//    .environmentObject(ThemeManager.shared)
+//    .background(ThemeManager.shared.currentTheme.backgroundColor)
+//}

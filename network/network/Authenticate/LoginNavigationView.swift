@@ -18,6 +18,12 @@ struct LoginNavigationView: View {
     var cancel: (() -> Void)? = nil
     var handleSuccess: (_ jwt: String) async -> Void
     
+    init(api: SdkApi, cancel: (() -> Void)? = nil, handleSuccess: @escaping (_ jwt: String) async -> Void) {
+        self.api = api
+        self.cancel = cancel
+        self.handleSuccess = handleSuccess
+    }
+    
     var body: some View {
         NavigationStack(
             path: $viewModel.navigationPath

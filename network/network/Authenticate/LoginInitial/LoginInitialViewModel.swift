@@ -11,19 +11,6 @@ import SwiftUI
 import AuthenticationServices
 import GoogleSignIn
 
-private class AuthLoginCallback: SdkCallback<SdkAuthLoginResult, SdkAuthLoginCallbackProtocol>, SdkAuthLoginCallbackProtocol {
-    func result(_ result: SdkAuthLoginResult?, err: Error?) {
-        handleResult(result, err: err)
-    }
-}
-enum LoginError: Error {
-    case appleLoginFailed
-    case googleLoginFailed
-    case googleNoResult
-    case googleNoIdToken
-    case inProgress
-}
-
 extension LoginInitialView {
     
     @MainActor
@@ -59,7 +46,7 @@ extension LoginInitialView {
             self.api = api
         }
         
-        private func authLogin(args: SdkAuthLoginArgs) async -> AuthLoginResult {
+        func authLogin(args: SdkAuthLoginArgs) async -> AuthLoginResult {
             
             do {
                 let result: AuthLoginResult = try await withCheckedThrowingContinuation { [weak self] continuation in
@@ -72,7 +59,7 @@ extension LoginInitialView {
                          
                         if let error {
 
-                            continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "error exists \(error)"]))
+                            continuation.resume(throwing: error)
                             
                             return
                         }
@@ -139,13 +126,67 @@ extension LoginInitialView {
             }
             
         }
+        
+        func linkGuestToExistingSocialLogin(args: SdkAuthLoginArgs) async -> AuthLoginResult {
+            
+            do {
+                
+                let result: AuthLoginResult = try await withCheckedThrowingContinuation { [weak self] continuation in
+                    
+                    guard let self = self else { return }
+                    
+                    let callback = UpgradeGuestExistingCallback { [weak self] result, error in
+                        
+                        guard let self = self else { return }
+                        
+                        guard let result else {
+                            
+                            continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "No result found"]))
+                            
+                            return
+                        }
+                        
+                        if let resultError = result.error {
+                            
+                            continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "result.error exists \(resultError.message)"]))
+                            
+                            return
+                        }
+                        
+                        
+                        // JWT exists, proceed to authenticate network
+                        if let jwt = result.network?.byJwt {
+                            continuation.resume(returning: .login(jwt))
+                            return
+                        }
+                        
+                        
+                    }
+                    
+                    let upgradeArgs = SdkUpgradeGuestExistingArgs()
+                    upgradeArgs.authJwt = args.authJwt
+                    upgradeArgs.authJwtType = args.authJwtType
+                    
+                    api?.upgradeGuestExisting(upgradeArgs, callback: callback)
+                    
+                }
+                
+                return result
+                
+            } catch(let error) {
+                return .failure(error)
+            }
+            
+        }
+        
     }
 }
 
 // MARK: Handle UserAuth Login
 extension LoginInitialView.ViewModel {
     
-    func getStarted() async -> AuthLoginResult {
+    // func getStarted() async -> AuthLoginResult {
+    func getStarted() -> Result<SdkAuthLoginArgs, Error> {
         
         if isCheckingUserAuth {
             return .failure(NSError(domain: domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Auth login already in progress"]))
@@ -162,7 +203,9 @@ extension LoginInitialView.ViewModel {
         let args = SdkAuthLoginArgs()
         args.userAuth = userAuth
         
-        return await authLogin(args: args)
+        return .success(args)
+        
+        // return await authLogin(args: args)
     }
     
 }
@@ -170,9 +213,8 @@ extension LoginInitialView.ViewModel {
 // MARK: Handle Apple Login
 extension LoginInitialView.ViewModel {
     
-    func handleAppleLoginResult(_ result: Result<ASAuthorization, any Error>) async -> AuthLoginResult {
-        
-        print("handleAppleLoginResult hit")
+    // func handleAppleLoginResult(_ result: Result<ASAuthorization, any Error>) async -> AuthLoginResult {
+    func createAppleAuthLoginArgs(_ result: Result<ASAuthorization, any Error>) -> Result<SdkAuthLoginArgs, Error> {
         
         switch result {
             
@@ -194,7 +236,9 @@ extension LoginInitialView.ViewModel {
                     args.authJwt = idTokenString
                     args.authJwtType = "apple"
                     
-                    return await authLogin(args: args)
+                    return .success(args)
+                    
+                    // return await authLogin(args: args)
 
                 default:
                         
@@ -215,7 +259,8 @@ extension LoginInitialView.ViewModel {
 // MARK: handle Google login result
 extension LoginInitialView.ViewModel {
     
-    func handleGoogleLoginResult(_ result: GIDSignInResult?) async -> AuthLoginResult {
+    // func handleGoogleLoginResult(_ result: GIDSignInResult?) async -> AuthLoginResult {
+    func createGoogleAuthLoginArgs(_ result: GIDSignInResult?) -> Result<SdkAuthLoginArgs, Error> {
         
         guard let result = result else {
             return .failure(LoginError.googleNoResult)
@@ -229,7 +274,9 @@ extension LoginInitialView.ViewModel {
         args.authJwt = idTokenString
         args.authJwtType = "google"
         
-        return await authLogin(args: args)
+        return .success(args)
+        
+        // return await authLogin(args: args)
         
     }
     
@@ -310,3 +357,24 @@ extension LoginInitialView.ViewModel {
     }
     
 }
+
+private class AuthLoginCallback: SdkCallback<SdkAuthLoginResult, SdkAuthLoginCallbackProtocol>, SdkAuthLoginCallbackProtocol {
+    func result(_ result: SdkAuthLoginResult?, err: Error?) {
+        handleResult(result, err: err)
+    }
+}
+
+private class UpgradeGuestExistingCallback: SdkCallback<SdkUpgradeGuestExistingResult, SdkUpgradeGuestExistingCallbackProtocol>, SdkUpgradeGuestExistingCallbackProtocol {
+    func result(_ result: SdkUpgradeGuestExistingResult?, err: Error?) {
+        handleResult(result, err: err)
+    }
+}
+
+enum LoginError: Error {
+    case appleLoginFailed
+    case googleLoginFailed
+    case googleNoResult
+    case googleNoIdToken
+    case inProgress
+}
+

@@ -15,3 +15,10 @@ enum AuthLoginResult {
     case create(SdkAuthLoginArgs)
     case failure(Error)
 }
+
+enum AuthLoginError: Error {
+    case isInProgress
+    case invalidResult
+    case invalidArguments
+    
+}

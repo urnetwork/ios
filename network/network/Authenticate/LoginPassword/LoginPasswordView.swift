@@ -35,6 +35,8 @@ struct LoginPasswordView: View {
 
     var body: some View {
         
+        let deviceExists = deviceManager.device != nil
+        
         GeometryReader { geometry in
             ScrollView(.vertical) {
                 VStack {
@@ -61,7 +63,7 @@ struct LoginPasswordView: View {
                         onSubmit: {
                             if !viewModel.password.isEmpty {
                                 Task {
-                                    let result = await viewModel.login(userAuth: self.userAuth)
+                                    let result = await viewModel.loginWithPassword(userAuth: self.userAuth)
                                     await handleLoginResult(result)
                                 }
                             }
@@ -77,7 +79,7 @@ struct LoginPasswordView: View {
                             hideKeyboard()
                             if !viewModel.password.isEmpty {
                                 Task {
-                                    let result = await viewModel.login(userAuth: self.userAuth)
+                                    let result = await viewModel.loginWithPassword(userAuth: self.userAuth)
                                     await handleLoginResult(result)
                                 }
                             }
