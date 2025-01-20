@@ -94,7 +94,7 @@ class VPNManager {
 //    }
     
     func close() {
-        self.stop()
+        self.stopVpnTunnel()
         
         UIApplication.shared.isIdleTimerDisabled = false
         
@@ -131,21 +131,25 @@ class VPNManager {
             print("[VPNManager]start")
             
             // see https://developer.apple.com/documentation/uikit/uiapplication/isidletimerdisabled
-            UIApplication.shared.isIdleTimerDisabled = true
+            if providePaused {
+                UIApplication.shared.isIdleTimerDisabled = false
+            } else {
+                UIApplication.shared.isIdleTimerDisabled = true
+            }
             
-            self.start()
+            self.startVpnTunnel()
             
             
         } else {
             print("[VPNManager]stop")
-            self.stop()
+            self.stopVpnTunnel()
             
             UIApplication.shared.isIdleTimerDisabled = false
         }
     }
     
     
-    private func start() {
+    private func startVpnTunnel() {
         if self.tunnelRequestStatus == .started {
             return
         }
@@ -181,8 +185,12 @@ class VPNManager {
             tunnelProtocol.serverAddress = networkSpace.getHostName()
             tunnelProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
             tunnelProtocol.disconnectOnSleep = false
+            
+            // Note `includeAllNetworks` seems to break Facetime and mail sync
+            // FIXME figure out the best setting here
             // see https://developer.apple.com/documentation/networkextension/nevpnprotocol/includeallnetworks
-            tunnelProtocol.includeAllNetworks = true
+//            tunnelProtocol.includeAllNetworks = true
+            
             // this is needed for casting, etc.
             tunnelProtocol.excludeLocalNetworks = true
             tunnelProtocol.excludeCellularServices = true
@@ -191,7 +199,7 @@ class VPNManager {
                 tunnelProtocol.excludeDeviceCommunication = true
             }
             
-            tunnelProtocol.enforceRoutes = true
+//            tunnelProtocol.enforceRoutes = true
             
             tunnelProtocol.providerConfiguration = [
                 "by_jwt": self.device.getApi()?.getByJwt() as Any,
@@ -217,13 +225,27 @@ class VPNManager {
                 
                 // see https://forums.developer.apple.com/forums/thread/25928
                 tunnelManager.loadFromPreferences { error in
-                    self.connect(tunnelManager: tunnelManager)
+                    if self.tunnelRequestStatus != .started {
+                        do {
+                            try tunnelManager.connection.startVPNTunnel()
+                            print("[VPNManager]connection started")
+                            self.device.sync()
+                            self.tunnelRequestStatus = .started
+                        } catch let error as NSError {
+                            print("[VPNManager]Error starting VPN connection:")
+                            print("[VPNManager]Domain: \(error.domain)")
+                            print("[VPNManager]Code: \(error.code)")
+                            print("[VPNManager]Description: \(error.localizedDescription)")
+                            print("[VPNManager]User Info: \(error.userInfo)")
+                            
+                        }
+                    }
                 }
             }
         }
     }	
     
-    private func stop() {
+    private func stopVpnTunnel() {
         if self.tunnelRequestStatus == .stopped {
             return
         }
@@ -254,41 +276,19 @@ class VPNManager {
                 
                 // see https://forums.developer.apple.com/forums/thread/25928
                 tunnelManager.loadFromPreferences { error in
-                    self.disconnect(tunnelManager: tunnelManager)
+                    if let error {
+                        return
+                    }
+                    
+                    if self.tunnelRequestStatus != .stopped {
+                        tunnelManager.connection.stopVPNTunnel()
+                        self.tunnelRequestStatus = .stopped
+                    }
                 }
             }
         }
     }
     
-    func connect(tunnelManager: NETunnelProviderManager) {
-        if self.tunnelRequestStatus == .started {
-            return
-        }
-        self.tunnelRequestStatus = .started
-        
-        do {
-            try tunnelManager.connection.startVPNTunnel()
-            print("[VPNManager]connection started")
-            self.device.sync()
-        } catch let error as NSError {
-            print("[VPNManager]Error starting VPN connection:")
-            print("[VPNManager]Domain: \(error.domain)")
-            print("[VPNManager]Code: \(error.code)")
-            print("[VPNManager]Description: \(error.localizedDescription)")
-            print("[VPNManager]User Info: \(error.userInfo)")
-            
-        }
-    }
-    
-    func disconnect(tunnelManager: NETunnelProviderManager) {
-        if self.tunnelRequestStatus == .stopped {
-            return
-        }
-        self.tunnelRequestStatus = .stopped
-        
-        tunnelManager.connection.stopVPNTunnel()
-        print("[VPNManager]connection stopped")
-    }
 }
 
 
