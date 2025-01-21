@@ -39,7 +39,9 @@ extension LoginPasswordView {
         }
         
         func setIsLoggingIn(_ isLoggingIn: Bool) {
-            self.isLoggingIn = isLoggingIn
+            DispatchQueue.main.async {
+                self.isLoggingIn = isLoggingIn
+            }
         }
         
         func loginWithPassword(userAuth: String) async -> LoginNetworkResult {
@@ -117,9 +119,10 @@ extension LoginPasswordView {
 //                DispatchQueue.main.async {
 //                    self.isLoggingIn = false
 //                }
-                
+                setIsLoggingIn(false)
                 return result
             } catch {
+                setIsLoggingIn(false)
                 return .failure(error)
             }
             
