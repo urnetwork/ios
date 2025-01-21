@@ -10,8 +10,16 @@ import URnetworkSdk
 
 // NOTE: used in LoginInitial to check whether the user already exists or if they should create a new network
 enum AuthLoginResult {
-    case login(String) // JWT
+    case login(_ jwt: String)
     case promptPassword(SdkAuthLoginResult)
     case create(SdkAuthLoginArgs)
     case failure(Error)
+    case verificationRequired(_ userAuth: String)
+}
+
+enum AuthLoginError: Error {
+    case isInProgress
+    case invalidResult
+    case invalidArguments
+    
 }

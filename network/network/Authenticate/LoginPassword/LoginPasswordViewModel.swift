@@ -17,6 +17,7 @@ private class AuthLoginPasswordCallback: SdkCallback<SdkAuthLoginWithPasswordRes
 
 extension LoginPasswordView {
     
+    @MainActor
     class ViewModel: ObservableObject {
         
         private var api: SdkApi?
@@ -38,10 +39,12 @@ extension LoginPasswordView {
         }
         
         func setIsLoggingIn(_ isLoggingIn: Bool) {
-            self.isLoggingIn = isLoggingIn
+            DispatchQueue.main.async {
+                self.isLoggingIn = isLoggingIn
+            }
         }
         
-        func login(userAuth: String) async -> LoginNetworkResult {
+        func loginWithPassword(userAuth: String) async -> LoginNetworkResult {
             
             if !isValid {
                 return .failure(NSError(domain: domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Form invalid"]))
@@ -51,9 +54,7 @@ extension LoginPasswordView {
                 return .failure(NSError(domain: domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "Login already in progress"]))
             }
             
-            DispatchQueue.main.async {
-                self.setIsLoggingIn(true)
-            }
+            self.setIsLoggingIn(true)
             
             do {
                 let result: LoginNetworkResult = try await withCheckedThrowingContinuation { [weak self] continuation in
@@ -118,9 +119,10 @@ extension LoginPasswordView {
 //                DispatchQueue.main.async {
 //                    self.isLoggingIn = false
 //                }
-                
+                setIsLoggingIn(false)
                 return result
             } catch {
+                setIsLoggingIn(false)
                 return .failure(error)
             }
             

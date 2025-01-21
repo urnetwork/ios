@@ -14,6 +14,7 @@ struct LoginPasswordView: View {
     @EnvironmentObject var snackbarManager: UrSnackbarManager
     @EnvironmentObject var deviceManager: DeviceManager
     @StateObject private var viewModel: ViewModel
+    @ObservedObject var guestUpgradeViewModel: GuestUpgradeViewModel
     
     var userAuth: String
     var navigate: (LoginInitialNavigationPath) -> Void
@@ -25,15 +26,19 @@ struct LoginPasswordView: View {
         userAuth: String,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
         handleSuccess: @escaping (_ jwt: String) async -> Void,
+        guestUpgradeViewModel: GuestUpgradeViewModel,
         api: SdkApi?
     ) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api))
         self.userAuth = userAuth
         self.navigate = navigate
         self.handleSuccess = handleSuccess
+        self.guestUpgradeViewModel = guestUpgradeViewModel
     }
 
     var body: some View {
+        
+        let deviceExists = deviceManager.device != nil
         
         GeometryReader { geometry in
             ScrollView(.vertical) {
@@ -61,7 +66,7 @@ struct LoginPasswordView: View {
                         onSubmit: {
                             if !viewModel.password.isEmpty {
                                 Task {
-                                    let result = await viewModel.login(userAuth: self.userAuth)
+                                    let result = await viewModel.loginWithPassword(userAuth: self.userAuth)
                                     await handleLoginResult(result)
                                 }
                             }
@@ -77,8 +82,25 @@ struct LoginPasswordView: View {
                             hideKeyboard()
                             if !viewModel.password.isEmpty {
                                 Task {
-                                    let result = await viewModel.login(userAuth: self.userAuth)
-                                    await handleLoginResult(result)
+                                    
+                                    if deviceExists {
+                                        // in guest mode
+                                        // merge user auth account and login
+                                        
+                                        let args = SdkUpgradeGuestExistingArgs()
+                                        args.userAuth = self.userAuth
+                                        args.password = self.viewModel.password
+                                    
+                                        let result = await guestUpgradeViewModel.linkGuestToExistingLogin(args: args)
+                                        await handleUpgradeLoginResult(result)
+                                        
+                                        
+                                    } else {
+                                        // normal login
+                                        let result = await viewModel.loginWithPassword(userAuth: self.userAuth)
+                                        await handleLoginResult(result)
+                                    }
+
                                 }
                             }
                         },
@@ -112,6 +134,29 @@ struct LoginPasswordView: View {
     
     }
     
+    private func handleUpgradeLoginResult(_ result: AuthLoginResult) async {
+        switch result {
+            
+        case .login(let authJwt):
+            await handleSuccess(authJwt)
+            break
+            
+        case .failure(let error):
+            print("auth login error: \(error.localizedDescription)")
+            break
+            
+        case .verificationRequired(let userAuth):
+            navigate(.verify(userAuth))
+            viewModel.setIsLoggingIn(false)
+            break
+            
+        default:
+            print("upgrade login result does not match any case")
+            return
+            
+        }
+    }
+    
     private func handleLoginResult(_ result: LoginNetworkResult) async {
         switch result {
             
@@ -138,19 +183,19 @@ struct LoginPasswordView: View {
     
 }
 
-#Preview {
-    
-    ZStack {
-    
-        LoginPasswordView(
-            userAuth: "hello@ur.io",
-            navigate: {_ in },
-            handleSuccess: {_ in },
-            api: nil
-        )
-        
-    }
-    .environmentObject(ThemeManager.shared)
-    .background(ThemeManager.shared.currentTheme.backgroundColor)
-    
-}
+//#Preview {
+//    
+//    ZStack {
+//    
+//        LoginPasswordView(
+//            userAuth: "hello@ur.io",
+//            navigate: {_ in },
+//            handleSuccess: {_ in },
+//            api: nil
+//        )
+//        
+//    }
+//    .environmentObject(ThemeManager.shared)
+//    .background(ThemeManager.shared.currentTheme.backgroundColor)
+//    
+//}

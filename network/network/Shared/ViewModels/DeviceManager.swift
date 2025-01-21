@@ -97,11 +97,8 @@ class DeviceManager: ObservableObject {
     
     init() {
         
-        let documentsPath = FileManager.default.urls(for: .documentDirectory,
-                                                   in: .userDomainMask)[0]
-        
         Task {
-            await self.initializeNetworkSpace(documentsPath.path())
+            await self.initializeNetworkSpace()
         }
         
     }
@@ -222,7 +219,11 @@ private class GetJwtInitDeviceCallback: NSObject, SdkGetByClientJwtCallbackProto
 // MARK: Network space handlers
 extension DeviceManager {
     
-    func initializeNetworkSpace(_ storagePath: String) async {
+    func initializeNetworkSpace() async {
+        
+        let documentsPath = FileManager.default.urls(for: .documentDirectory,
+                                                   in: .userDomainMask)[0]
+        let storagePath = documentsPath.path()
         
         let deviceSpecs = self.getDeviceSpecs()
         let networkSpaceManager = URnetworkSdk.SdkNewNetworkSpaceManager(storagePath)
@@ -580,4 +581,3 @@ private class ProvideSecretKeysListener: NSObject, SdkProvideSecretKeysListenerP
         }
     }
 }
-
