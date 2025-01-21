@@ -18,7 +18,6 @@ struct AccountRootView: View {
     var navigate: (AccountNavigationPath) -> Void
     var logout: () -> Void
     var api: SdkApi
-
     
     @StateObject private var viewModel: ViewModel = ViewModel()
     @StateObject private var subscriptionManager = SubscriptionManager()
@@ -262,8 +261,8 @@ struct AccountRootView: View {
                 
                 handleSuccess: { jwt in
                     Task {
+                        // viewModel.isPresentedCreateAccount = false
                         await handleSuccessWithJwt(jwt)
-                        viewModel.isPresentedCreateAccount = false
                     }
                 }
             )
@@ -271,6 +270,10 @@ struct AccountRootView: View {
     }
     
     private func handleSuccessWithJwt(_ jwt: String) async {
+                    
+        deviceManager.logout()
+        
+        await deviceManager.initializeNetworkSpace()
         
         let result = await deviceManager.authenticateNetworkClient(jwt)
         
@@ -284,6 +287,7 @@ struct AccountRootView: View {
         
         // TODO: fade out login flow
         // TODO: create navigation view model and switch to main app instead of checking deviceManager.device
+
         
     }
     

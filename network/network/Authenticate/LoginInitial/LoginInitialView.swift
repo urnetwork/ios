@@ -19,6 +19,8 @@ struct LoginInitialView: View {
     @StateObject private var viewModel: ViewModel
     @State private var initialIsLandscape: Bool = false
     
+    @ObservedObject var guestUpgradeViewModel: GuestUpgradeViewModel
+    
     var api: SdkApi?
     var navigate: (LoginInitialNavigationPath) -> Void
     var cancel: (() -> Void)?
@@ -28,12 +30,14 @@ struct LoginInitialView: View {
         api: SdkApi?,
         navigate: @escaping (LoginInitialNavigationPath) -> Void,
         cancel: (() -> Void)? = nil,
-        handleSuccess: @escaping (_ jwt: String) async -> Void
+        handleSuccess: @escaping (_ jwt: String) async -> Void,
+        guestUpgradeViewModel: GuestUpgradeViewModel
     ) {
         _viewModel = StateObject(wrappedValue: ViewModel(api: api))
         self.navigate = navigate
         self.cancel = cancel
         self.handleSuccess = handleSuccess
+        self.guestUpgradeViewModel = guestUpgradeViewModel
     }
     
     var body: some View {
@@ -172,7 +176,10 @@ struct LoginInitialView: View {
         
                 // device exists, meaning we're in the guest flow
                 // link guest account to google account
-                let result = await viewModel.linkGuestToExistingSocialLogin(args: args)
+                
+                let upgradeArgs = self.createUpgradeExistingSocialArgs(args)
+                
+                let result = await guestUpgradeViewModel.linkGuestToExistingLogin(args: upgradeArgs)
                 await self.handleAuthLoginResult(result)
                 
             } else {
@@ -225,12 +232,25 @@ struct LoginInitialView: View {
         case .create(let authLoginArgs):
             navigate(.createNetwork(authLoginArgs))
             break
+
+        // verificationRequired should not be hit from this view
+        case .verificationRequired(let userAuth):
+            print("verificationRequired should not be hit from this view")
+            navigate(.verify(userAuth))
+            break
         
         case .failure(let error):
             print("auth login error: \(error.localizedDescription)")
             break
             
         }
+    }
+    
+    private func createUpgradeExistingSocialArgs(_ args: SdkAuthLoginArgs) -> SdkUpgradeGuestExistingArgs {
+        let updateArgs = SdkUpgradeGuestExistingArgs()
+        updateArgs.authJwt = args.authJwt
+        updateArgs.authJwtType = args.authJwtType
+        return updateArgs
     }
     
     private func handleGoogleSignInButton() async {
@@ -251,7 +271,12 @@ struct LoginInitialView: View {
             
                     // device exists, meaning we're in the guest flow
                     // link guest account to google account
-                    let result = await viewModel.linkGuestToExistingSocialLogin(args: args)
+                    // let result = await viewModel.linkGuestToExistingSocialLogin(args: args)
+                    
+                    let upgradeArgs = self.createUpgradeExistingSocialArgs(args)
+                    
+                    let result = await guestUpgradeViewModel.linkGuestToExistingLogin(args: upgradeArgs)
+                    
                     await self.handleAuthLoginResult(result)
                     
                 } else {

@@ -127,58 +127,6 @@ extension LoginInitialView {
             
         }
         
-        func linkGuestToExistingSocialLogin(args: SdkAuthLoginArgs) async -> AuthLoginResult {
-            
-            do {
-                
-                let result: AuthLoginResult = try await withCheckedThrowingContinuation { [weak self] continuation in
-                    
-                    guard let self = self else { return }
-                    
-                    let callback = UpgradeGuestExistingCallback { [weak self] result, error in
-                        
-                        guard let self = self else { return }
-                        
-                        guard let result else {
-                            
-                            continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "No result found"]))
-                            
-                            return
-                        }
-                        
-                        if let resultError = result.error {
-                            
-                            continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "result.error exists \(resultError.message)"]))
-                            
-                            return
-                        }
-                        
-                        
-                        // JWT exists, proceed to authenticate network
-                        if let jwt = result.network?.byJwt {
-                            continuation.resume(returning: .login(jwt))
-                            return
-                        }
-                        
-                        
-                    }
-                    
-                    let upgradeArgs = SdkUpgradeGuestExistingArgs()
-                    upgradeArgs.authJwt = args.authJwt
-                    upgradeArgs.authJwtType = args.authJwtType
-                    
-                    api?.upgradeGuestExisting(upgradeArgs, callback: callback)
-                    
-                }
-                
-                return result
-                
-            } catch(let error) {
-                return .failure(error)
-            }
-            
-        }
-        
     }
 }
 
@@ -205,7 +153,6 @@ extension LoginInitialView.ViewModel {
         
         return .success(args)
         
-        // return await authLogin(args: args)
     }
     
 }
@@ -213,7 +160,6 @@ extension LoginInitialView.ViewModel {
 // MARK: Handle Apple Login
 extension LoginInitialView.ViewModel {
     
-    // func handleAppleLoginResult(_ result: Result<ASAuthorization, any Error>) async -> AuthLoginResult {
     func createAppleAuthLoginArgs(_ result: Result<ASAuthorization, any Error>) -> Result<SdkAuthLoginArgs, Error> {
         
         switch result {
@@ -237,8 +183,6 @@ extension LoginInitialView.ViewModel {
                     args.authJwtType = "apple"
                     
                     return .success(args)
-                    
-                    // return await authLogin(args: args)
 
                 default:
                         
@@ -259,7 +203,6 @@ extension LoginInitialView.ViewModel {
 // MARK: handle Google login result
 extension LoginInitialView.ViewModel {
     
-    // func handleGoogleLoginResult(_ result: GIDSignInResult?) async -> AuthLoginResult {
     func createGoogleAuthLoginArgs(_ result: GIDSignInResult?) -> Result<SdkAuthLoginArgs, Error> {
         
         guard let result = result else {
@@ -276,8 +219,6 @@ extension LoginInitialView.ViewModel {
         
         return .success(args)
         
-        // return await authLogin(args: args)
-        
     }
     
 }
@@ -286,8 +227,6 @@ extension LoginInitialView.ViewModel {
 extension LoginInitialView.ViewModel {
     
     func createGuestNetwork() async -> LoginNetworkResult {
-        
-        print("create guest network")
         
         if self.isCreatingGuestNetwork {
             return .failure(LoginError.inProgress)
@@ -360,12 +299,6 @@ extension LoginInitialView.ViewModel {
 
 private class AuthLoginCallback: SdkCallback<SdkAuthLoginResult, SdkAuthLoginCallbackProtocol>, SdkAuthLoginCallbackProtocol {
     func result(_ result: SdkAuthLoginResult?, err: Error?) {
-        handleResult(result, err: err)
-    }
-}
-
-private class UpgradeGuestExistingCallback: SdkCallback<SdkUpgradeGuestExistingResult, SdkUpgradeGuestExistingCallbackProtocol>, SdkUpgradeGuestExistingCallbackProtocol {
-    func result(_ result: SdkUpgradeGuestExistingResult?, err: Error?) {
         handleResult(result, err: err)
     }
 }

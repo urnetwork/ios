@@ -12,6 +12,8 @@ struct LoginNavigationView: View {
     
     @StateObject private var viewModel = ViewModel()
     
+    @StateObject private var guestUpgradeViewModel: GuestUpgradeViewModel
+    
     @EnvironmentObject var themeManager: ThemeManager
     
     var api: SdkApi
@@ -22,6 +24,7 @@ struct LoginNavigationView: View {
         self.api = api
         self.cancel = cancel
         self.handleSuccess = handleSuccess
+        _guestUpgradeViewModel = StateObject(wrappedValue: GuestUpgradeViewModel(api: api))
     }
     
     var body: some View {
@@ -32,7 +35,8 @@ struct LoginNavigationView: View {
                 api: api,
                 navigate: viewModel.navigate,
                 cancel: cancel,
-                handleSuccess: handleSuccess
+                handleSuccess: handleSuccess,
+                guestUpgradeViewModel: guestUpgradeViewModel
             )
             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
             .navigationDestination(for: LoginInitialNavigationPath.self) { path in
@@ -42,6 +46,7 @@ struct LoginNavigationView: View {
                             userAuth: userAuth,
                             navigate: viewModel.navigate,
                             handleSuccess: handleSuccess,
+                            guestUpgradeViewModel: guestUpgradeViewModel,
                             api: api
                         )
                         .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())

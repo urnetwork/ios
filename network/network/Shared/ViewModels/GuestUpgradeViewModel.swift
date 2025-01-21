@@ -17,11 +17,11 @@ class GuestUpgradeViewModel: ObservableObject {
     
     let domain = "[GuestUpgradeViewModel]"
     
-    init(isUpgrading: Bool, api: SdkApi) {
+    init(api: SdkApi) {
         self.api = api
     }
     
-    func linkGuestToExistingSocialLogin(args: SdkAuthLoginArgs) async -> AuthLoginResult {
+    func linkGuestToExistingLogin(args: SdkUpgradeGuestExistingArgs) async -> AuthLoginResult {
         
         do {
             
@@ -47,21 +47,39 @@ class GuestUpgradeViewModel: ObservableObject {
                         return
                     }
                     
+                    /**
+                     * In the case a guest user is upgrading to an existing account
+                     * but the existing account has not yet been verified
+                     */
+                    if let verificationRequired = result.verificationRequired {
+                        continuation.resume(returning: .verificationRequired(verificationRequired.userAuth))
+                        return
+                    }
                     
-                    // JWT exists, proceed to authenticate network
+                    /**
+                     * JWT exists, proceed to authenticate network
+                     */
                     if let jwt = result.network?.byJwt {
                         continuation.resume(returning: .login(jwt))
                         return
                     }
                     
+                    /**
+                     * No network exists
+                     * Navigate to create view
+                     */
+                    let authLoginArgs = SdkAuthLoginArgs()
+                    authLoginArgs.authJwt = args.authJwt
+                    authLoginArgs.authJwtType = args.authJwtType
+                    authLoginArgs.userAuth = args.userAuth
+                    
+
+                    continuation.resume(returning: .create(authLoginArgs))
+                    
                     
                 }
                 
-                let upgradeArgs = SdkUpgradeGuestExistingArgs()
-                upgradeArgs.authJwt = args.authJwt
-                upgradeArgs.authJwtType = args.authJwtType
-                
-                api.upgradeGuestExisting(upgradeArgs, callback: callback)
+                api.upgradeGuestExisting(args, callback: callback)
                 
             }
             
