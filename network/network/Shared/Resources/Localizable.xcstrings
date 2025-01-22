@@ -327,9 +327,6 @@
     "$%@/month" : {
 
     },
-    "0" : {
-      "shouldTranslate" : false
-    },
     "Account" : {
       "localizations" : {
         "ar" : {
@@ -610,34 +607,10 @@
     },
     "Are you sure you want to delete your account?" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Are you sure you want to delete your account?"
-          }
-        },
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "هل أنت متأكد من رغبتك في حذف حسابك؟"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "您確定要刪除您的帳戶嗎？"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "您确定要删除您的账户吗？"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Êtes-vous sûr de vouloir supprimer votre compte ?"
           }
         },
         "de" : {
@@ -650,6 +623,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Είστε βέβαιοι ότι θέλετε να διαγράψετε τον λογαριασμό σας;"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to delete your account?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Está seguro de que desea eliminar su cuenta?"
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Está seguro de que desea eliminar su cuenta?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Êtes-vous sûr de vouloir supprimer votre compte ?"
           }
         },
         "he" : {
@@ -712,18 +709,6 @@
             "value" : "Вы уверены, что хотите удалить свой аккаунт?"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Está seguro de que desea eliminar su cuenta?"
-          }
-        },
-        "es-419" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Está seguro de que desea eliminar su cuenta?"
-          }
-        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -746,6 +731,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bạn có chắc chắn muốn xóa tài khoản của mình không?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您确定要删除您的账户吗？"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您確定要刪除您的帳戶嗎？"
           }
         }
       }
@@ -2719,34 +2716,10 @@
     },
     "Delete account" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Delete account"
-          }
-        },
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "حذف الحساب"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "刪除帳戶"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "删除账户"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Supprimer le compte"
           }
         },
         "de" : {
@@ -2759,6 +2732,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Διαγραφή λογαριασμού"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete account"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar cuenta"
+          }
+        },
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar cuenta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer le compte"
           }
         },
         "he" : {
@@ -2821,18 +2818,6 @@
             "value" : "Удалить аккаунт"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eliminar cuenta"
-          }
-        },
-        "es-419" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eliminar cuenta"
-          }
-        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2855,6 +2840,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Xóa tài khoản"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除账户"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除帳戶"
           }
         }
       }
@@ -4553,6 +4550,7 @@
       }
     },
     "Free" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -4840,6 +4838,7 @@
 
     },
     "Guest" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -7409,6 +7408,7 @@
       "shouldTranslate" : false
     },
     "Plan" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -7977,6 +7977,7 @@
       }
     },
     "Refer and earn" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -11961,9 +11962,6 @@
           }
         }
       }
-    },
-    "USDC" : {
-      "shouldTranslate" : false
     },
     "USDC addresses on Solana and Polygon are currently supported" : {
       "localizations" : {
