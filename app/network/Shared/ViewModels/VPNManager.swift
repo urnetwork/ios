@@ -225,7 +225,7 @@ class VPNManager {
             // Use the same as remote address in PacketTunnelProvider
             // value from connect resolvedHost
             tunnelProtocol.serverAddress = networkSpace.getHostName()
-            tunnelProtocol.providerBundleIdentifier = "com.bringyour.network.extension"
+            tunnelProtocol.providerBundleIdentifier = "network.ur.extension"
             tunnelProtocol.disconnectOnSleep = false
             
             // Note `includeAllNetworks` seems to break Facetime and mail sync
