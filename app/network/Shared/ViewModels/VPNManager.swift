@@ -35,6 +35,10 @@ class VPNManager {
     
     var deviceRemoteSub: SdkSubProtocol?
     
+    var tunnelSub: SdkSubProtocol?
+    
+    var contractStatusSub: SdkSubProtocol?
+    
     
     init(device: SdkDeviceRemote) {
         print("[VPNManager]init")
@@ -70,7 +74,6 @@ class VPNManager {
             }
         })
         
-        
         self.deviceRemoteSub = device.add(RemoteChangeListener { [weak self] remoteConnected in
             guard let self = self else {
                 return
@@ -78,11 +81,27 @@ class VPNManager {
             
             DispatchQueue.main.async {
                 if !remoteConnected {
-                    // recheck the last known state to make sure remote is not supposed to be active
-                    self.updateVpnService()
+                    // the user can manually stop the tunnel in settings
+                    // in this case, make sure we turn it off until the user starts it manually again
+                    self.stopVpnTunnel()
                 }
             }
         })
+        
+        self.tunnelSub = device.add(TunnelChangeListener { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.updateTunnel()
+            }
+        })
+        
+        self.contractStatusSub = device.add(ContractStatusChangeListener { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.updateContractStatus()
+            }
+        })
+        
+        updateTunnel()
+        updateContractStatus()
         
         updateVpnService()
     }
@@ -112,12 +131,35 @@ class VPNManager {
         
         self.deviceConnectSub?.close()
         self.deviceConnectSub = nil
+        
+        self.deviceRemoteSub?.close()
+        self.deviceRemoteSub = nil
+        
+        self.tunnelSub?.close()
+        self.tunnelSub = nil
+        
+        self.contractStatusSub?.close()
+        self.contractStatusSub = nil
     }
     
     
     private func getPasswordReference() -> Data? {
         // Retrieve the password reference from the keychain
         return nil
+    }
+    
+    
+    private func updateTunnel() {
+        let tunnelStarted = self.device.getTunnelStarted()
+        print("[VPNManager][tunnel]started=\(tunnelStarted)")
+    }
+    
+    private func updateContractStatus() {
+        if let contractStatus = self.device.getContractStatus() {
+            print("[VPNManager][contract]insufficent=\(contractStatus.insufficientBalance) nopermission=\(contractStatus.noPermission) premium=\(contractStatus.premium)")
+        } else {
+            print("[VPNManager][contract]no contract status")
+        }
     }
     
     
@@ -367,6 +409,32 @@ private class RemoteChangeListener: NSObject, SdkRemoteChangeListenerProtocol {
     
     func remoteChanged(_ remoteConnected: Bool) {
         c(remoteConnected)
+    }
+}
+
+private class TunnelChangeListener: NSObject, SdkTunnelChangeListenerProtocol {
+    
+    private let c: (_ tunnelStarted: Bool) -> Void
+
+    init(c: @escaping (_ tunnelStarted: Bool) -> Void) {
+        self.c = c
+    }
+    
+    func tunnelChanged(_ tunnelStarted: Bool) {
+        c(tunnelStarted)
+    }
+}
+
+private class ContractStatusChangeListener: NSObject, SdkContractStatusChangeListenerProtocol {
+    
+    private let c: (_ contractStatus: SdkContractStatus?) -> Void
+
+    init(c: @escaping (_ contractStatus: SdkContractStatus?) -> Void) {
+        self.c = c
+    }
+    
+    func contractStatusChanged(_ contractStatus: SdkContractStatus?) {
+        c(contractStatus)
     }
 }
 
