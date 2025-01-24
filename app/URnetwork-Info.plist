@@ -25,7 +25,7 @@
 	<string>338638865390-tdgpupo59durdck5es80iukafh0or4uq.apps.googleusercontent.com</string>
 	<key>NEVPNConfiguration</key>
 	<array>
-		<string>com.bringyour.network.extension</string>
+		<string>network.ur.extension</string>
 	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
@@ -41,7 +41,5 @@
 	</array>
 	<key>UIBackgroundModes</key>
 	<array/>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
 </dict>
 </plist>

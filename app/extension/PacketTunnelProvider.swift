@@ -19,7 +19,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
      * You can open up the console app on Mac and filter by subsystem
      */
     private let logger = Logger(
-        subsystem: "com.bringyour.network.extension",
+        subsystem: "network.ur.extension",
         category: "PacketTunnel"
         
     )
@@ -182,7 +182,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         
         
         let pathMonitor = NWPathMonitor.init(prohibitedInterfaceTypes: [.loopback, .other])
-        let pathMonitorQueue = DispatchQueue(label: "com.bringyour.network.extension.pathMonitor")
+        let pathMonitorQueue = DispatchQueue(label: "network.ur.extension.pathMonitor")
         pathMonitor.pathUpdateHandler = { path in
             device.setProvidePaused(!canProvideOnNetwork(path: path))
         }
