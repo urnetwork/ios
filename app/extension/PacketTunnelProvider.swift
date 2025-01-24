@@ -155,6 +155,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         
         // load initial device settings
         // these will be in effect until the app connects and sets the user values
+        device.setTunnelStarted(true)
         device.setProvidePaused(true)
         if let location = localState.getConnectLocation() {
             device.setConnectLocation(location)
