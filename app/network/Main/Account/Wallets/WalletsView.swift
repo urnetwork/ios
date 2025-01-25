@@ -124,13 +124,13 @@ struct WalletsHeader: View {
     var body: some View {
         VStack {
          
-            HStack {
-                Text("Connected wallets")
-                    .font(themeManager.currentTheme.titleFont)
-                    .foregroundColor(themeManager.currentTheme.textColor)
-                
-                Spacer()
-            }
+//            HStack {
+//                Text("Payout wallets")
+//                    .font(themeManager.currentTheme.titleFont)
+//                    .foregroundColor(themeManager.currentTheme.textColor)
+//                
+//                Spacer()
+//            }
             
             Spacer().frame(height: 16)
             

@@ -119,7 +119,7 @@ extension LoginPasswordView {
 //                DispatchQueue.main.async {
 //                    self.isLoggingIn = false
 //                }
-                setIsLoggingIn(false)
+                // setIsLoggingIn(false)
                 return result
             } catch {
                 setIsLoggingIn(false)

@@ -57,70 +57,70 @@ struct AccountRootView: View {
             .frame(height: 32)
             // .padding(.vertical, 12)
             
-//            Spacer().frame(height: 16)
-//            
-//            VStack(spacing: 0) {
-//                
-//                HStack {
-//                    Text("Plan")
-//                        .font(themeManager.currentTheme.secondaryBodyFont)
-//                        .foregroundColor(themeManager.currentTheme.textMutedColor)
-//                    Spacer()
-//                }
-//                
-//                HStack(alignment: .firstTextBaseline) {
-//                    
-//                    Text(isGuest ? "Guest" : "Free")
-//                        .font(themeManager.currentTheme.titleCondensedFont)
-//                        .foregroundColor(themeManager.currentTheme.textColor)
-//                    
-//                    Spacer()
-//  
-//                    // TODO: add back in when upgrade subscription work complete
-////                    Button(action: {
-////                        viewModel.isPresentedUpgradeSheet = true
-////                    }) {
-////                        Text("Create account")
-////                            .font(themeManager.currentTheme.secondaryBodyFont)
-////                    }
-//                    
-//                }
-//                
-//                Divider()
-//                    .background(themeManager.currentTheme.borderBaseColor)
-//                    .padding(.vertical, 16)
-//                
-//                HStack {
-//                    Text("Earnings")
-//                        .font(themeManager.currentTheme.secondaryBodyFont)
-//                        .foregroundColor(themeManager.currentTheme.textMutedColor)
-//                    Spacer()
-//                }
-//                
-//                HStack(alignment: .firstTextBaseline) {
-//                    
-//                    Text("0")
-//                        .font(themeManager.currentTheme.titleCondensedFont)
-//                        .foregroundColor(themeManager.currentTheme.textColor)
-//                    
-//                    Text("USDC")
-//                        .font(themeManager.currentTheme.secondaryBodyFont)
-//                        .foregroundColor(themeManager.currentTheme.textMutedColor)
-//                    
-//                    Spacer()
-//                    
-////                    Button(action: {}) {
-////                        Text("Start earning")
-////                            .font(themeManager.currentTheme.secondaryBodyFont)
-////                    }
-//                    
-//                }
-//                
-//            }
-//            .padding()
-//            .frame(maxWidth: .infinity)
-//            .background(themeManager.currentTheme.tintedBackgroundBase)
-//            .cornerRadius(12)
+            Spacer().frame(height: 16)
+            
+            VStack(spacing: 0) {
+                
+                HStack {
+                    Text("Plan")
+                        .font(themeManager.currentTheme.secondaryBodyFont)
+                        .foregroundColor(themeManager.currentTheme.textMutedColor)
+                    Spacer()
+                }
+                
+                HStack(alignment: .firstTextBaseline) {
+                    
+                    Text(isGuest ? "Guest" : "Free")
+                        .font(themeManager.currentTheme.titleCondensedFont)
+                        .foregroundColor(themeManager.currentTheme.textColor)
+                    
+                    Spacer()
+  
+                    // TODO: add back in when upgrade subscription work complete
+//                    Button(action: {
+//                        viewModel.isPresentedUpgradeSheet = true
+//                    }) {
+//                        Text("Create account")
+//                            .font(themeManager.currentTheme.secondaryBodyFont)
+//                    }
+                    
+                }
+                
+                Divider()
+                    .background(themeManager.currentTheme.borderBaseColor)
+                    .padding(.vertical, 16)
+                
+                HStack {
+                    Text("Network earnings")
+                        .font(themeManager.currentTheme.secondaryBodyFont)
+                        .foregroundColor(themeManager.currentTheme.textMutedColor)
+                    Spacer()
+                }
+                
+                HStack(alignment: .firstTextBaseline) {
+                    
+                    Text("0")
+                        .font(themeManager.currentTheme.titleCondensedFont)
+                        .foregroundColor(themeManager.currentTheme.textColor)
+                    
+                    Text("USDC")
+                        .font(themeManager.currentTheme.secondaryBodyFont)
+                        .foregroundColor(themeManager.currentTheme.textMutedColor)
+                    
+                    Spacer()
+                    
+//                    Button(action: {}) {
+//                        Text("Start earning")
+//                            .font(themeManager.currentTheme.secondaryBodyFont)
+//                    }
+                    
+                }
+                
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(themeManager.currentTheme.tintedBackgroundBase)
+            .cornerRadius(12)
             
             Spacer().frame(height: 16)
             
@@ -152,17 +152,17 @@ struct AccountRootView: View {
                         }
                     }
                 )
-//                AccountNavLink(
-//                    name: "Wallet",
-//                    iconPath: "ur.symbols.wallet",
-//                    action: {
-//                        if isGuest {
-//                            viewModel.isPresentedCreateAccount = true
-//                        } else {
-//                            navigate(.wallets)
-//                        }
-//                    }
-//                )
+                AccountNavLink(
+                    name: "Wallet",
+                    iconPath: "ur.symbols.wallet",
+                    action: {
+                        if isGuest {
+                            viewModel.isPresentedCreateAccount = true
+                        } else {
+                            navigate(.wallets)
+                        }
+                    }
+                )
                 
                 ReferralShareLink(api: api) {
                     
