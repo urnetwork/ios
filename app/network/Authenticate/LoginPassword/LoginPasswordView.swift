@@ -162,7 +162,7 @@ struct LoginPasswordView: View {
             
         case .successWithJwt(let jwt):
             await handleSuccess(jwt)
-            viewModel.setIsLoggingIn(false)
+            // viewModel.setIsLoggingIn(false)
             break
             
         case .successWithVerificationRequired:

@@ -327,6 +327,9 @@
     "$%@/month" : {
 
     },
+    "0" : {
+
+    },
     "Account" : {
       "localizations" : {
         "ar" : {
@@ -1721,6 +1724,7 @@
       }
     },
     "Connected wallets" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -4550,7 +4554,6 @@
       }
     },
     "Free" : {
-      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -4838,7 +4841,6 @@
 
     },
     "Guest" : {
-      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -5838,6 +5840,9 @@
           }
         }
       }
+    },
+    "Network earnings" : {
+
     },
     "Network name" : {
       "localizations" : {
@@ -7408,7 +7413,6 @@
       "shouldTranslate" : false
     },
     "Plan" : {
-      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -11962,6 +11966,9 @@
           }
         }
       }
+    },
+    "USDC" : {
+
     },
     "USDC addresses on Solana and Polygon are currently supported" : {
       "localizations" : {
