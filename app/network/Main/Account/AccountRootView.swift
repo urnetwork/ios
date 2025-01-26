@@ -18,6 +18,7 @@ struct AccountRootView: View {
     var navigate: (AccountNavigationPath) -> Void
     var logout: () -> Void
     var api: SdkApi
+    var totalPayments: Double
     
     @StateObject private var viewModel: ViewModel = ViewModel()
     @StateObject private var subscriptionManager = SubscriptionManager()
@@ -25,11 +26,13 @@ struct AccountRootView: View {
     init(
         navigate: @escaping (AccountNavigationPath) -> Void,
         logout: @escaping () -> Void,
+        totalPayments: Double,
         api: SdkApi
     ) {
         self.navigate = navigate
         self.logout = logout
         self.api = api
+        self.totalPayments = totalPayments
     }
     
     
@@ -99,7 +102,7 @@ struct AccountRootView: View {
                 
                 HStack(alignment: .firstTextBaseline) {
                     
-                    Text("0")
+                    Text(totalPayments > 0 ? String(format: "%.4f", totalPayments) : "0")
                         .font(themeManager.currentTheme.titleCondensedFont)
                         .foregroundColor(themeManager.currentTheme.textColor)
                     
