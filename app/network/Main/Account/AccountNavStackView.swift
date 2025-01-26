@@ -63,6 +63,7 @@ struct AccountNavStackView: View {
             AccountRootView(
                 navigate: viewModel.navigate,
                 logout: logout,
+                totalPayments: accountPaymentsViewModel.totalPayoutsUsdc,
                 api: api
             )
             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
