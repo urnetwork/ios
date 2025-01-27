@@ -84,13 +84,21 @@ struct ConnectWalletSheetView: View {
                 
             }
             
+            Spacer().frame(height: 16)
+            
+            HStack {
+                Text("These wallets are not affiliated or controlled by URnetwork. We will send earnings into the connected wallet.")
+                    .font(themeManager.currentTheme.secondaryBodyFont)
+                    .foregroundColor(themeManager.currentTheme.textMutedColor)
+            }
+            
             Spacer()
             
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Text("Connect wallet")
+                Text("Connect external wallet")
                     .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
             }
         }
