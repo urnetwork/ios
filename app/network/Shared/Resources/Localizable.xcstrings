@@ -327,9 +327,6 @@
     "$%@/month" : {
 
     },
-    "0" : {
-
-    },
     "Account" : {
       "localizations" : {
         "ar" : {
@@ -3005,9 +3002,6 @@
     "Disconnect URnetwork VPN" : {
 
     },
-    "Disconnecting from URnetwork" : {
-
-    },
     "Don't see it? " : {
       "comment" : "Referring to the OTP code",
       "localizations" : {
@@ -4282,9 +4276,6 @@
       }
     },
     "Failed to connect" : {
-
-    },
-    "Failed to disconnect" : {
 
     },
     "Feedback" : {
@@ -11990,6 +11981,9 @@
           }
         }
       }
+    },
+    "URnetwork VPN disconnected" : {
+
     },
     "USDC" : {
 
