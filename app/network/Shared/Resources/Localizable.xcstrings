@@ -327,9 +327,6 @@
     "$%@/month" : {
 
     },
-    "0" : {
-
-    },
     "Account" : {
       "localizations" : {
         "ar" : {
@@ -1439,7 +1436,11 @@
         }
       }
     },
+    "Connect external wallet" : {
+
+    },
     "Connect wallet" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -10828,6 +10829,136 @@
         }
       }
     },
+    "These wallets are not affiliated or controlled by URnetwork. We will send earnings into the connected wallet." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هذه المحافظ غير مرتبطة أو متحكم بها من قبل URnetwork. سنقوم بإرسال الأرباح إلى المحفظة المتصلة."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Wallets sind nicht mit URnetwork verbunden oder werden von URnetwork kontrolliert. Wir senden Einnahmen an die verbundene Wallet."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αυτά τα πορτοφόλια δεν συνδέονται ούτε ελέγχονται από το URnetwork. Θα στείλουμε τα κέρδη στο συνδεδεμένο πορτοφόλι."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estas carteras no están afiliadas ni controladas por URnetwork. Enviaremos las ganancias a la cartera conectada."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estas billeteras no están afiliadas ni controladas por URnetwork. Enviaremos las ganancias a la billetera conectada."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ces portefeuilles ne sont pas affiliés ni contrôlés par URnetwork. Nous enverrons les gains dans le portefeuille connecté."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ארנקים אלה אינם מסונפים או נשלטים על ידי URnetwork. נשלח את הרווחים לארנק המחובר."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ये वॉलेट URnetwork से संबद्ध या नियंत्रित नहीं हैं। हम कनेक्टेड वॉलेट में कमाई भेजेंगे।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questi portafogli non sono affiliati né controllati da URnetwork. Invieremo i guadagni nel portafoglio collegato."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "これらのウォレットはURnetworkと提携しておらず、URnetworkによって管理されていません。収益は接続されたウォレットに送金されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 지갑들은 URnetwork와 제휴되거나 통제되지 않습니다. 수익금은 연결된 지갑으로 보내드립니다."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te portfele nie są powiązane ani kontrolowane przez URnetwork. Wyślemy zarobki do połączonego portfela."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estas carteiras não são afiliadas nem controladas pela URnetwork. Enviaremos os ganhos para a carteira conectada."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estas carteiras não são afiliadas nem controladas pela URnetwork. Enviaremos os ganhos para a carteira conectada."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эти кошельки не связаны и не контролируются URnetwork. Мы отправим заработок в подключенный кошелек."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dessa plånböcker är inte anslutna till eller kontrollerade av URnetwork. Vi kommer att skicka intäkter till den anslutna plånboken."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กระเป๋าเงินเหล่านี้ไม่ได้เป็นพันธมิตรหรือควบคุมโดย URnetwork เราจะส่งรายได้ไปยังกระเป๋าเงินที่เชื่อมต่อ"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ці гаманці не пов'язані та не контролюються URnetwork. Ми надішлемо заробіток на підключений гаманець."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Các ví này không liên kết hoặc được kiểm soát bởi URnetwork. Chúng tôi sẽ gửi thu nhập vào ví đã kết nối."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这些钱包与URnetwork无关，也不受URnetwork控制。我们将收益发送到连接的钱包中。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這些錢包與URnetwork無關，也不受URnetwork控制。我們將收益發送到已連接的錢包中。"
+          }
+        }
+      }
+    },
     "This network name is already taken" : {
       "localizations" : {
         "ar" : {
@@ -11968,7 +12099,7 @@
       }
     },
     "USDC" : {
-
+      "shouldTranslate" : false
     },
     "USDC addresses on Solana and Polygon are currently supported" : {
       "localizations" : {
