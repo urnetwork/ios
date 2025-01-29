@@ -7,8 +7,13 @@
 
 import Foundation
 import UIKit
+import URnetworkSdk
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    override init() {
+        SdkSetMemoryLimit(64 * 1024 * 1024)
+    }
+    
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .pad {
             return .allButUpsideDown
