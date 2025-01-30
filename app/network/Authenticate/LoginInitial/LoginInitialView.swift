@@ -351,7 +351,8 @@ private struct LoginInitialFormView: View {
                         await handleUserAuth()
                     }
                 },
-                enabled: isValidUserAuth && !isCheckingUserAuth
+                enabled: isValidUserAuth && !isCheckingUserAuth,
+                isProcessing: isCheckingUserAuth
             )
             
             Spacer()
