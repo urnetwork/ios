@@ -176,9 +176,9 @@ extension ConnectView {
                     print("SelectedLocationListener no self found")
                     return
                 }
-                
-                print("new selected location is: \(selectedLocation?.name ?? "none")")
+            
                 DispatchQueue.main.async {
+                    print("new selected location is: \(selectedLocation?.name ?? "none")")
                     self.selectedProvider = selectedLocation
                 }
             }
@@ -436,8 +436,10 @@ extension ConnectView.ViewModel {
             guard let self = self else {
                 return
             }
-            
-            self.updateConnectionStatus()
+                
+            DispatchQueue.main.async {
+                self.updateConnectionStatus()
+            }
             
         }
         connectViewController?.add(listener)
@@ -450,13 +452,11 @@ extension ConnectView.ViewModel {
         }
         
         if let status = ConnectionStatus(rawValue: statusString) {
-            DispatchQueue.main.async {
-                self.connectionStatus = status
-                
-                if status == .connected {
-                    if let requestReview = self.requestReview {
-                        requestReview()
-                    }
+            self.connectionStatus = status
+            
+            if status == .connected {
+                if let requestReview = self.requestReview {
+                    requestReview()
                 }
             }
         }

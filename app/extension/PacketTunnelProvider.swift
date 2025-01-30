@@ -30,6 +30,15 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     
     override init() {
         super.init()
+        if #available(iOS 16, *) {
+            // the memory limit in the PacketTunnelProvider is 50mib in iOS 16, 17, 18
+            // the binary and go runtime take a part of that
+            // see https://forums.developer.apple.com/forums/thread/73148?page=2
+            SdkSetMemoryLimit(24 * 1024 * 1024)
+        } else {
+            // note provider is also disabled for these
+            SdkSetMemoryLimit(4 * 1024 * 1024)
+        }
         logger.info("PacketTunnelProvider init")
     }
     
@@ -339,8 +348,6 @@ private class RouteLocalChangeListener: NSObject, SdkRouteLocalChangeListenerPro
 
 func canProvideOnNetwork(path: Network.NWPath) ->  Bool {
     if #available(iOS 16, *) {
-        // the memory limit in the PacketTunnelProvider is the same in iOS 16, 17, 18
-        // see https://forums.developer.apple.com/forums/thread/73148?page=2
         if path.isExpensive || path.isConstrained {
             return false
         } else if let primaryInterface = path.availableInterfaces.first {
@@ -356,6 +363,7 @@ func canProvideOnNetwork(path: Network.NWPath) ->  Bool {
         }
     } else {
         // not enough memory in the extension
+        // see memory notes at top
         return false
     }
 }
