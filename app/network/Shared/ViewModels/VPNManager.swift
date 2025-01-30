@@ -195,11 +195,16 @@ class VPNManager {
         if self.tunnelRequestStatus == .started {
             return
         }
+        self.tunnelRequestStatus = .started
         
         // Load all configurations first
         NETunnelProviderManager.loadAllFromPreferences { (managers, error) in
             if let error = error {
                 print("Error loading managers: \(error.localizedDescription)")
+                self.tunnelRequestStatus = .none
+                return
+            }
+            if self.tunnelRequestStatus != .started {
                 return
             }
 //            guard let self = self else {
@@ -262,26 +267,36 @@ class VPNManager {
             tunnelManager.saveToPreferences { error in
                 if let error = error {
                     // when changing locations quickly, another change might have intercepted this save
+                    self.tunnelRequestStatus = .none
+                    return
+                }
+                if self.tunnelRequestStatus != .started {
                     return
                 }
                 
                 // see https://forums.developer.apple.com/forums/thread/25928
                 tunnelManager.loadFromPreferences { error in
+                    if let error = error {
+                        self.tunnelRequestStatus = .none
+                        return
+                    }
                     if self.tunnelRequestStatus != .started {
-                        self.tunnelRequestStatus = .started
-                        do {
-                            try tunnelManager.connection.startVPNTunnel()
-                            print("[VPNManager]connection started")
-                            self.device.sync()
-                        } catch let error as NSError {
-                            self.tunnelRequestStatus = .none
-                            print("[VPNManager]Error starting VPN connection:")
-                            print("[VPNManager]Domain: \(error.domain)")
-                            print("[VPNManager]Code: \(error.code)")
-                            print("[VPNManager]Description: \(error.localizedDescription)")
-                            print("[VPNManager]User Info: \(error.userInfo)")
-                            
-                        }
+                        return
+                    }
+                    
+
+                    do {
+                        try tunnelManager.connection.startVPNTunnel()
+                        print("[VPNManager]connection started")
+                        self.device.sync()
+                    } catch let error as NSError {
+                        self.tunnelRequestStatus = .none
+                        print("[VPNManager]Error starting VPN connection:")
+                        print("[VPNManager]Domain: \(error.domain)")
+                        print("[VPNManager]Code: \(error.code)")
+                        print("[VPNManager]Description: \(error.localizedDescription)")
+                        print("[VPNManager]User Info: \(error.userInfo)")
+                        
                     }
                 }
             }
@@ -292,10 +307,15 @@ class VPNManager {
         if self.tunnelRequestStatus == .stopped {
             return
         }
+        self.tunnelRequestStatus = .stopped
         
         NETunnelProviderManager.loadAllFromPreferences { (managers, error) in
             if let error = error {
                 print("[VPNManager]error loading managers: \(error.localizedDescription)")
+                self.tunnelRequestStatus = .none
+                return
+            }
+            if self.tunnelRequestStatus != .stopped {
                 return
             }
 //            guard let self = self else {
@@ -314,19 +334,24 @@ class VPNManager {
             tunnelManager.saveToPreferences { error in
                 if let error = error {
                     // when changing locations quickly, another change might have intercepted this save
+                    self.tunnelRequestStatus = .none
+                    return
+                }
+                if self.tunnelRequestStatus != .stopped {
                     return
                 }
                 
                 // see https://forums.developer.apple.com/forums/thread/25928
                 tunnelManager.loadFromPreferences { error in
                     if let error {
+                        self.tunnelRequestStatus = .none
+                        return
+                    }
+                    if self.tunnelRequestStatus != .stopped {
                         return
                     }
                     
-                    if self.tunnelRequestStatus != .stopped {
-                        tunnelManager.connection.stopVPNTunnel()
-                        self.tunnelRequestStatus = .stopped
-                    }
+                    tunnelManager.connection.stopVPNTunnel()
                 }
             }
         }
