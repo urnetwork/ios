@@ -104,7 +104,8 @@ struct LoginPasswordView: View {
                                 }
                             }
                         },
-                        enabled: !viewModel.isLoggingIn && viewModel.isValid
+                        enabled: !viewModel.isLoggingIn && viewModel.isValid,
+                        isProcessing: viewModel.isLoggingIn
                         // todo add icon
                     )
                     

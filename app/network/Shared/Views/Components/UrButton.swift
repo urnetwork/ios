@@ -24,6 +24,7 @@ struct UrButton: View {
     var enabled: Bool = true
     var isFullWidth: Bool = true
     var trailingIcon: String?
+    var isProcessing: Bool = false
     
     var body: some View {
         
@@ -31,15 +32,21 @@ struct UrButton: View {
             action()
         }) {
             HStack {
-                Text(text)
-                    .foregroundColor(foregroundColor)
-                    .font(
-                        themeManager.currentTheme.toolbarTitleFont.bold()
-                    )
                 
-                if let trailingIcon {
-                    Image(trailingIcon)
+                if isProcessing {
+                    ProgressView()
+                } else {
+                    Text(text)
+                        .foregroundColor(foregroundColor)
+                        .font(
+                            themeManager.currentTheme.toolbarTitleFont.bold()
+                        )
+                    
+                    if let trailingIcon {
+                        Image(trailingIcon)
+                    }
                 }
+                
             }
             .frame(maxWidth: isFullWidth ? .infinity : nil)
             .frame(height: 48)
@@ -184,6 +191,13 @@ struct UrButton: View {
             action: {},
             style: UrButtonStyle.outlineSecondary,
             isFullWidth: false
+        )
+        
+        // is processing
+        UrButton(
+            text: "Processing",
+            action: {},
+            isProcessing: true
         )
     }
     .environmentObject(themeManager)
