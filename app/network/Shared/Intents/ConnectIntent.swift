@@ -47,7 +47,7 @@ struct ConnectIntent: AppIntent {
             connectViewController.connectBestAvailable()
         }
         
-        return .result(dialog: "Connecting to URnetwork")
+        return .result(dialog: "URnetwork VPN started")
              
     }
     

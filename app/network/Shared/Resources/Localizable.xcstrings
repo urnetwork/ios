@@ -1866,9 +1866,6 @@
         }
       }
     },
-    "Connecting to URnetwork" : {
-
-    },
     "Connections" : {
       "localizations" : {
         "ar" : {
@@ -12122,6 +12119,9 @@
       }
     },
     "URnetwork VPN disconnected" : {
+
+    },
+    "URnetwork VPN started" : {
 
     },
     "USDC" : {
