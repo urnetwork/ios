@@ -144,6 +144,7 @@ struct LoginPasswordView: View {
             
         case .failure(let error):
             print("auth login error: \(error.localizedDescription)")
+            viewModel.setIsLoggingIn(false)
             break
             
         case .verificationRequired(let userAuth):
@@ -152,6 +153,7 @@ struct LoginPasswordView: View {
             break
             
         default:
+            viewModel.setIsLoggingIn(false)
             print("upgrade login result does not match any case")
             return
             
