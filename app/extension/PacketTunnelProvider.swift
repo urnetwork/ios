@@ -197,10 +197,16 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         }
         pathMonitor.start(queue: pathMonitorQueue)
         
-        
-        // FIXME packet receive will need to surface ipv4 or ipv6
-        let packetReceiverSub = device.add(PacketReceiver { data in
-            self.packetFlow.writePackets([data], withProtocols: [AF_INET as NSNumber])
+        let packetReceiverSub = device.add(PacketReceiver { ipVersion, ipProtocol, data in
+            switch ipVersion {
+            case 4:
+                self.packetFlow.writePackets([data], withProtocols: [AF_INET as NSNumber])
+            case 6:
+                self.packetFlow.writePackets([data], withProtocols: [AF_INET6 as NSNumber])
+            default:
+                // unknown version, drop
+                break
+            }
         })
         
         let close = {
@@ -286,17 +292,15 @@ func readToDevice(packetFlow: NEPacketTunnelFlow, device: SdkDeviceLocal, close:
 
 
 private class PacketReceiver: NSObject, SdkReceivePacketProtocol {
-    func receivePacket(_ packet: Data?) {
-        
+    func receivePacket(_ ipVersion: Int, ipProtocol: Int, packet: Data?) {
         if let packet {
-            c(packet)
+            c(ipVersion, ipProtocol, packet)
         }
-        
     }
     
-    private let c: (Data) -> Void
+    private let c: (Int, Int, Data) -> Void
     
-    init(c: @escaping (Data) -> Void) {
+    init(c: @escaping (Int, Int, Data) -> Void) {
         self.c = c
     }
     
