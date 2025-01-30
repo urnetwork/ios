@@ -273,23 +273,33 @@ struct AccountRootView: View {
     }
     
     private func handleSuccessWithJwt(_ jwt: String) async {
-                    
-        deviceManager.logout()
         
-        await deviceManager.initializeNetworkSpace()
-        
-        let result = await deviceManager.authenticateNetworkClient(jwt)
-        
-        if case .failure(let error) = result {
-            print("[AccountRootView] handleSuccessWithJwt: \(error.localizedDescription)")
+        do {
             
-            snackbarManager.showSnackbar(message: "There was an error creating your network. Please try again later.")
+            deviceManager.logout()
             
-            return
+            try await deviceManager.waitUntilDeviceUninitialized()
+            
+            await deviceManager.initializeNetworkSpace()
+            
+            try await deviceManager.waitUntilDeviceInitialized()
+            
+            let result = await deviceManager.authenticateNetworkClient(jwt)
+            
+            if case .failure(let error) = result {
+                print("[AccountRootView] handleSuccessWithJwt: \(error.localizedDescription)")
+                
+                snackbarManager.showSnackbar(message: "There was an error creating your network. Please try again later.")
+                
+                return
+            }
+            
+            // TODO: fade out login flow
+            // TODO: create navigation view model and switch to main app instead of checking deviceManager.device
+            
+        } catch {
+            print("handleSuccessWithJwt error is \(error)")
         }
-        
-        // TODO: fade out login flow
-        // TODO: create navigation view model and switch to main app instead of checking deviceManager.device
 
         
     }
