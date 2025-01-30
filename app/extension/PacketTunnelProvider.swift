@@ -338,17 +338,24 @@ private class RouteLocalChangeListener: NSObject, SdkRouteLocalChangeListenerPro
 
 
 func canProvideOnNetwork(path: Network.NWPath) ->  Bool {
-    if path.isExpensive || path.isConstrained {
-        return false
-    } else if let primaryInterface = path.availableInterfaces.first {
-        switch primaryInterface.type {
-        case .wifi, .wiredEthernet:
-            return true
-        default:
+    if #available(iOS 16, *) {
+        // the memory limit in the PacketTunnelProvider is the same in iOS 16, 17, 18
+        // see https://forums.developer.apple.com/forums/thread/73148?page=2
+        if path.isExpensive || path.isConstrained {
+            return false
+        } else if let primaryInterface = path.availableInterfaces.first {
+            switch primaryInterface.type {
+            case .wifi, .wiredEthernet:
+                return true
+            default:
+                return false
+            }
+        } else {
+            // no interfaces
             return false
         }
     } else {
-        // no interfaces
+        // not enough memory in the extension
         return false
     }
 }

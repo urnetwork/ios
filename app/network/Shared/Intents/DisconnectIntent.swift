@@ -31,12 +31,12 @@ struct DisconnectIntent: AppIntent {
         
         if !device.getConnected() {
             return .result(
-                dialog: "You are disconnected"
+                dialog: "URnetwork is disconnected"
             )
         }
         
         guard let connectViewController = device.openConnectViewController() else {
-            return .result(dialog: "Failed to connect")
+            return .result(dialog: "Failed to connect URnetwork")
         }
         
         connectViewController.disconnect()

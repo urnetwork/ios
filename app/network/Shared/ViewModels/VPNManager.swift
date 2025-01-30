@@ -268,12 +268,13 @@ class VPNManager {
                 // see https://forums.developer.apple.com/forums/thread/25928
                 tunnelManager.loadFromPreferences { error in
                     if self.tunnelRequestStatus != .started {
+                        self.tunnelRequestStatus = .started
                         do {
                             try tunnelManager.connection.startVPNTunnel()
                             print("[VPNManager]connection started")
                             self.device.sync()
-                            self.tunnelRequestStatus = .started
                         } catch let error as NSError {
+                            self.tunnelRequestStatus = .none
                             print("[VPNManager]Error starting VPN connection:")
                             print("[VPNManager]Domain: \(error.domain)")
                             print("[VPNManager]Code: \(error.code)")

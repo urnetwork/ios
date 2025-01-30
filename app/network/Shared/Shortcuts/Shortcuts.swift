@@ -15,6 +15,8 @@ struct Shortcuts: AppShortcutsProvider {
         AppShortcut(
             intent: ConnectIntent(),
             phrases: [
+                "Start \(.applicationName)",
+                "Start \(.applicationName) VPN",
                 "Connect to \(.applicationName)",
                 "Connect \(.applicationName)",
                 "Connect \(.applicationName) VPN",
@@ -29,6 +31,8 @@ struct Shortcuts: AppShortcutsProvider {
         AppShortcut(
             intent: DisconnectIntent(),
             phrases: [
+                "Stop \(.applicationName)",
+                "Stop \(.applicationName) VPN",
                 "Disconnect from \(.applicationName)",
                 "Disconnect \(.applicationName)",
                 "Disconnect \(.applicationName) VPN",

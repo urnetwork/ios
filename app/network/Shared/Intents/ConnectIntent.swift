@@ -33,7 +33,7 @@ struct ConnectIntent: AppIntent {
         
         if device.getConnected() {
             return .result(
-                dialog: "You are already connected"
+                dialog: "URnetwork is already connected"
             )
         }
         

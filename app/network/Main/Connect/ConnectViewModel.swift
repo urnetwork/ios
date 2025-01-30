@@ -178,7 +178,9 @@ extension ConnectView {
                 }
                 
                 print("new selected location is: \(selectedLocation?.name ?? "none")")
-                self.selectedProvider = selectedLocation
+                DispatchQueue.main.async {
+                    self.selectedProvider = selectedLocation
+                }
             }
             connectViewController?.add(listener)
         }

@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 class ProviderListSheetViewModel: ObservableObject {
 
     @Published var isPresented: Bool = false
