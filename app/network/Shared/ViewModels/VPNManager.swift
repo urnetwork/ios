@@ -82,36 +82,13 @@ class VPNManager {
             DispatchQueue.main.async {
                 self.updateTunnel()
                 
+                // note this makes it impossible to turn off the vpn from settings
+                // until it's possible to tell whether the tunnel ended from user preference or crash,
+                // we won't be able to support the settings without compromising reliability of the tunnel
                 if !tunnelStarted {
-                    // the user can manually stop the tunnel in settings
-                    // in this case, make sure we turn it off until the user starts it manually again
-//                    self.stopVpnTunnel()
-                    
-                    NETunnelProviderManager.loadAllFromPreferences { (managers, error) in
-                        if let _ = error {
-                            return
-                        }
-                        
-                        guard let tunnelManager = managers?.first else {
-                            return
-                        }
-                        
-                        // on ios, the user can manually stop the tunnel outside of the app by checking off the vpn setting
-                        // detect this case by looking at whether the tunnel stopped with error or normally
-                        tunnelManager.connection.fetchLastDisconnectError { error in
-                            if let error = error {
-                                print("[tunnel]disconnect error: \(error.localizedDescription)")
-                                
-                                // the tunnel stopped unexpectedly. Sync with state.
-                                self.tunnelRequestStatus = .none
-                                self.updateVpnService()
-                            } else {
-                                // the tunnel stopped normally e.g. the user turned off the tunnel
-                                self.stopVpnTunnel()
-                            }
-                        }
-                    }
-                    
+                    // the tunnel stopped unexpectedly. Sync with state.
+                    self.tunnelRequestStatus = .none
+                    self.updateVpnService()
                 }
             }
         })
