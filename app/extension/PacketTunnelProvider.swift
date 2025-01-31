@@ -26,6 +26,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     
     private var deviceConfiguration: [String: String]?
     private var device: SdkDeviceLocal?
+    private var memoryPressureSource: DispatchSourceMemoryPressure?
 
     
     override init() {
@@ -40,11 +41,28 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             SdkSetMemoryLimit(4 * 1024 * 1024)
         }
         logger.info("PacketTunnelProvider init")
-    }
-    
-    deinit {
-        self.device?.cancel()
-        self.device = nil
+        
+        // respond to memory pressure events
+        // see https://developer.apple.com/documentation/dispatch/dispatchsource/makememorypressuresource(eventmask:queue:)
+        memoryPressureSource = DispatchSource.makeMemoryPressureSource(eventMask: .all, queue: nil)
+        if let memoryPressureSource = memoryPressureSource {
+            memoryPressureSource.setEventHandler {
+                switch memoryPressureSource.mask {
+                case DispatchSource.MemoryPressureEvent.normal:
+    //                SdkFreeMemory()
+                    break
+                case DispatchSource.MemoryPressureEvent.warning:
+                    SdkFreeMemory()
+                case DispatchSource.MemoryPressureEvent.critical:
+                    SdkFreeMemory()
+                default:
+                    break
+                }
+                
+            }
+            memoryPressureSource.activate()
+        }
+        
     }
     
     
@@ -264,6 +282,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
         self.logger.info("Stopping tunnel with reason: \(String(describing: reason))")
         self.device?.cancel()
+        self.memoryPressureSource?.cancel()
         completionHandler()
     }
     
