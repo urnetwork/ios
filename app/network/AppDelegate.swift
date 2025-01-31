@@ -22,6 +22,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
+    func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
+        SdkFreeMemory()
+    }
     
     
 }
