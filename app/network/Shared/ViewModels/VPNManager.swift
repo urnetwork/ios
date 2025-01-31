@@ -33,7 +33,7 @@ class VPNManager {
     
     var deviceConnectSub: SdkSubProtocol?
     
-    var deviceRemoteSub: SdkSubProtocol?
+//    var deviceRemoteSub: SdkSubProtocol?
     
     var tunnelSub: SdkSubProtocol?
     
@@ -74,23 +74,45 @@ class VPNManager {
             }
         })
         
-        self.deviceRemoteSub = device.add(RemoteChangeListener { [weak self] remoteConnected in
+        self.tunnelSub = device.add(TunnelChangeListener { [weak self] tunnelStarted in
             guard let self = self else {
                 return
             }
             
             DispatchQueue.main.async {
-                if !remoteConnected {
+                self.updateTunnel()
+                
+                if !tunnelStarted {
                     // the user can manually stop the tunnel in settings
                     // in this case, make sure we turn it off until the user starts it manually again
-                    self.stopVpnTunnel()
+//                    self.stopVpnTunnel()
+                    
+                    NETunnelProviderManager.loadAllFromPreferences { (managers, error) in
+                        if let _ = error {
+                            return
+                        }
+                        
+                        guard let tunnelManager = managers?.first else {
+                            return
+                        }
+                        
+                        // on ios, the user can manually stop the tunnel outside of the app by checking off the vpn setting
+                        // detect this case by looking at whether the tunnel stopped with error or normally
+                        tunnelManager.connection.fetchLastDisconnectError { error in
+                            if let error = error {
+                                print("[tunnel]disconnect error: \(error.localizedDescription)")
+                                
+                                // the tunnel stopped unexpectedly. Sync with state.
+                                self.tunnelRequestStatus = .none
+                                self.updateVpnService()
+                            } else {
+                                // the tunnel stopped normally e.g. the user turned off the tunnel
+                                self.stopVpnTunnel()
+                            }
+                        }
+                    }
+                    
                 }
-            }
-        })
-        
-        self.tunnelSub = device.add(TunnelChangeListener { [weak self] _ in
-            DispatchQueue.main.async {
-                self?.updateTunnel()
             }
         })
         
@@ -132,8 +154,8 @@ class VPNManager {
         self.deviceConnectSub?.close()
         self.deviceConnectSub = nil
         
-        self.deviceRemoteSub?.close()
-        self.deviceRemoteSub = nil
+//        self.deviceRemoteSub?.close()
+//        self.deviceRemoteSub = nil
         
         self.tunnelSub?.close()
         self.tunnelSub = nil
@@ -265,7 +287,7 @@ class VPNManager {
             tunnelManager.onDemandRules = [connectRule]
             
             tunnelManager.saveToPreferences { error in
-                if let error = error {
+                if let _ = error {
                     // when changing locations quickly, another change might have intercepted this save
                     self.tunnelRequestStatus = .none
                     return
@@ -276,7 +298,7 @@ class VPNManager {
                 
                 // see https://forums.developer.apple.com/forums/thread/25928
                 tunnelManager.loadFromPreferences { error in
-                    if let error = error {
+                    if let _ = error {
                         self.tunnelRequestStatus = .none
                         return
                     }
@@ -322,7 +344,6 @@ class VPNManager {
 //                return
 //            }
             
-            // Use existing manager or create new one
             guard let tunnelManager = managers?.first else {
                 return
             }
@@ -332,7 +353,7 @@ class VPNManager {
             tunnelManager.isOnDemandEnabled = false
             
             tunnelManager.saveToPreferences { error in
-                if let error = error {
+                if let _ = error {
                     // when changing locations quickly, another change might have intercepted this save
                     self.tunnelRequestStatus = .none
                     return
@@ -343,7 +364,7 @@ class VPNManager {
                 
                 // see https://forums.developer.apple.com/forums/thread/25928
                 tunnelManager.loadFromPreferences { error in
-                    if let error {
+                    if let _ = error {
                         self.tunnelRequestStatus = .none
                         return
                     }
