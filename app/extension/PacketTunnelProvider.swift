@@ -31,6 +31,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     
     override init() {
         super.init()
+        
+        logger.info("PacketTunnelProvider init")
+        
         if #available(iOS 16, *) {
             // the memory limit in the PacketTunnelProvider is 50mib in iOS 16, 17, 18
             // the binary and go runtime take about 30mib of that, leaving at most about 20mib for the sdk and tunnel provider
@@ -41,7 +44,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             // note provider is also disabled for these
             SdkSetMemoryLimit(4 * 1024 * 1024)
         }
-        logger.info("PacketTunnelProvider init")
         
         // respond to memory pressure events
         // see https://developer.apple.com/documentation/dispatch/dispatchsource/makememorypressuresource(eventmask:queue:)
