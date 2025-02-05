@@ -26,25 +26,46 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     
     private var deviceConfiguration: [String: String]?
     private var device: SdkDeviceLocal?
+    private var memoryPressureSource: DispatchSourceMemoryPressure?
 
     
     override init() {
         super.init()
+        
+        logger.info("PacketTunnelProvider init")
+        
         if #available(iOS 16, *) {
             // the memory limit in the PacketTunnelProvider is 50mib in iOS 16, 17, 18
-            // the binary and go runtime take a part of that
+            // the binary and go runtime take about 30mib of that, leaving at most about 20mib for the sdk and tunnel provider
+            // since the limit is a soft limit, take ~80% of the available for the SDK
             // see https://forums.developer.apple.com/forums/thread/73148?page=2
-            SdkSetMemoryLimit(24 * 1024 * 1024)
+            SdkSetMemoryLimit(16 * 1024 * 1024)
         } else {
             // note provider is also disabled for these
             SdkSetMemoryLimit(4 * 1024 * 1024)
         }
-        logger.info("PacketTunnelProvider init")
-    }
-    
-    deinit {
-        self.device?.cancel()
-        self.device = nil
+        
+        // respond to memory pressure events
+        // see https://developer.apple.com/documentation/dispatch/dispatchsource/makememorypressuresource(eventmask:queue:)
+        memoryPressureSource = DispatchSource.makeMemoryPressureSource(eventMask: .all, queue: nil)
+        if let memoryPressureSource = memoryPressureSource {
+            memoryPressureSource.setEventHandler {
+                switch memoryPressureSource.mask {
+                case DispatchSource.MemoryPressureEvent.normal:
+    //                SdkFreeMemory()
+                    break
+                case DispatchSource.MemoryPressureEvent.warning:
+                    SdkFreeMemory()
+                case DispatchSource.MemoryPressureEvent.critical:
+                    SdkFreeMemory()
+                default:
+                    break
+                }
+                
+            }
+            memoryPressureSource.activate()
+        }
+        
     }
     
     
@@ -197,10 +218,16 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         }
         pathMonitor.start(queue: pathMonitorQueue)
         
-        
-        // FIXME packet receive will need to surface ipv4 or ipv6
-        let packetReceiverSub = device.add(PacketReceiver { data in
-            self.packetFlow.writePackets([data], withProtocols: [AF_INET as NSNumber])
+        let packetReceiverSub = device.add(PacketReceiver { ipVersion, ipProtocol, data in
+            switch ipVersion {
+            case 4:
+                self.packetFlow.writePackets([data], withProtocols: [AF_INET as NSNumber])
+            case 6:
+                self.packetFlow.writePackets([data], withProtocols: [AF_INET6 as NSNumber])
+            default:
+                // unknown version, drop
+                break
+            }
         })
         
         let close = {
@@ -258,6 +285,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
         self.logger.info("Stopping tunnel with reason: \(String(describing: reason))")
         self.device?.cancel()
+        self.memoryPressureSource?.cancel()
         completionHandler()
     }
     
@@ -286,17 +314,15 @@ func readToDevice(packetFlow: NEPacketTunnelFlow, device: SdkDeviceLocal, close:
 
 
 private class PacketReceiver: NSObject, SdkReceivePacketProtocol {
-    func receivePacket(_ packet: Data?) {
-        
+    func receivePacket(_ ipVersion: Int, ipProtocol: Int, packet: Data?) {
         if let packet {
-            c(packet)
+            c(ipVersion, ipProtocol, packet)
         }
-        
     }
     
-    private let c: (Data) -> Void
+    private let c: (Int, Int, Data) -> Void
     
-    init(c: @escaping (Data) -> Void) {
+    init(c: @escaping (Int, Int, Data) -> Void) {
         self.c = c
     }
     

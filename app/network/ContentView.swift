@@ -31,7 +31,7 @@ struct ContentView: View {
                 switch viewModel.contentViewPath {
                     
                 case .uninitialized:
-                    ProgressView("Loading...")
+                    ProgressView()
                 case .authenticate:
                     LoginNavigationView(
                         api: api,
@@ -58,8 +58,7 @@ struct ContentView: View {
                 }
                 
             } else {
-                // loading indicator?
-                ProgressView("Loading...")
+                ProgressView()
             }
             
             UrSnackBar(message: snackbarManager.message, isVisible: snackbarManager.isVisible)
@@ -71,25 +70,8 @@ struct ContentView: View {
         .background(themeManager.currentTheme.backgroundColor)
         .environmentObject(snackbarManager)
         .onReceive(deviceManager.$device) { device in
-            
-            if deviceManager.deviceInitialized {
-                
-                if device != nil {
-                    welcomeAnimationComplete = false
-                }
-                
-                updatePath()
-            }
-            
-        }
-        .onReceive(deviceManager.$deviceInitialized) { isInitialized in
-            print("is initialized is \(isInitialized)")
-            
-            if isInitialized {
-                
-                updatePath()
-                
-            }
+  
+            updatePath()
             
         }
         
@@ -100,6 +82,7 @@ struct ContentView: View {
         withAnimation {
             opacity = 0.0
         }
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             
             viewModel.updatePath(deviceManager.device)
@@ -112,6 +95,9 @@ struct ContentView: View {
     }
     
     private func handleSuccessWithJwt(_ jwt: String) async {
+        
+        welcomeAnimationComplete = false
+     
         let result = await deviceManager.authenticateNetworkClient(jwt)
         
         if case .failure(let error) = result {
@@ -121,9 +107,6 @@ struct ContentView: View {
             
             return
         }
-        
-        // TODO: fade out login flow
-        // TODO: create navigation view model and switch to main app instead of checking deviceManager.device
         
     }
     

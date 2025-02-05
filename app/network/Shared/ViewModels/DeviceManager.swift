@@ -8,6 +8,7 @@
 import Foundation
 import URnetworkSdk
 import UIKit
+import Combine
 
 @MainActor
 class DeviceManager: ObservableObject {
@@ -233,6 +234,50 @@ private class GetJwtInitDeviceCallback: NSObject, SdkGetByClientJwtCallbackProto
     }
 }
 
+// MARK: Device initialized utils
+extension DeviceManager {
+    func waitUntilDeviceInitialized(timeout: TimeInterval = 30) async throws {
+        try await withTimeout(timeout) {
+            for await initialized in self.$deviceInitialized.values {
+                if initialized {
+                    return
+                }
+            }
+        }
+    }
+    
+    func waitUntilDeviceUninitialized(timeout: TimeInterval = 30) async throws {
+        try await withTimeout(timeout) {
+            for await initialized in self.$deviceInitialized.values {
+                if !initialized {
+                    return
+                }
+            }
+        }
+    }
+    
+    private func withTimeout<T>(_ seconds: TimeInterval, operation: @escaping () async throws -> T) async throws -> T {
+        try await withThrowingTaskGroup(of: T.self) { group in
+            group.addTask {
+                try await operation()
+            }
+            
+            group.addTask {
+                try await Task.sleep(nanoseconds: UInt64(seconds * Double(NSEC_PER_SEC)))
+                throw DeviceManagerError.timeout
+            }
+            
+            let result = try await group.next()!
+            group.cancelAll()
+            return result
+        }
+    }
+    
+    enum DeviceManagerError: Error {
+        case timeout
+    }
+}
+
 // MARK: Network space handlers
 extension DeviceManager {
     
@@ -270,30 +315,26 @@ extension DeviceManager {
             networkStore: self,
             deviceSpecs: deviceSpecs,
             onResult: { result, ok in
-//                DispatchQueue.main.async {
-                    if ok {
+                if ok {
+                    
+                    guard let result else {
+                        self.logout()
                         
-                        guard let result else {
-                            print("[GetByClientJwtCallback] result is nil")
-                            self.logout()
-                            
-                            return
-                        }
-                        
-                        if result == "" {
-                            self.logout()
-                        } else {
-                            self.initDevice(clientJwt: result, deviceSpec: deviceSpecs)
-                        }
-                        
-                    } else {
-                        
-                        
-                        self.deviceInitialized = true
-                        
-                        
+                        return
                     }
-//                }
+                    
+                    if result == "" {
+                        print("result is empty")
+                        self.logout()
+                    } else {
+                        self.initDevice(clientJwt: result, deviceSpec: deviceSpecs)
+                    }
+                    
+                } else {
+                    
+                    self.deviceInitialized = true
+                    
+                }
             }
         )
         self.asyncLocalState?.getByClientJwt(getJwtCallback)
@@ -497,35 +538,33 @@ extension DeviceManager {
                 let callback = AuthNetworkClientCallback { [weak self] result, error in
                     guard let self = self else { return }
                     
-//                    DispatchQueue.main.async {
+                    
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                        return
+                    }
+                    
+                    guard let result = result else {
+                        continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "No result found in AuthNetworkClientCallback"]))
+                        return
+                    }
+                    
+                    if let resultError = result.error {
+                        continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: resultError.message]))
                         
-                        if let error = error {
-                            continuation.resume(throwing: error)
-                            return
-                        }
-                        
-                        guard let result = result else {
-                            continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "No result found in AuthNetworkClientCallback"]))
-                            return
-                        }
-                        
-                        if let resultError = result.error {
-                            continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: resultError.message]))
-                            
-                            return
-                        }
-                        
-                        let clientJwt = result.byClientJwt
-                        
-                        let callback = SetJWTLocalStateCallback(
-                            continuation: continuation,
-                            clientJwt: clientJwt,
-                            deviceSpecs: deviceSpecs,
-                            initDevice: self.initDevice(clientJwt:deviceSpec:)
-                        )
-                        
-                        self.asyncLocalState?.setByClientJwt(clientJwt, callback: callback)
-//                    }
+                        return
+                    }
+                    
+                    let clientJwt = result.byClientJwt
+                    
+                    let callback = SetJWTLocalStateCallback(
+                        continuation: continuation,
+                        clientJwt: clientJwt,
+                        deviceSpecs: deviceSpecs,
+                        initDevice: self.initDevice(clientJwt:deviceSpec:)
+                    )
+                    
+                    self.asyncLocalState?.setByClientJwt(clientJwt, callback: callback)
                     
                 }
                 
