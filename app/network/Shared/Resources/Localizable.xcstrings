@@ -1437,10 +1437,6 @@
       }
     },
     "Connect external wallet" : {
-
-    },
-    "Connect wallet" : {
-      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -1463,7 +1459,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Connect wallet"
+            "value" : "Connect external wallet"
           }
         },
         "es" : {
@@ -1581,6 +1577,9 @@
           }
         }
       }
+    },
+    "Connect URnetwork VPN" : {
+
     },
     "Connect Wallet" : {
       "localizations" : {
@@ -2997,6 +2996,9 @@
         }
       }
     },
+    "Disconnect URnetwork VPN" : {
+
+    },
     "Don't see it? " : {
       "comment" : "Referring to the OTP code",
       "localizations" : {
@@ -4269,6 +4271,15 @@
           }
         }
       }
+    },
+    "Error connecting to URnetwork" : {
+
+    },
+    "Failed to connect" : {
+
+    },
+    "Failed to connect URnetwork" : {
+
     },
     "Feedback" : {
       "localizations" : {
@@ -7554,6 +7565,12 @@
           }
         }
       }
+    },
+    "Please login to URnetwork" : {
+
+    },
+    "Please login to URnetwork to connect" : {
+
     },
     "Profile" : {
       "localizations" : {
@@ -11956,6 +11973,9 @@
     "URid" : {
       "shouldTranslate" : false
     },
+    "URnetwork is disconnected" : {
+
+    },
     "URnetwork Referral Code" : {
       "localizations" : {
         "ar" : {
@@ -12097,6 +12117,15 @@
           }
         }
       }
+    },
+    "URnetwork VPN already started" : {
+
+    },
+    "URnetwork VPN disconnected" : {
+
+    },
+    "URnetwork VPN started" : {
+
     },
     "USDC" : {
       "shouldTranslate" : false

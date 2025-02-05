@@ -52,6 +52,7 @@ class DeviceManager: ObservableObject {
             self.vpnManager = nil
             
             if let device = device {
+                print("set device hit: device exists: resetting vpn manager")
                 self.provideWhileDisconnected = device.getProvideWhileDisconnected()
                 self.deviceInitialized = true
                 self.vpnManager = VPNManager(device: device)
@@ -85,6 +86,7 @@ class DeviceManager: ObservableObject {
         
     }
     
+    
     // TODO: check how this is used or set
     let deviceDescription = "New device"
     
@@ -102,6 +104,21 @@ class DeviceManager: ObservableObject {
             await self.initializeNetworkSpace()
         }
         
+    }
+    
+    /**
+     * used in app intents
+     */
+    func waitForDeviceInitialization() async {
+        // Return early if already initialized
+        if deviceInitialized { return }
+        
+        // Wait for deviceInitialized to become true
+        for await value in $deviceInitialized.values {
+            if value == true {
+                return
+            }
+        }
     }
     
     var asyncLocalState: SdkAsyncLocalState? {
