@@ -43,12 +43,12 @@ struct ConnectCanvasConnectedStateView: View {
         
         self._circleOffsets = State(initialValue: zip(initialOffsets, finalOffsets).map { ($0, $1) }.shuffled())
         
-        // self.animatedIn = animatedIn
         self.isActive = isActive
     }
     
     var body: some View {
         ZStack {
+            
             ForEach(0..<5) { index in
                 Circle()
                     .fill(self.colors[index])
@@ -72,6 +72,20 @@ struct ConnectCanvasConnectedStateView: View {
             withAnimation(.easeInOut(duration: 1)) {
                 self.animateCircles = newValue
             }
+        }
+        .onAppear {
+            
+            // if closing out the app
+            // then opening again, if the vpn connection is active
+            // animate the circles back in
+            if isActive {
+                
+                withAnimation(.easeInOut(duration: 1)) {
+                    self.animateCircles = true
+                }
+                
+            }
+            
         }
     }
 }
