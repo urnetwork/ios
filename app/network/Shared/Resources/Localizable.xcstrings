@@ -4272,6 +4272,9 @@
         }
       }
     },
+    "Error connecting to URnetwork" : {
+
+    },
     "Failed to connect" : {
 
     },
@@ -11970,9 +11973,6 @@
     "URid" : {
       "shouldTranslate" : false
     },
-    "URnetwork is already connected" : {
-
-    },
     "URnetwork is disconnected" : {
 
     },
@@ -12117,6 +12117,9 @@
           }
         }
       }
+    },
+    "URnetwork VPN already started" : {
+
     },
     "URnetwork VPN disconnected" : {
 

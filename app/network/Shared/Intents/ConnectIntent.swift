@@ -31,21 +31,24 @@ struct ConnectIntent: AppIntent {
             )
         }
         
-        if device.getConnected() {
-            return .result(
-                dialog: "URnetwork is already connected"
-            )
-        }
-        
         guard let connectViewController = device.openConnectViewController() else {
             return .result(dialog: "Failed to connect")
         }
+        
+        var status = connectViewController.getConnectionStatus()
+        if (status != SdkDisconnected) {
+            return .result(dialog: "URnetwork VPN already started")
+        }
+        
         
         if let location = device.getConnectLocation() {
             connectViewController.connect(location)
         } else {
             connectViewController.connectBestAvailable()
         }
+        
+        status = connectViewController.getConnectionStatus()
+        print("post connect status is: \(status)")
         
         return .result(dialog: "URnetwork VPN started")
              

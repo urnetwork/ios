@@ -30,8 +30,9 @@ struct DisconnectIntent: AppIntent {
         }
         
         if !device.getConnected() {
+            print("RPC device is not connected")
             return .result(
-                dialog: "URnetwork is disconnected"
+                dialog: "Error connecting to URnetwork"
             )
         }
         
@@ -39,7 +40,19 @@ struct DisconnectIntent: AppIntent {
             return .result(dialog: "Failed to connect URnetwork")
         }
         
+        var status = connectViewController.getConnectionStatus()
+        print("connect status is: \(status)")
+        
+        if (status == SdkDisconnected) {
+            return .result(
+                dialog: "URnetwork is disconnected"
+            )
+        }
+        
         connectViewController.disconnect()
+        
+        status = connectViewController.getConnectionStatus()
+        print("after disconnect status is: \(status)")
         
         return .result(dialog: "URnetwork VPN disconnected")
          
