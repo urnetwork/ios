@@ -237,6 +237,7 @@ struct AccountRootView: View {
             
         }
         .padding()
+        .frame(maxWidth: 600)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
 //        .onChange(of: deviceManager.device) {
 //            viewModel.isPresentedCreateAccount = false

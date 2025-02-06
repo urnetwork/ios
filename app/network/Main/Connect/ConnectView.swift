@@ -154,6 +154,7 @@ struct ConnectView: View {
             
         }
         .padding()
+        .frame(maxWidth: 600)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .sheet(isPresented: $providerListSheetViewModel.isPresented) {
             

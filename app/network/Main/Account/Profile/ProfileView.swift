@@ -33,15 +33,15 @@ struct ProfileView: View {
         
         VStack {
          
-            HStack {
-                Text("Profile")
-                    .font(themeManager.currentTheme.titleFont)
-                    .foregroundColor(themeManager.currentTheme.textColor)
-                
-                Spacer()
-            }
-            
-            Spacer().frame(height: 64)
+//            HStack {
+//                Text("Profile")
+//                    .font(themeManager.currentTheme.titleFont)
+//                    .foregroundColor(themeManager.currentTheme.textColor)
+//                
+//                Spacer()
+//            }
+//            
+//            Spacer().frame(height: 64)
             
             HStack {
                 UrLabel(text: "Network name")
@@ -82,6 +82,7 @@ struct ProfileView: View {
             Spacer()
         }
         .padding()
+        .frame(maxWidth: 600)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
