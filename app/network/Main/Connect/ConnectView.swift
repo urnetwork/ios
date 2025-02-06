@@ -47,16 +47,16 @@ struct ConnectView: View {
         
         VStack {
             
-            HStack {
-                Spacer()
-                AccountMenu(
-                    isGuest: isGuest,
-                    logout: logout,
-                    api: api,
-                    isPresentedCreateAccount: $viewModel.isPresentedCreateAccount
-                )
-            }
-            .frame(height: 32)
+//            HStack {
+//                Spacer()
+//                AccountMenu(
+//                    isGuest: isGuest,
+//                    logout: logout,
+//                    api: api,
+//                    isPresentedCreateAccount: $viewModel.isPresentedCreateAccount
+//                )
+//            }
+//            .frame(height: 32)
             
             Spacer()
             
