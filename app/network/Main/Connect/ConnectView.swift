@@ -47,16 +47,16 @@ struct ConnectView: View {
         
         VStack {
             
-            HStack {
-                Spacer()
-                AccountMenu(
-                    isGuest: isGuest,
-                    logout: logout,
-                    api: api,
-                    isPresentedCreateAccount: $viewModel.isPresentedCreateAccount
-                )
-            }
-            .frame(height: 32)
+//            HStack {
+//                Spacer()
+//                AccountMenu(
+//                    isGuest: isGuest,
+//                    logout: logout,
+//                    api: api,
+//                    isPresentedCreateAccount: $viewModel.isPresentedCreateAccount
+//                )
+//            }
+//            .frame(height: 32)
             
             Spacer()
             
@@ -154,6 +154,7 @@ struct ConnectView: View {
             
         }
         .padding()
+        .frame(maxWidth: 600)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .sheet(isPresented: $providerListSheetViewModel.isPresented) {
             

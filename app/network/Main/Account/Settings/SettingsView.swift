@@ -44,15 +44,15 @@ struct SettingsView: View {
                 
                 VStack {
                     
-                    HStack {
-                        Text("Settings")
-                            .font(themeManager.currentTheme.titleFont)
-                            .foregroundColor(themeManager.currentTheme.textColor)
-                        
-                        Spacer()
-                    }
-                    
-                    Spacer().frame(height: 64)
+//                    HStack {
+//                        Text("Settings")
+//                            .font(themeManager.currentTheme.titleFont)
+//                            .foregroundColor(themeManager.currentTheme.textColor)
+//                        
+//                        Spacer()
+//                    }
+//                    
+//                    Spacer().frame(height: 64)
   
                     // TODO: add this back in for subscription
 //                    HStack {
@@ -231,10 +231,11 @@ struct SettingsView: View {
                     Spacer().frame(height: 12)
                     
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding()
+                .frame(maxWidth: 600)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .frame(minHeight: geometry.size.height)
-                .frame(maxWidth: .infinity)
+                // .frame(maxWidth: .infinity)
                 
                 
             }

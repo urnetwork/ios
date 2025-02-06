@@ -66,6 +66,8 @@ struct WalletsView: View {
                             presentConnectWalletSheet: $viewModel.presentConnectWalletSheet
                         )
                     }
+                    .frame(maxWidth: 600)
+                    .frame(maxWidth: .infinity)
                     
                 }
                 
