@@ -46,9 +46,13 @@ struct LoginInitialView: View {
         
         GeometryReader { geometry in
             
+            #if os(iOS)
             let isTablet = UIDevice.current.userInterfaceIdiom == .pad
+            #else
+            let isTablet = false
+            #endif
       
-            ScrollView(.vertical) {
+            ScrollView {
                 
                 if initialIsLandscape && isTablet {
                     
@@ -118,15 +122,25 @@ struct LoginInitialView: View {
             .scrollIndicators(.hidden)
             .toolbar {
                 if let cancel = cancel {
+                    
+                    #if os(iOS)
                     ToolbarItem(placement: .navigationBarLeading) {
                         
                         Button(action: { cancel() }) {
-                            //                            Text("Cancel")
-                            //                            .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
                             Image(systemName: "xmark")
                         }
                         
                     }
+                    #elseif os(macOS)
+                    ToolbarItem {
+                        
+                        Button(action: { cancel() }) {
+                            Image(systemName: "xmark")
+                        }
+                        
+                    }
+                    #endif
+                    
                     ToolbarItem(placement: .principal) {
                         Text("Create Account")
                             .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
@@ -136,9 +150,14 @@ struct LoginInitialView: View {
         }
         .onAppear {
             // Cache initial orientation
+            #if os(iOS)
             let orientation = UIDevice.current.orientation
             initialIsLandscape = orientation.isLandscape
+            #elseif os(macOS)
+            initialIsLandscape = true
+            #endif
         }
+        #if os(iOS)
         .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
             // Only update on actual rotation events
             let orientation = UIDevice.current.orientation
@@ -146,6 +165,7 @@ struct LoginInitialView: View {
                 initialIsLandscape = orientation.isLandscape
             }
         }
+        #endif
         
     }
     
@@ -241,6 +261,7 @@ struct LoginInitialView: View {
         
         case .failure(let error):
             print("auth login error: \(error.localizedDescription)")
+            viewModel.setIsCheckingUserAuth(false)
             break
             
         }
@@ -255,6 +276,7 @@ struct LoginInitialView: View {
     
     private func handleGoogleSignInButton() async {
         
+        #if os(iOS)
         guard let rootViewController = getRootViewController() else {
             print("no root view controller found")
             return
@@ -297,6 +319,8 @@ struct LoginInitialView: View {
              snackbarManager.showSnackbar(message: "There was an error logging in")
          }
         
+        #endif
+        
     }
     
 }
@@ -320,6 +344,7 @@ private struct LoginInitialFormView: View {
         
         VStack {
          
+            #if os(iOS)
             UrTextField(
                 text: $userAuth,
                 label: "Email or phone number",
@@ -340,6 +365,27 @@ private struct LoginInitialFormView: View {
                     
                 }
             )
+            #elseif os(macOS)
+            UrTextField(
+                text: $userAuth,
+                label: "Email or phone number",
+                placeholder: "Enter your phone number or email",
+                onTextChange: { newValue in
+                    // Filter whitespace
+                    if newValue.contains(" ") {
+                        userAuth = newValue.filter { !$0.isWhitespace }
+                    }
+                },
+                submitLabel: .continue,
+                onSubmit: {
+                 
+                    Task {
+                        await handleUserAuth()
+                    }
+                    
+                }
+            )
+            #endif
             
             Spacer()
                 .frame(height: 32)

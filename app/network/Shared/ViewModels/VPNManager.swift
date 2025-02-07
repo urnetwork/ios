@@ -6,9 +6,14 @@
 //
 
 import Foundation
-import UIKit
 import NetworkExtension
 import URnetworkSdk
+
+#if canImport(UIKit)
+import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 //enum TunnelRequestStatus {
 //    case started
@@ -114,7 +119,8 @@ class VPNManager {
     func close() {
         self.stopVpnTunnel()
         
-        UIApplication.shared.isIdleTimerDisabled = false
+        // UIApplication.shared.isIdleTimerDisabled = false
+        self.setIdleTimerDisabled(false)
         
         self.routeLocalSub?.close()
         self.routeLocalSub = nil
@@ -172,11 +178,13 @@ class VPNManager {
             print("[VPNManager]start")
             
             // see https://developer.apple.com/documentation/uikit/uiapplication/isidletimerdisabled
-            if providePaused {
-                UIApplication.shared.isIdleTimerDisabled = false
-            } else {
-                UIApplication.shared.isIdleTimerDisabled = true
-            }
+//            if providePaused {
+//                UIApplication.shared.isIdleTimerDisabled = false
+//            } else {
+//                UIApplication.shared.isIdleTimerDisabled = true
+//            }
+            
+            setIdleTimerDisabled(providePaused ? false : true)
             
             self.startVpnTunnel()
             
@@ -185,8 +193,18 @@ class VPNManager {
             print("[VPNManager]stop")
             self.stopVpnTunnel()
             
-            UIApplication.shared.isIdleTimerDisabled = false
+            self.setIdleTimerDisabled(false)
+            
+            // UIApplication.shared.isIdleTimerDisabled = false
         }
+    }
+    
+    private func setIdleTimerDisabled(_ disabled: Bool) {
+        #if canImport(UIKit)
+        UIApplication.shared.isIdleTimerDisabled = disabled
+        #elseif canImport(AppKit)
+        ProcessInfo.processInfo.automaticTerminationSupportEnabled = !disabled
+        #endif
     }
     
     
@@ -241,7 +259,7 @@ class VPNManager {
             tunnelProtocol.excludeLocalNetworks = true
             tunnelProtocol.excludeCellularServices = true
             tunnelProtocol.excludeAPNs = true
-            if #available(iOS 17.4, *) {
+            if #available(iOS 17.4, macOS 14.4, *) {
                 tunnelProtocol.excludeDeviceCommunication = true
             }
             

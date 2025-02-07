@@ -79,7 +79,11 @@ struct LoginPasswordView: View {
                     UrButton(
                         text: "Continue",
                         action: {
+                            
+                            #if canImport(UIKit)
                             hideKeyboard()
+                            #endif
+                            
                             if !viewModel.password.isEmpty {
                                 Task {
                                     

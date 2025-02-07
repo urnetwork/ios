@@ -45,6 +45,7 @@ struct MainView: View {
                     welcomeAnimationComplete: self.welcomeAnimationComplete
                 )
                 case true:
+                #if os(iOS)
                 MainTabView(
                     api: api,
                     device: device,
@@ -52,6 +53,15 @@ struct MainView: View {
                     logout: deviceManager.logout,
                     provideWhileDisconnected: $deviceManager.provideWhileDisconnected
                 )
+                #elseif os(macOS)
+                MainNavigationSplitView(
+                    api: api,
+                    device: device,
+                    vpnManager: vpnManager,
+                    logout: deviceManager.logout,
+                    provideWhileDisconnected: $deviceManager.provideWhileDisconnected
+                )
+                #endif
             }
             
         }

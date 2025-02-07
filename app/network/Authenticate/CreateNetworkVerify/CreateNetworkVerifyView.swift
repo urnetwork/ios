@@ -63,6 +63,8 @@ struct CreateNetworkVerifyView: View {
                         }
                     }.background {
                         // hidden textfield which holds the otp value
+                        
+                        #if os(iOS)
                         TextField("", text: $viewModel.otp)
                             .onChange(of: viewModel.otp) { newValue in
                                 
@@ -87,6 +89,33 @@ struct CreateNetworkVerifyView: View {
                             .autocorrectionDisabled()
                             .textInputAutocapitalization(.never)
                             .textContentType(.oneTimeCode)
+                        
+                        #elseif os(macOS)
+                    
+                        TextField("", text: $viewModel.otp)
+                            .onChange(of: viewModel.otp) { newValue in
+                                
+                                if newValue.count > viewModel.codeCount {
+                                    viewModel.otp = String(newValue.prefix(viewModel.codeCount))
+                                }
+                                
+                                if viewModel.otp.count == viewModel.codeCount && !viewModel.isSubmitting {
+                                    
+                                    Task {
+                                        let result = await viewModel.submit()
+                                        await self.handleOptSubmitResult(result)
+                                    }
+                                }
+                                
+                            }
+                            .frame(width: 1, height: 1)
+                            .opacity(0.001)
+                            .blendMode(.screen)
+                            .focused($isKeyboardShowing)
+                            .autocorrectionDisabled()
+                            .textContentType(.oneTimeCode)
+                    
+                        #endif
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
@@ -129,6 +158,7 @@ struct CreateNetworkVerifyView: View {
                     
                 }
                 .toolbar {
+                    #if os(iOS)
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button(action: {
                             // path = NavigationPath() // Reset to root
@@ -138,6 +168,17 @@ struct CreateNetworkVerifyView: View {
                                 .foregroundColor(themeManager.currentTheme.textColor)
                         }
                     }
+                    #elseif os(macOS)
+                    ToolbarItem {
+                        Button(action: {
+                            // path = NavigationPath() // Reset to root
+                            backToRoot()
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(themeManager.currentTheme.textColor)
+                        }
+                    }
+                    #endif
                 }
                 .navigationBarBackButtonHidden(true)
                 .padding()
@@ -157,7 +198,9 @@ struct CreateNetworkVerifyView: View {
             // consider launching this in a task
             // the ContentView will switch the the main app view before this function has completed
             
+            #if canImport(UIKit)
             hideKeyboard()
+            #endif
             
             await handleSuccess(jwt)
             // TODO: clear viewmodel loading state

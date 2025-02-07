@@ -8,6 +8,79 @@
 import SwiftUI
 import URnetworkSdk
 
+//struct ProviderListSheetView: View {
+//    
+//    @EnvironmentObject var themeManager: ThemeManager
+//    
+//    var selectedProvider: SdkConnectLocation?
+//    var connect: (SdkConnectLocation) -> Void
+//    var connectBestAvailable: () -> Void
+//    
+//    /**
+//     * Provider lists
+//     */
+//    var providerCountries: [SdkConnectLocation]
+//    var providerPromoted: [SdkConnectLocation]
+//    var providerDevices: [SdkConnectLocation]
+//    var providerRegions: [SdkConnectLocation]
+//    var providerCities: [SdkConnectLocation]
+//    var providerBestSearchMatches: [SdkConnectLocation]
+//    
+//    /**
+//     * Close sheet
+//     */
+//    var setIsPresented: (Bool) -> Void
+//    
+//    
+//    var body: some View {
+//        List {
+//            
+//            ProviderListGroup(
+//                groupName: "Best Search Matches",
+//                providers: providerBestSearchMatches,
+//                selectedProvider: selectedProvider,
+//                connect: connect
+//            )
+//            ProviderListGroup(
+//                groupName: "Promoted Locations",
+//                providers: providerPromoted,
+//                selectedProvider: selectedProvider,
+//                connect: connect,
+//                connectBestAvailable: connectBestAvailable,
+//                isPromotedLocations: true
+//            )
+//            ProviderListGroup(
+//                groupName: "Countries",
+//                providers: providerCountries,
+//                selectedProvider: selectedProvider,
+//                connect: connect
+//            )
+//            ProviderListGroup(
+//                groupName: "Regions",
+//                providers: providerRegions,
+//                selectedProvider: selectedProvider,
+//                connect: connect
+//            )
+//            ProviderListGroup(
+//                groupName: "Cities",
+//                providers: providerCities,
+//                selectedProvider: selectedProvider,
+//                connect: connect
+//            )
+//            ProviderListGroup(
+//                groupName: "Devices",
+//                providers: providerDevices,
+//                selectedProvider: selectedProvider,
+//                connect: connect
+//            )
+//        }
+//        .frame(minHeight: 400)
+//        .listStyle(.plain)
+//        .background(themeManager.currentTheme.backgroundColor)
+//    }
+//}
+
+#if os(iOS)
 struct ProviderListSheetView: View {
     
     @EnvironmentObject var themeManager: ThemeManager
@@ -26,6 +99,12 @@ struct ProviderListSheetView: View {
     var providerCities: [SdkConnectLocation]
     var providerBestSearchMatches: [SdkConnectLocation]
     
+    /**
+     * Close sheet
+     */
+    var setIsPresented: (Bool) -> Void
+    
+    @Binding var searchText: String
     
     var body: some View {
         List {
@@ -69,10 +148,156 @@ struct ProviderListSheetView: View {
                 connect: connect
             )
         }
+        // .frame(minHeight: 400)
         .listStyle(.plain)
         .background(themeManager.currentTheme.backgroundColor)
     }
+    
 }
+#elseif os(macOS)
+struct ProviderListSheetView: View {
+    
+    @EnvironmentObject var themeManager: ThemeManager
+    
+    var selectedProvider: SdkConnectLocation?
+    var connect: (SdkConnectLocation) -> Void
+    var connectBestAvailable: () -> Void
+    
+    /**
+     * Provider lists
+     */
+    var providerCountries: [SdkConnectLocation]
+    var providerPromoted: [SdkConnectLocation]
+    var providerDevices: [SdkConnectLocation]
+    var providerRegions: [SdkConnectLocation]
+    var providerCities: [SdkConnectLocation]
+    var providerBestSearchMatches: [SdkConnectLocation]
+    
+    /**
+     * Close sheet
+     */
+    var setIsPresented: (Bool) -> Void
+    
+    @Binding var searchText: String
+    
+    var body: some View {
+        
+        NavigationStack {
+            
+            ZStack {
+             
+                
+                List {
+                    
+                    ProviderListGroup(
+                        groupName: "Best Search Matches",
+                        providers: providerBestSearchMatches,
+                        selectedProvider: selectedProvider,
+                        connect: connect
+                    )
+                    ProviderListGroup(
+                        groupName: "Promoted Locations",
+                        providers: providerPromoted,
+                        selectedProvider: selectedProvider,
+                        connect: connect,
+                        connectBestAvailable: connectBestAvailable,
+                        isPromotedLocations: true
+                    )
+                    ProviderListGroup(
+                        groupName: "Countries",
+                        providers: providerCountries,
+                        selectedProvider: selectedProvider,
+                        connect: connect
+                    )
+                    ProviderListGroup(
+                        groupName: "Regions",
+                        providers: providerRegions,
+                        selectedProvider: selectedProvider,
+                        connect: connect
+                    )
+                    ProviderListGroup(
+                        groupName: "Cities",
+                        providers: providerCities,
+                        selectedProvider: selectedProvider,
+                        connect: connect
+                    )
+                    ProviderListGroup(
+                        groupName: "Devices",
+                        providers: providerDevices,
+                        selectedProvider: selectedProvider,
+                        connect: connect
+                    )
+                }
+                
+                .listStyle(.plain)
+//                .searchable(
+//                    text: $searchText,
+//                    prompt: "Search providers"
+//                )
+                .frame(height: 300)
+                
+            }
+            
+            .searchable(
+                text: $searchText,
+                prompt: "Search providers"
+            )
+            
+            .navigationTitle("Available providers")
+            // .toolbarTitleDisplayMode(.inline)
+            
+            
+//            .toolbar {
+//                
+//                ToolbarItemGroup(placement: .automatic) {
+//                    HStack {
+//                        Text("Available providers")
+//                    }
+//                }
+//
+////                ToolbarItem(placement: .automatic) {
+////                    Text("Available providers")
+////                        .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
+////                }
+//
+////                ToolbarItem(placement: .cancellationAction) {
+////                    Button(action: {
+////                        setIsPresented(false)
+////                        // providerListSheetViewModel.isPresented = false
+////                    }) {
+////                        Image(systemName: "xmark")
+////                    }
+////                }
+//
+//            }
+            
+            
+//            .searchable(
+//                text: $searchText,
+//                prompt: "Search providers"
+//            )
+            
+            
+            // .navigationTitle("Available providers")
+            
+            // .navigationBarTitleDisplayMode(.inline)
+            
+
+            
+//            .refreshable {
+//                let _ = await viewModel.filterLocations(viewModel.searchQuery)
+//            }
+//            .onAppear {
+//                Task {
+//                    let _ = await viewModel.filterLocations(viewModel.searchQuery)
+//                }
+//            }
+            // .background(themeManager.currentTheme.backgroundColor)
+        }
+    }
+    
+}
+#endif
 
 private struct ProviderListGroup: View {
     
@@ -195,7 +420,7 @@ private struct ProviderListGroup: View {
         }()
     ]
     
-    return VStack {
+    VStack {
         ProviderListSheetView(
             selectedProvider: nil,
             connect: {_ in },
@@ -205,7 +430,9 @@ private struct ProviderListGroup: View {
             providerDevices: [],
             providerRegions: [],
             providerCities: providerCities,
-            providerBestSearchMatches: []
+            providerBestSearchMatches: [],
+            setIsPresented: {_ in },
+            searchText: .constant("")
         )
     }
     .environmentObject(themeManager)

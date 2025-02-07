@@ -8,7 +8,13 @@
 import Foundation
 import CryptoKit
 import URnetworkSdk
+
+#if canImport(UIKit)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
+
 
 @MainActor
 class ConnectWalletProviderViewModel: ObservableObject {
@@ -52,7 +58,9 @@ class ConnectWalletProviderViewModel: ObservableObject {
         
         if let url = URL(string: "https://\(self.solflareHostname)/ul/v1/connect?\(queryString)") {
             print("url is: \(url.absoluteString)")
-            UIApplication.shared.open(url)
+            
+            self.openURL(url)
+            
         }
     }
     
@@ -65,7 +73,7 @@ class ConnectWalletProviderViewModel: ObservableObject {
         }
         
         if let url = URL(string: "https://\(self.phantomHostname)/ul/v1/connect?\(queryString)") {
-            UIApplication.shared.open(url)
+            self.openURL(url)
         }
     }
     
@@ -152,7 +160,7 @@ class ConnectWalletProviderViewModel: ObservableObject {
         let hostName = connectedWalletProvider == .phantom ? phantomHostname : solflareHostname
         
         if let url = URL(string: "https://\(hostName)/ul/v1/connect?\(queryString)") {
-            UIApplication.shared.open(url)
+            self.openURL(url)
         }
         
     }
@@ -185,6 +193,14 @@ class ConnectWalletProviderViewModel: ObservableObject {
         let randomBytes = Array<UInt8>.init(repeating: 0, count: 32)
         SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, UnsafeMutableRawPointer(mutating: randomBytes))
         return SdkEncodeBase58(Data(randomBytes))
+    }
+    
+    func openURL(_ url: URL) {
+        #if canImport(UIKit)
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        #elseif canImport(AppKit)
+        NSWorkspace.shared.open(url)
+        #endif
     }
 }
 

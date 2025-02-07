@@ -256,6 +256,7 @@ struct AccountRootView: View {
                 }
             )
         }
+        #if os(iOS)
         .fullScreenCover(isPresented: $viewModel.isPresentedCreateAccount) {
             LoginNavigationView(
                 api: api,
@@ -271,6 +272,7 @@ struct AccountRootView: View {
                 }
             )
         }
+        #endif
     }
     
     private func handleSuccessWithJwt(_ jwt: String) async {

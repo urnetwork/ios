@@ -180,16 +180,50 @@ extension ConnectCanvasConnectingStateView {
         }
 
         private func blend(from: Color, to: Color, progress: Double) -> Color {
-            let fromComponents = UIColor(from).cgColor.components ?? [0, 0, 0, 0]
-            let toComponents = UIColor(to).cgColor.components ?? [0, 0, 0, 0]
-            
+            let fromComponents = getColorComponents(from: from)
+            let toComponents = getColorComponents(from: to)
+                  
             let r = fromComponents[0] + (toComponents[0] - fromComponents[0]) * progress
             let g = fromComponents[1] + (toComponents[1] - fromComponents[1]) * progress
             let b = fromComponents[2] + (toComponents[2] - fromComponents[2]) * progress
             let a = fromComponents[3] + (toComponents[3] - fromComponents[3]) * progress
             
-            return Color(uiColor: UIColor(red: r, green: g, blue: b, alpha: a))
+            let color = getColor(r: r, g: g, b: b, a: a)
+            return color
         }
+        
+        func getColor(r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat) -> Color {
+            #if canImport(UIKit)
+            return Color(uiColor: UIColor(red: r, green: g, blue: b, alpha: a))
+            #elseif canImport(AppKit)
+            return Color(nsColor: NSColor(red: r, green: g, blue: b, alpha: a))
+            #endif
+        }
+        
+        func getColorComponents(from color: Color) -> [CGFloat] {
+            #if canImport(UIKit)
+            let uiColor = UIColor(color)
+            return uiColor.cgColor.components ?? [0, 0, 0, 0]
+            #elseif canImport(AppKit)
+            let nsColor = NSColor(color)
+            let convertedColor = nsColor.usingColorSpace(.deviceRGB) ?? NSColor.black
+            let components = convertedColor.cgColor.components ?? [0, 0, 0, 1]
+            return components + Array(repeating: 0, count: max(0, 4 - components.count))
+            #endif
+        }
+        
+//        func getColorComponents(from color: Any) -> [CGFloat] {
+//            #if canImport(UIKit)
+//            let uiColor = color as? UIColor ?? UIColor.black
+//            return uiColor.cgColor.components ?? [0, 0, 0, 0]
+//            #elseif canImport(AppKit)
+//            let nsColor = color as? NSColor ?? NSColor.black
+//            let convertedColor = nsColor.usingColorSpace(.deviceRGB) ?? NSColor.black
+//            return convertedColor.cgColor.components ?? [0, 0, 0, 0]
+////            let nsColor = color as? NSColor ?? NSColor.black
+////            return nsColor.cgColor.components ?? [0, 0, 0, 0]
+//            #endif
+//        }
         
         private func colorForState(_ state: GridPointState) -> Color {
             switch state {

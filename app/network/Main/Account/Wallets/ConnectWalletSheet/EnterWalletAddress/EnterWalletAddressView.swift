@@ -68,6 +68,7 @@ struct EnterWalletAddressView: View {
                     .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
             }
             
+            #if os(iOS)
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(
                     action: {
@@ -79,8 +80,24 @@ struct EnterWalletAddressView: View {
                 }
                 .disabled(!viewModel.isValidWalletAddress || accountWalletsViewModel.isCreatingWallet)
             }
+            #elseif os(macOS)
+            ToolbarItem {
+                Button(
+                    action: {
+                        connect()
+                    }
+                ) {
+                    Text("Connect")
+                        .font(themeManager.currentTheme.toolbarTitleFont)
+                }
+                .disabled(!viewModel.isValidWalletAddress || accountWalletsViewModel.isCreatingWallet)
+            }
+            #endif
+            
         }
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
         .padding(.horizontal)
         // .background(themeManager.currentTheme.backgroundColor)
     }

@@ -89,7 +89,8 @@ struct SettingsView: View {
                     // TODO: copy URid
                     Button(action: {
                         if let clientId = clientId?.idStr {
-                            UIPasteboard.general.string = clientId
+                            
+                            copyToPasteboard(clientId)
                             
                             snackbarManager.showSnackbar(message: "URid copied to clipboard")
                         }
@@ -120,7 +121,8 @@ struct SettingsView: View {
                     
                     Button(action: {
                         if let clientId = clientId?.idStr {
-                            UIPasteboard.general.string = "https://ur.io/c?\(clientId)"
+                            
+                            copyToPasteboard("https://ur.io/c?\(clientId)")
                             
                             snackbarManager.showSnackbar(message: "URnetwork link copied to clipboard")
                             
@@ -212,7 +214,14 @@ struct SettingsView: View {
                         
                         Button(action: {
                             if let url = URL(string: "https://discord.com/invite/RUNZXMwPRK") {
-                                UIApplication.shared.open(url)
+                                
+                                #if canImport(UIKit)
+                                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                                #elseif canImport(AppKit)
+                                NSWorkspace.shared.open(url)
+                                #endif
+                                
+                                
                             }
                         }) {
                             Image(systemName: "arrow.forward")
@@ -265,6 +274,16 @@ struct SettingsView: View {
             print("Error deleting account: \(error)")
             snackbarManager.showSnackbar(message: "Sorry, there was an error deleting your account.")
         }
+    }
+    
+    private func copyToPasteboard(_ value: String) {
+        #if os(iOS)
+        UIPasteboard.general.string = value
+        #elseif os(macOS)
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(value, forType: .string)
+        #endif
     }
 }
 

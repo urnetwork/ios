@@ -5712,6 +5712,7 @@
       }
     },
     "More connections help our community stay anonymous (and help you earn!)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -9425,9 +9426,6 @@
           }
         }
       }
-    },
-    "Share" : {
-      "shouldTranslate" : false
     },
     "Share URnetwork" : {
       "localizations" : {

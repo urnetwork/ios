@@ -43,7 +43,9 @@ struct MainTabView: View {
         self.vpnManager = vpnManager
         // vpnManager.loadOrCreateManager()
         
+        #if os(iOS)
         setupTabBar()
+        #endif
     }
     
     var body: some View {
@@ -126,6 +128,7 @@ struct MainTabView: View {
     }
     
     // used for adding a border above the tab bar
+    #if os(iOS)
     private func setupTabBar() {
         let appearance = UITabBarAppearance()
         appearance.shadowColor = UIColor(white: 1.0, alpha: 0.12)
@@ -139,6 +142,7 @@ struct MainTabView: View {
         UITabBar.appearance().standardAppearance = appearance
     
     }
+    #endif
     
 }
 

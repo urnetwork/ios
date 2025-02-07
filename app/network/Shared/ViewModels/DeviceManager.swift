@@ -7,8 +7,14 @@
 
 import Foundation
 import URnetworkSdk
-import UIKit
 import Combine
+
+#if canImport(UIKit)
+import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
+
 
 @MainActor
 class DeviceManager: ObservableObject {
@@ -612,9 +618,23 @@ extension DeviceManager {
     
     private func getDeviceSpecs() -> String {
         
-        let systemVersion = UIDevice.current.systemVersion
-        let deviceModel = UIDevice.current.model
-        let deviceName = UIDevice.current.name
+        var systemName = ""
+        var systemVersion = ""
+        var deviceModel = ""
+        var deviceName = ""
+        
+        #if os(iOS)
+        systemName = UIDevice.current.systemName
+        systemVersion = UIDevice.current.systemVersion
+        deviceModel = UIDevice.current.model
+        deviceName = UIDevice.current.name
+        #elseif os(macOS)
+        let processInfo = ProcessInfo.processInfo
+        systemName = "macOS"
+        systemVersion = processInfo.operatingSystemVersionString
+        deviceModel = "Mac"
+        deviceName = processInfo.hostName
+        #endif
         
         return "\(systemVersion) \(deviceModel) \(deviceName)"
     }

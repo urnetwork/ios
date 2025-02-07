@@ -20,7 +20,7 @@ struct FeedbackView: View {
         ))
     }
     
-    let isTablet = UIDevice.current.userInterfaceIdiom == .pad
+    // let isTablet = UIDevice.current.userInterfaceIdiom == .pad
     
     var body: some View {
         
@@ -55,11 +55,13 @@ struct FeedbackView: View {
                 enabled: !viewModel.isSending
             )
 
-            if isTablet {
-                Spacer().frame(height: 32)
-            } else {
-                Spacer()
-            }
+//            if isTablet {
+//                Spacer().frame(height: 32)
+//            } else {
+//                Spacer()
+//            }
+            
+            Spacer().frame(height: 32)
             
             UrButton(
                 text: "Send",
@@ -82,7 +84,10 @@ struct FeedbackView: View {
     
     private func handleSendFeedbackResult(_ result: Result<Void, Error>) {
         
-        UIApplication.shared.endEditing(true)
+        
+        #if canImport(UIKit)
+        hideKeyboard()
+        #endif
         
         
         switch result {
