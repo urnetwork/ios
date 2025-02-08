@@ -14,6 +14,7 @@ enum MainNavigationTab {
     case support
 }
 
+#if os(macOS)
 struct MainNavigationSplitView: View {
     
     // @State private var selectedTab = 0
@@ -140,3 +141,5 @@ struct MainNavigationSplitView: View {
 //#Preview {
 //    MainNavigationSplitView()
 //}
+
+#endif

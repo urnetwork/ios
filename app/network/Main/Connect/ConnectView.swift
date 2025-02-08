@@ -231,143 +231,143 @@ struct ConnectView: View {
         
 }
 
-#if os(iOS)
-struct ProvidersListSheet: View {
-    
-    var viewModel: ConnectView.ViewModel
-    @EnvironmentObject var themeManager: ThemeManager
-    
-    var body: some View {
-         NavigationStack {
-            
-            ProviderListSheetView(
-                selectedProvider: viewModel.selectedProvider,
-                connect: { provider in
-                    viewModel.connect(provider)
-                    providerListSheetViewModel.isPresented = false
-                },
-                connectBestAvailable: {
-                    viewModel.connectBestAvailable()
-                    providerListSheetViewModel.isPresented = false
-                },
-                providerCountries: viewModel.providerCountries,
-                providerPromoted: viewModel.providerPromoted,
-                providerDevices: viewModel.providerDevices,
-                providerRegions: viewModel.providerRegions,
-                providerCities: viewModel.providerCities,
-                providerBestSearchMatches: viewModel.providerBestSearchMatches
-            )
-            .navigationBarTitleDisplayMode(.inline)
-
-            
-            .searchable(
-                text: $viewModel.searchQuery,
-                placement: .navigationBarDrawer(displayMode: .always),
-                prompt: "Search providers"
-            )
-            .toolbar {
-
-                ToolbarItem(placement: .principal) {
-                    Text("Available providers")
-                        .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
-                }
-
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        providerListSheetViewModel.isPresented = false
-                    }) {
-                        Image(systemName: "xmark")
-                    }
-                }
-            }
-            .refreshable {
-                let _ = await viewModel.filterLocations(viewModel.searchQuery)
-            }
-            .onAppear {
-                Task {
-                    let _ = await viewModel.filterLocations(viewModel.searchQuery)
-                }
-            }
-            
-         }
-        .background(themeManager.currentTheme.backgroundColor)
-    }
-}
-#elseif os(macOS)
-
-struct ProvidersListSheet: View {
-    
-    @ObservedObject var viewModel: ConnectView.ViewModel
-    var setIsPresented: (Bool) -> Void
-    @EnvironmentObject var themeManager: ThemeManager
-    
-    var body: some View {
-         NavigationStack {
-            
-            ProviderListSheetView(
-                selectedProvider: viewModel.selectedProvider,
-                connect: { provider in
-                    viewModel.connect(provider)
-                    setIsPresented(false)
-                    // providerListSheetViewModel.isPresented = false
-                },
-                connectBestAvailable: {
-                    viewModel.connectBestAvailable()
-                    setIsPresented(false)
-                    // providerListSheetViewModel.isPresented = false
-                },
-                providerCountries: viewModel.providerCountries,
-                providerPromoted: viewModel.providerPromoted,
-                providerDevices: viewModel.providerDevices,
-                providerRegions: viewModel.providerRegions,
-                providerCities: viewModel.providerCities,
-                providerBestSearchMatches: viewModel.providerBestSearchMatches,
-                setIsPresented: {_ in },
-                searchText: $viewModel.searchQuery
-            )
-            // .navigationBarTitleDisplayMode(.inline)
-
+//#if os(iOS)
+//struct ProvidersListSheet: View {
+//    
+//    var viewModel: ConnectView.ViewModel
+//    @EnvironmentObject var themeManager: ThemeManager
+//    
+//    var body: some View {
+//         NavigationStack {
+//            
+//            ProviderListSheetView(
+//                selectedProvider: viewModel.selectedProvider,
+//                connect: { provider in
+//                    viewModel.connect(provider)
+//                    providerListSheetViewModel.isPresented = false
+//                },
+//                connectBestAvailable: {
+//                    viewModel.connectBestAvailable()
+//                    providerListSheetViewModel.isPresented = false
+//                },
+//                providerCountries: viewModel.providerCountries,
+//                providerPromoted: viewModel.providerPromoted,
+//                providerDevices: viewModel.providerDevices,
+//                providerRegions: viewModel.providerRegions,
+//                providerCities: viewModel.providerCities,
+//                providerBestSearchMatches: viewModel.providerBestSearchMatches
+//            )
+//            .navigationBarTitleDisplayMode(.inline)
+//
+//            
 //            .searchable(
 //                text: $viewModel.searchQuery,
+//                placement: .navigationBarDrawer(displayMode: .always),
 //                prompt: "Search providers"
 //            )
-        
-            .navigationTitle("Available providers")
-            // .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-
+//            .toolbar {
+//
 //                ToolbarItem(placement: .principal) {
 //                    Text("Available providers")
 //                        .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
 //                }
+//
+//                ToolbarItem(placement: .navigationBarTrailing) {
+//                    Button(action: {
+//                        providerListSheetViewModel.isPresented = false
+//                    }) {
+//                        Image(systemName: "xmark")
+//                    }
+//                }
+//            }
+//            .refreshable {
+//                let _ = await viewModel.filterLocations(viewModel.searchQuery)
+//            }
+//            .onAppear {
+//                Task {
+//                    let _ = await viewModel.filterLocations(viewModel.searchQuery)
+//                }
+//            }
+//            
+//         }
+//        .background(themeManager.currentTheme.backgroundColor)
+//    }
+//}
+//#elseif os(macOS)
+//
+//struct ProvidersListSheet: View {
+//    
+//    @ObservedObject var viewModel: ConnectView.ViewModel
+//    var setIsPresented: (Bool) -> Void
+//    @EnvironmentObject var themeManager: ThemeManager
+//    
+//    var body: some View {
+//         NavigationStack {
+//            
+//            ProviderListSheetView(
+//                selectedProvider: viewModel.selectedProvider,
+//                connect: { provider in
+//                    viewModel.connect(provider)
+//                    setIsPresented(false)
+//                    // providerListSheetViewModel.isPresented = false
+//                },
+//                connectBestAvailable: {
+//                    viewModel.connectBestAvailable()
+//                    setIsPresented(false)
+//                    // providerListSheetViewModel.isPresented = false
+//                },
+//                providerCountries: viewModel.providerCountries,
+//                providerPromoted: viewModel.providerPromoted,
+//                providerDevices: viewModel.providerDevices,
+//                providerRegions: viewModel.providerRegions,
+//                providerCities: viewModel.providerCities,
+//                providerBestSearchMatches: viewModel.providerBestSearchMatches,
+//                setIsPresented: {_ in },
+//                searchText: $viewModel.searchQuery
+//            )
+//            // .navigationBarTitleDisplayMode(.inline)
+//
+////            .searchable(
+////                text: $viewModel.searchQuery,
+////                prompt: "Search providers"
+////            )
+//        
+//            .navigationTitle("Available providers")
+//            // .navigationBarTitleDisplayMode(.inline)
+//            .toolbar {
+//
+////                ToolbarItem(placement: .principal) {
+////                    Text("Available providers")
+////                        .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
+////                }
+//
+//                ToolbarItem(placement: .cancellationAction) {
+//                    Button(action: {
+//                        setIsPresented(false)
+//                        // providerListSheetViewModel.isPresented = false
+//                    }) {
+//                        Image(systemName: "xmark")
+//                    }
+//                }
+//                
+//            }
+//            .refreshable {
+//                let _ = await viewModel.filterLocations(viewModel.searchQuery)
+//            }
+//            .onAppear {
+//                Task {
+//                    let _ = await viewModel.filterLocations(viewModel.searchQuery)
+//                }
+//            }
+//
+//            
+//         }
+//        .background(themeManager.currentTheme.backgroundColor)
+//    }
+//    
+//}
 
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(action: {
-                        setIsPresented(false)
-                        // providerListSheetViewModel.isPresented = false
-                    }) {
-                        Image(systemName: "xmark")
-                    }
-                }
-                
-            }
-            .refreshable {
-                let _ = await viewModel.filterLocations(viewModel.searchQuery)
-            }
-            .onAppear {
-                Task {
-                    let _ = await viewModel.filterLocations(viewModel.searchQuery)
-                }
-            }
-
-            
-         }
-        .background(themeManager.currentTheme.backgroundColor)
-    }
-    
-}
-
-#endif
+// #endif
 
 #Preview {
     ConnectView(
