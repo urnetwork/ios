@@ -16,13 +16,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D1AF93BB2D2E6EAC00281A0E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D1B95A472CEBDD6900542E0E /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D1B95A802CEBE76400542E0E;
-			remoteInfo = URnetworkVPN;
-		};
 		D1B95A612CEBDD6A00542E0E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D1B95A472CEBDD6900542E0E /* Project object */;
@@ -81,21 +74,6 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		17F8C8322D55DAEC000F7C0E /* URnetwork Mac */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "URnetwork Mac";
-			sourceTree = "<group>";
-		};
-		17F8C8442D55DAEE000F7C0E /* URnetwork MacTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "URnetwork MacTests";
-			sourceTree = "<group>";
-		};
-		17F8C84E2D55DAEE000F7C0E /* URnetwork MacUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "URnetwork MacUITests";
-			sourceTree = "<group>";
-		};
 		D1B95A512CEBDD6900542E0E /* network */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = network;
@@ -167,9 +145,6 @@
 				D1B95A632CEBDD6A00542E0E /* networkTests */,
 				D1B95A6D2CEBDD6A00542E0E /* networkUITests */,
 				D1B95A852CEBE76400542E0E /* extension */,
-				17F8C8322D55DAEC000F7C0E /* URnetwork Mac */,
-				17F8C8442D55DAEE000F7C0E /* URnetwork MacTests */,
-				17F8C84E2D55DAEE000F7C0E /* URnetwork MacUITests */,
 				D1B95A822CEBE76400542E0E /* Frameworks */,
 				D1B95A502CEBDD6900542E0E /* Products */,
 			);
@@ -211,7 +186,6 @@
 			);
 			dependencies = (
 				D1B95A8B2CEBE76400542E0E /* PBXTargetDependency */,
-				D1AF93BC2D2E6EAC00281A0E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				D1B95A512CEBDD6900542E0E /* network */,
@@ -470,11 +444,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D1AF93BC2D2E6EAC00281A0E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D1B95A802CEBE76400542E0E /* URnetworkVPN */;
-			targetProxy = D1AF93BB2D2E6EAC00281A0E /* PBXContainerItemProxy */;
-		};
 		D1B95A622CEBDD6A00542E0E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D1B95A4E2CEBDD6900542E0E /* URnetwork */;
@@ -826,6 +795,7 @@
 				SKIP_INSTALL = NO;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -857,6 +827,7 @@
 				SKIP_INSTALL = NO;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

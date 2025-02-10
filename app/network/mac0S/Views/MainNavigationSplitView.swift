@@ -28,15 +28,12 @@ struct MainNavigationSplitView: View {
     var connectViewController: SdkConnectViewController?
     @Binding var provideWhileDisconnected: Bool
     
-    var vpnManager: VPNManager
-    
     // can probably pass this down from MainView
     @StateObject var providerListSheetViewModel: ProviderListSheetViewModel = ProviderListSheetViewModel()
     
     init(
         api: SdkApi,
         device: SdkDeviceRemote,
-        vpnManager: VPNManager,
         logout: @escaping () -> Void,
         provideWhileDisconnected: Binding<Bool>
     ) {
@@ -45,11 +42,6 @@ struct MainNavigationSplitView: View {
         self.device = device
         self._provideWhileDisconnected = provideWhileDisconnected
         self.connectViewController = device.openConnectViewController()
-        
-        // vpn manager
-//        self.vpnManager = VPNManager(device: device)
-        self.vpnManager = vpnManager
-        // vpnManager.loadOrCreateManager()
 
     }
     

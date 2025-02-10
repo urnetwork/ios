@@ -45,7 +45,7 @@ struct ConnectView: View {
     
     var body: some View {
         
-        let isGuest = deviceManager.parsedJwt?.guestMode ?? true
+        // let isGuest = deviceManager.parsedJwt?.guestMode ?? true
         
         VStack {
             

@@ -12,7 +12,6 @@ struct MainView: View {
     
     var api: SdkApi
     var device: SdkDeviceRemote
-    var vpnManager: VPNManager
     var logout: () -> Void
     var connectViewController: SdkConnectViewController?
     var welcomeAnimationComplete: Binding<Bool>
@@ -23,14 +22,12 @@ struct MainView: View {
     init(
         api: SdkApi,
         device: SdkDeviceRemote,
-        vpnManager: VPNManager,
         logout: @escaping () -> Void,
         welcomeAnimationComplete: Binding<Bool>
     ) {
         self.api = api
         self.logout = logout
         self.device = device
-        self.vpnManager = vpnManager
         self.connectViewController = device.openConnectViewController()
         self.welcomeAnimationComplete = welcomeAnimationComplete
     }
@@ -49,7 +46,6 @@ struct MainView: View {
                 MainTabView(
                     api: api,
                     device: device,
-                    vpnManager: vpnManager,
                     logout: deviceManager.logout,
                     provideWhileDisconnected: $deviceManager.provideWhileDisconnected
                 )
@@ -57,7 +53,6 @@ struct MainView: View {
                 MainNavigationSplitView(
                     api: api,
                     device: device,
-                    vpnManager: vpnManager,
                     logout: deviceManager.logout,
                     provideWhileDisconnected: $deviceManager.provideWhileDisconnected
                 )
