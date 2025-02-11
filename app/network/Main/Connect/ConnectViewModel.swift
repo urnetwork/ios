@@ -66,142 +66,136 @@ enum ConnectionStatus: String {
     case connected = "CONNECTED"
 }
 
-extension ConnectView {
+
     
-    class ViewModel: ObservableObject {
-         
-        /**
-         * Provider groups
-         */
-        @Published private(set) var providerCountries: [SdkConnectLocation] = []
-        @Published private(set) var providerPromoted: [SdkConnectLocation] = []
-        @Published private(set) var providerDevices: [SdkConnectLocation] = []
-        @Published private(set) var providerRegions: [SdkConnectLocation] = []
-        @Published private(set) var providerCities: [SdkConnectLocation] = []
-        @Published private(set) var providerBestSearchMatches: [SdkConnectLocation] = []
+class ConnectViewModel: ObservableObject {
+     
+    /**
+     * Provider groups
+     */
+    @Published private(set) var providerCountries: [SdkConnectLocation] = []
+    @Published private(set) var providerPromoted: [SdkConnectLocation] = []
+    @Published private(set) var providerDevices: [SdkConnectLocation] = []
+    @Published private(set) var providerRegions: [SdkConnectLocation] = []
+    @Published private(set) var providerCities: [SdkConnectLocation] = []
+    @Published private(set) var providerBestSearchMatches: [SdkConnectLocation] = []
+    
+    /**
+     * Connection status
+     */
+    @Published private(set) var connectionStatus: ConnectionStatus?
+    
+    /**
+     * Connect grid
+     */
+    @Published private(set) var grid: SdkConnectGrid? = nil // might not need this to be tracked...
+    @Published private(set) var windowCurrentSize: Int32 = 0
+    @Published private(set) var gridPoints: [SdkId: SdkProviderGridPoint] = [:]
+    @Published private(set) var gridWidth: Int32 = 0
+    
+    /**
+     * Selected Provider
+     */
+    @Published private(set) var selectedProvider: SdkConnectLocation?
+    
+    /**
+     * Search
+     */
+    private var cancellables = Set<AnyCancellable>()
+    private var debounceTimer: AnyCancellable?
+    @Published var searchQuery: String = ""
+    
+    /**
+     * Prompt ratings
+     */
+    var requestReview: (() -> Void)?
+    
+    /**
+     * Upgrade guest account sheet
+     */
+    @Published var isPresentedCreateAccount: Bool = false
+    
+    
+    var api: SdkApi
+    var device: SdkDeviceRemote?
+    var connectViewController: SdkConnectViewController?
+    
+    init(api: SdkApi, device: SdkDeviceRemote?, connectViewController: SdkConnectViewController?) {
+        self.api = api
+        self.connectViewController = connectViewController
+        self.addGridListener()
+        self.addConnectionStatusListener()
+        self.addSelectedLocationListener()
         
-        /**
-         * Connection status
-         */
-        @Published private(set) var connectionStatus: ConnectionStatus?
+        self.updateConnectionStatus()
         
-        /**
-         * Connect grid
-         */
-        @Published private(set) var grid: SdkConnectGrid? = nil // might not need this to be tracked...
-        @Published private(set) var windowCurrentSize: Int32 = 0
-        @Published private(set) var gridPoints: [SdkId: SdkProviderGridPoint] = [:]
-        @Published private(set) var gridWidth: Int32 = 0
+        self.selectedProvider = device?.getConnectLocation()
         
-        /**
-         * Selected Provider
-         */
-        @Published private(set) var selectedProvider: SdkConnectLocation?
-        
-        /**
-         * Search
-         */
-        private var cancellables = Set<AnyCancellable>()
-        private var debounceTimer: AnyCancellable?
-        @Published var searchQuery: String = ""
-        
-        /**
-         * Prompt ratings
-         */
-        var requestReview: (() -> Void)?
-        
-        /**
-         * Upgrade guest account sheet
-         */
-        @Published var isPresentedCreateAccount: Bool = false
-        
-        
-        var api: SdkApi
-        var device: SdkDeviceRemote?
-        var connectViewController: SdkConnectViewController?
-        
-        init(api: SdkApi, device: SdkDeviceRemote?, connectViewController: SdkConnectViewController?) {
-            self.api = api
-            self.connectViewController = connectViewController
-            self.addGridListener()
-            self.addConnectionStatusListener()
-            self.addSelectedLocationListener()
-            
-            self.updateConnectionStatus()
-            
-            self.selectedProvider = device?.getConnectLocation()
-            
-            // when search changes
-            // debounce and fire search
-            $searchQuery
-                .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
-                .sink { [weak self] query in
-                    self?.performSearch(query)
-                }
-                .store(in: &cancellables)
-            
-        }
-        
-        /**
-         * Used in the provider list
-         */
-        func connect(_ provider: SdkConnectLocation) {
-            connectViewController?.connect(provider)
-            try? device?.getNetworkSpace()?.getAsyncLocalState()?.getLocalState()?.setConnectLocation(provider)
-        }
-        
-        /**
-         * Used for the main  connect button
-         */
-        func connect() {
-            if let selectedProvider = self.selectedProvider {
-                connectViewController?.connect(selectedProvider)
-            } else {
-                connectViewController?.connectBestAvailable()
+        // when search changes
+        // debounce and fire search
+        $searchQuery
+            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+            .sink { [weak self] query in
+                self?.performSearch(query)
             }
-        }
-        
-        func connectBestAvailable() {
-            connectViewController?.connectBestAvailable()
-        }
-        
-        func disconnect() {
-            connectViewController?.disconnect()
-        }
-        
-        private func addSelectedLocationListener() {
-            let listener = SelectedLocationListener { [weak self] selectedLocation in
-                
-                guard let self = self else {
-                    print("SelectedLocationListener no self found")
-                    return
-                }
-            
-                DispatchQueue.main.async {
-                    print("new selected location is: \(selectedLocation?.name ?? "none")")
-                    self.selectedProvider = selectedLocation
-                }
-            }
-            connectViewController?.add(listener)
-        }
-        
-        func getProviderColor(_ provider: SdkConnectLocation) -> Color {
-            return Color(hex: SdkGetColorHex(
-                provider.locationType == SdkLocationTypeCountry ? provider.countryCode : provider.connectLocationId?.string()
-            ))
-        }
+            .store(in: &cancellables)
         
     }
     
-}
-
-// MARK: connect
-extension ConnectView.ViewModel {
+    /**
+     * Used in the provider list
+     */
+    func connect(_ provider: SdkConnectLocation) {
+        connectViewController?.connect(provider)
+        try? device?.getNetworkSpace()?.getAsyncLocalState()?.getLocalState()?.setConnectLocation(provider)
+    }
+    
+    /**
+     * Used for the main  connect button
+     */
+    func connect() {
+        if let selectedProvider = self.selectedProvider {
+            connectViewController?.connect(selectedProvider)
+        } else {
+            connectViewController?.connectBestAvailable()
+        }
+    }
+    
+    func connectBestAvailable() {
+        connectViewController?.connectBestAvailable()
+    }
+    
+    func disconnect() {
+        connectViewController?.disconnect()
+    }
+    
+    private func addSelectedLocationListener() {
+        let listener = SelectedLocationListener { [weak self] selectedLocation in
+            
+            guard let self = self else {
+                print("SelectedLocationListener no self found")
+                return
+            }
+        
+            DispatchQueue.main.async {
+                print("new selected location is: \(selectedLocation?.name ?? "none")")
+                self.selectedProvider = selectedLocation
+            }
+        }
+        connectViewController?.add(listener)
+    }
+    
+    func getProviderColor(_ provider: SdkConnectLocation) -> Color {
+        return Color(hex: SdkGetColorHex(
+            provider.locationType == SdkLocationTypeCountry ? provider.countryCode : provider.connectLocationId?.string()
+        ))
+    }
     
 }
+    
 
 // MARK: providers list
-extension ConnectView.ViewModel {
+extension ConnectViewModel {
     
     private func flattenConnectLocationList(_ connectLocationList: SdkConnectLocationList) -> [SdkConnectLocation] {
         
@@ -365,7 +359,7 @@ extension ConnectView.ViewModel {
  * Grid
  */
 
-extension ConnectView.ViewModel {
+extension ConnectViewModel {
     
     
     private func addGridListener() {
@@ -427,7 +421,7 @@ extension ConnectView.ViewModel {
 }
 
 // MARK: connection status
-extension ConnectView.ViewModel {
+extension ConnectViewModel {
     
     private func addConnectionStatusListener() {
         let listener = ConnectionStatusListener { [weak self] in

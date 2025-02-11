@@ -92,12 +92,18 @@ struct MainNavigationSplitView: View {
             
             switch selectedTab {
             case .connect:
-                ConnectView(
-                    api: api,
-                    logout: logout,
-                    device: device,
-                    connectViewController: connectViewController,
-                    providerListSheetViewModel: providerListSheetViewModel
+//                ConnectView(
+//                    api: api,
+//                    logout: logout,
+//                    device: device,
+//                    connectViewController: connectViewController,
+//                    providerListSheetViewModel: providerListSheetViewModel
+//                )
+                ConnectView_macOS(
+                        api: api,
+                        logout: logout,
+                        device: device,
+                        connectViewController: connectViewController
                 )
                 .background(themeManager.currentTheme.backgroundColor)
             case .account:

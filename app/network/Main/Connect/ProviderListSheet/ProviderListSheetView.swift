@@ -102,9 +102,9 @@ struct ProviderListSheetView: View {
     /**
      * Close sheet
      */
-    var setIsPresented: (Bool) -> Void
-    
-    @Binding var searchText: String
+//    var setIsPresented: (Bool) -> Void
+//    
+//    @Binding var searchText: String
     
     var body: some View {
         List {
@@ -176,9 +176,9 @@ struct ProviderListSheetView: View {
     /**
      * Close sheet
      */
-    var setIsPresented: (Bool) -> Void
-    
-    @Binding var searchText: String
+//    var setIsPresented: (Bool) -> Void
+//    
+//    @Binding var searchText: String
     
     var body: some View {
         
@@ -238,10 +238,10 @@ struct ProviderListSheetView: View {
                 
             }
             
-            .searchable(
-                text: $searchText,
-                prompt: "Search providers"
-            )
+//            .searchable(
+//                text: $searchText,
+//                prompt: "Search providers"
+//            )
             
             .navigationTitle("Available providers")
             // .toolbarTitleDisplayMode(.inline)
@@ -299,7 +299,7 @@ struct ProviderListSheetView: View {
 }
 #endif
 
-private struct ProviderListGroup: View {
+struct ProviderListGroup: View {
     
     @EnvironmentObject var themeManager: ThemeManager
     
@@ -430,9 +430,9 @@ private struct ProviderListGroup: View {
             providerDevices: [],
             providerRegions: [],
             providerCities: providerCities,
-            providerBestSearchMatches: [],
-            setIsPresented: {_ in },
-            searchText: .constant("")
+            providerBestSearchMatches: []
+//            setIsPresented: {_ in },
+//            searchText: .constant("")
         )
     }
     .environmentObject(themeManager)

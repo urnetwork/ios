@@ -8,6 +8,7 @@
 import SwiftUI
 import URnetworkSdk
 
+#if os(iOS)
 struct MainTabView: View {
     
     var api: SdkApi
@@ -35,9 +36,7 @@ struct MainTabView: View {
         self._provideWhileDisconnected = provideWhileDisconnected
         self.connectViewController = device.openConnectViewController()
         
-        #if os(iOS)
         setupTabBar()
-        #endif
     }
     
     var body: some View {
@@ -47,7 +46,14 @@ struct MainTabView: View {
             /**
              * Connect View
              */
-            ConnectView(
+//            ConnectView(
+//                api: api,
+//                logout: logout,
+//                device: device,
+//                connectViewController: connectViewController,
+//                providerListSheetViewModel: providerListSheetViewModel
+//            )
+            ConnectView_iOS(
                 api: api,
                 logout: logout,
                 device: device,
@@ -120,7 +126,6 @@ struct MainTabView: View {
     }
     
     // used for adding a border above the tab bar
-    #if os(iOS)
     private func setupTabBar() {
         let appearance = UITabBarAppearance()
         appearance.shadowColor = UIColor(white: 1.0, alpha: 0.12)
@@ -134,9 +139,9 @@ struct MainTabView: View {
         UITabBar.appearance().standardAppearance = appearance
     
     }
-    #endif
     
 }
+#endif
 
 //#Preview {
 //    MainTabView(
