@@ -13,7 +13,7 @@ let package = Package(
 	targets: [
 		.binaryTarget(
 			name: "URnetworkSdkBinary",
-			path: "../../../sdk/build/ios/URnetworkSdk.xcframework"
+			path: "../../../sdk/build/apple/URnetworkSdk.xcframework"
 		),
 		.testTarget(
 			name: "URnetworkSdkTests",

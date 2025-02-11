@@ -183,9 +183,11 @@ class VPNManager {
             
         } else {
             print("[VPNManager]stop")
-            self.stopVpnTunnel()
             
             UIApplication.shared.isIdleTimerDisabled = false
+            
+            self.stopVpnTunnel()
+            
         }
     }
     
