@@ -52,6 +52,7 @@ struct UrButton: View {
             .frame(height: 48)
             .padding(.horizontal, 32)
         }
+        .buttonStyle(.plain)
         .background(backgroundColor)
         .cornerRadius(100)
         .overlay(

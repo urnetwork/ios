@@ -104,7 +104,9 @@ struct SettingsView: View {
                         .foregroundColor(themeManager.currentTheme.textMutedColor)
                         .padding(.vertical, 8)
                         .padding(.horizontal, 16)
+                        .contentShape(Rectangle())
                     }
+                    .buttonStyle(.plain)
                     .background(themeManager.currentTheme.tintedBackgroundBase)
                     .cornerRadius(8)
                     
@@ -140,7 +142,9 @@ struct SettingsView: View {
                         .foregroundColor(themeManager.currentTheme.textMutedColor)
                         .padding(.vertical, 8)
                         .padding(.horizontal, 16)
+                        .contentShape(Rectangle())
                     }
+                    .buttonStyle(.plain)
                     .background(themeManager.currentTheme.tintedBackgroundBase)
                     .cornerRadius(8)
 

@@ -219,8 +219,10 @@ struct AccountRootView: View {
                             .background(themeManager.currentTheme.borderBaseColor)
                         
                     }
+                    .contentShape(Rectangle())
                     
                 }
+                .buttonStyle(.plain)
                 
             }
             
@@ -338,14 +340,18 @@ private struct AccountNavLink: View {
                         .foregroundColor(themeManager.currentTheme.textMutedColor)
                     
                 }
+                // .contentShape(Rectangle())
                 .padding(.vertical, 8)
                 
                 Divider()
                     .background(themeManager.currentTheme.borderBaseColor)
                 
             }
+            .contentShape(Rectangle())
             
         }
+        .buttonStyle(.plain)
+        // .contentShape(Rectangle())
         
     }
 }
