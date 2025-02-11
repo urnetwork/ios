@@ -40,55 +40,51 @@ struct ConnectView_macOS: View {
     }
     
     var body: some View {
-        
-        NavigationStack {
             
-            ScrollView {
-             
-                VStack {
-                    ConnectButtonView(
-                        gridPoints:
-                            connectViewModel.gridPoints,
-                        gridWidth: connectViewModel.gridWidth,
-                        connectionStatus: connectViewModel.connectionStatus,
-                        windowCurrentSize: connectViewModel.windowCurrentSize,
-                        connect: connectViewModel.connect,
-                        disconnect: connectViewModel.disconnect
-                    )
-                    
-                    ProviderTable(
-                        selectedProvider: connectViewModel.selectedProvider,
-                        connect: { provider in
-                            connectViewModel.connect(provider)
-                            // providerListSheetViewModel.isPresented = false
-                        },
-                        connectBestAvailable: {
-                            connectViewModel.connectBestAvailable()
-                            // providerListSheetViewModel.isPresented = false
-                        },
-                        providerCountries: connectViewModel.providerCountries,
-                        providerPromoted: connectViewModel.providerPromoted,
-                        providerDevices: connectViewModel.providerDevices,
-                        providerRegions: connectViewModel.providerRegions,
-                        providerCities: connectViewModel.providerCities,
-                        providerBestSearchMatches: connectViewModel.providerBestSearchMatches,
-                        searchQuery: $connectViewModel.searchQuery,
-                        refresh: {
-                            Task {
-                                isRefreshing = true
-                                let _ = await connectViewModel.filterLocations(connectViewModel.searchQuery)
-                                isRefreshing = false
-                            }
-                        },
-                        isRefreshing: isRefreshing
-                    )
+        ScrollView {
+         
+            VStack {
+                ConnectButtonView(
+                    gridPoints:
+                        connectViewModel.gridPoints,
+                    gridWidth: connectViewModel.gridWidth,
+                    connectionStatus: connectViewModel.connectionStatus,
+                    windowCurrentSize: connectViewModel.windowCurrentSize,
+                    connect: connectViewModel.connect,
+                    disconnect: connectViewModel.disconnect
+                )
+                
+                ProviderTable(
+                    selectedProvider: connectViewModel.selectedProvider,
+                    connect: { provider in
+                        connectViewModel.connect(provider)
+                        // providerListSheetViewModel.isPresented = false
+                    },
+                    connectBestAvailable: {
+                        connectViewModel.connectBestAvailable()
+                        // providerListSheetViewModel.isPresented = false
+                    },
+                    providerCountries: connectViewModel.providerCountries,
+                    providerPromoted: connectViewModel.providerPromoted,
+                    providerDevices: connectViewModel.providerDevices,
+                    providerRegions: connectViewModel.providerRegions,
+                    providerCities: connectViewModel.providerCities,
+                    providerBestSearchMatches: connectViewModel.providerBestSearchMatches,
+                    searchQuery: $connectViewModel.searchQuery,
+                    refresh: {
+                        Task {
+                            isRefreshing = true
+                            let _ = await connectViewModel.filterLocations(connectViewModel.searchQuery)
+                            isRefreshing = false
+                        }
+                    },
+                    isRefreshing: isRefreshing
+                )
 //                    .searchable(
 //                        text: $connectViewModel.searchQuery,
 //                        // placement: .navigationBarDrawer(displayMode: .always),
 //                        prompt: "Search providers"
 //                    )
-                }
-                
             }
             
         }

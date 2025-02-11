@@ -105,7 +105,7 @@ struct MainNavigationSplitView: View {
                         device: device,
                         connectViewController: connectViewController
                 )
-                .background(themeManager.currentTheme.backgroundColor)
+                // .background(themeManager.currentTheme.backgroundColor)
             case .account:
                 AccountNavStackView(
                     api: api,
@@ -113,7 +113,7 @@ struct MainNavigationSplitView: View {
                     provideWhileDisconnected: $provideWhileDisconnected,
                     logout: logout
                 )
-                .background(themeManager.currentTheme.backgroundColor)
+                // .background(themeManager.currentTheme.backgroundColor)
             case .support:
                 FeedbackView(
                     api: api
