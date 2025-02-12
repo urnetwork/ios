@@ -45,7 +45,7 @@ struct ConnectView_macOS: View {
          
             VStack {
                 
-                HStack {
+                HStack(spacing: 0) {
                  
                     VStack {
                         
@@ -80,6 +80,8 @@ struct ConnectView_macOS: View {
                     
                     
                     // Spacer()
+                    
+                    Divider()
                     
                     ProviderTable(
                         selectedProvider: connectViewModel.selectedProvider,

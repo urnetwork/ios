@@ -22,17 +22,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         SdkSetMemoryLimit(64 * 1024 * 1024)
     }
     
-    // this is supposed to show Launch screen only on iOS but is breaking
-//    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-//        // Use LaunchScreen storyboard on iOS
-//        let storyboard = UIStoryboard(name: "LaunchScreen", bundle: nil)
-//        let initialViewController = storyboard.instantiateInitialViewController()
-//        window = UIWindow(frame: UIScreen.main.bounds)
-//        window?.rootViewController = initialViewController
-//        window?.makeKeyAndVisible()
-//        return true
-//    }
-    
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .pad {
             return .allButUpsideDown
