@@ -80,6 +80,7 @@ struct CreateNetworkView: View {
                     
                     if let userAuth = userAuth {
                         
+                        #if os(iOS)
                         UrTextField(
                             text: .constant(userAuth),
                             label: "Email or phone number",
@@ -88,6 +89,15 @@ struct CreateNetworkView: View {
                             keyboardType: .emailAddress,
                             submitLabel: .next
                         )
+                        #elseif os(macOS)
+                        UrTextField(
+                            text: .constant(userAuth),
+                            label: "Email or phone number",
+                            placeholder: "Enter your phone number or email",
+                            isEnabled: false,
+                            submitLabel: .next
+                        )
+                        #endif
                         
                         Spacer().frame(height: 24)
                         
@@ -150,7 +160,9 @@ struct CreateNetworkView: View {
                         text: "Continue",
                         action: {
                             
+                            #if canImport(UIKit)
                             hideKeyboard()
+                            #endif
                             
                             Task {
                                 let result = deviceManager.device != nil

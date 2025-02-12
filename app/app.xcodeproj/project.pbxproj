@@ -10,20 +10,13 @@
 		17041CF72D026BE4003F4D5A /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 17041CF62D026BE4003F4D5A /* GoogleSignIn */; };
 		17041CF92D026BE4003F4D5A /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 17041CF82D026BE4003F4D5A /* GoogleSignInSwift */; };
 		1728CF992D1691F100050EC5 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1B95A832CEBE76400542E0E /* NetworkExtension.framework */; };
+		17A25D3E2D5C702200507C75 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D1880DF52D36F732001DE81F /* LaunchScreen.storyboard */; platformFilter = ios; };
 		D1829C222CEBF0D700920833 /* URnetworkSdk in Frameworks */ = {isa = PBXBuildFile; productRef = D1829C212CEBF0D700920833 /* URnetworkSdk */; };
 		D1829C242CEBF0E300920833 /* URnetworkSdk in Frameworks */ = {isa = PBXBuildFile; productRef = D1829C232CEBF0E300920833 /* URnetworkSdk */; };
-		D1880DF62D36F732001DE81F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D1880DF52D36F732001DE81F /* LaunchScreen.storyboard */; };
 		D1B95A8C2CEBE76400542E0E /* URnetworkVPN.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D1B95A812CEBE76400542E0E /* URnetworkVPN.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D1AF93BB2D2E6EAC00281A0E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D1B95A472CEBDD6900542E0E /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D1B95A802CEBE76400542E0E;
-			remoteInfo = URnetworkVPN;
-		};
 		D1B95A612CEBDD6A00542E0E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D1B95A472CEBDD6900542E0E /* Project object */;
@@ -194,7 +187,6 @@
 			);
 			dependencies = (
 				D1B95A8B2CEBE76400542E0E /* PBXTargetDependency */,
-				D1AF93BC2D2E6EAC00281A0E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				D1B95A512CEBDD6900542E0E /* network */,
@@ -286,7 +278,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1610;
+				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					D1B95A4E2CEBDD6900542E0E = {
@@ -358,7 +350,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D1880DF62D36F732001DE81F /* LaunchScreen.storyboard in Resources */,
+				17A25D3E2D5C702200507C75 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -454,11 +446,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D1AF93BC2D2E6EAC00281A0E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D1B95A802CEBE76400542E0E /* URnetworkVPN */;
-			targetProxy = D1AF93BB2D2E6EAC00281A0E /* PBXContainerItemProxy */;
-		};
 		D1B95A622CEBDD6A00542E0E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D1B95A4E2CEBDD6900542E0E /* URnetwork */;
@@ -604,6 +591,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = network/network.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
@@ -629,12 +617,14 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MARKETING_VERSION = 2025.2.6;
 				PRODUCT_BUNDLE_IDENTIFIER = network.ur;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				REGISTER_APP_GROUPS = NO;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -651,6 +641,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = network/network.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
@@ -676,12 +667,14 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MARKETING_VERSION = 2025.2.6;
 				PRODUCT_BUNDLE_IDENTIFIER = network.ur;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				REGISTER_APP_GROUPS = NO;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -787,6 +780,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = extension/extension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 6BGU69Q742;
@@ -803,8 +797,13 @@
 				MARKETING_VERSION = 2025.2.6;
 				PRODUCT_BUNDLE_IDENTIFIER = network.ur.extension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				REGISTER_APP_GROUPS = NO;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -815,6 +814,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = extension/extension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 6BGU69Q742;
@@ -831,8 +831,13 @@
 				MARKETING_VERSION = 2025.2.6;
 				PRODUCT_BUNDLE_IDENTIFIER = network.ur.extension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				REGISTER_APP_GROUPS = NO;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

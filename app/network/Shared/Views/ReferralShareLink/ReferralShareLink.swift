@@ -24,6 +24,8 @@ struct ReferralShareLink<Content: View>: View {
             content()
         }
         .disabled(viewModel.isLoading)
+        .buttonStyle(.plain)
+        .contentShape(Rectangle())
     }
 }
 

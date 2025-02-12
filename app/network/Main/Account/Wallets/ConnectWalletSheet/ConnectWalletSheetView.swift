@@ -102,7 +102,9 @@ struct ConnectWalletSheetView: View {
                     .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
             }
         }
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
         .padding(.horizontal)
     }
 }

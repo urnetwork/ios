@@ -31,8 +31,10 @@ struct UrTextField: View {
 
     var onTextChange: ((String) -> Void)?
 
+    #if os(iOS)
     // keyboard type
     var keyboardType: UIKeyboardType = .default
+    #endif
     
     // submit label
     var submitLabel: SubmitLabel = .return
@@ -43,7 +45,7 @@ struct UrTextField: View {
     
     var disableCapitalization: Bool = false
     
-
+    #if os(iOS)
     private var autoCapitalization: TextInputAutocapitalization {
         
         if (disableCapitalization) {
@@ -58,7 +60,9 @@ struct UrTextField: View {
         }
     
     }
+    #endif
     
+    #if os(iOS)
     private var shouldDisableAutocorrection: Bool {
         switch keyboardType {
         case .emailAddress:
@@ -67,6 +71,7 @@ struct UrTextField: View {
             return false
         }
     }
+    #endif
     
     private var foregroundSupportColor: Color {
         
@@ -96,6 +101,9 @@ struct UrTextField: View {
             HStack {
                 
                 if isSecure {
+                    
+                    #if os(iOS)
+                    
                     SecureField(
                         "",
                         text: $text,
@@ -117,7 +125,34 @@ struct UrTextField: View {
                     .onChange(of: text) { newValue in
                         onTextChange?(newValue)
                     }
+                    
+                    #else
+                    
+                    SecureField(
+                        "",
+                        text: $text,
+                        prompt: Text(placeholder)
+                            .font(themeManager.currentTheme.bodyFont)
+                            .foregroundColor(themeManager.currentTheme.textFaintColor)
+                    )
+                    .tint(themeManager.currentTheme.textColor)
+                    .submitLabel(submitLabel)
+                    .onSubmit {
+                        onSubmit?()
+                    }
+                    .foregroundColor(themeManager.currentTheme.textColor)
+                    .disabled(!isEnabled)
+                    .focused($isFocused)
+                    .onChange(of: text) { newValue in
+                        onTextChange?(newValue)
+                    }
+                    
+                    #endif
+                    
                 } else {
+                    
+                    #if canImport(UIKit)
+                    
                     TextField(
                         "",
                         text: $text,
@@ -139,6 +174,30 @@ struct UrTextField: View {
                     .onChange(of: text) { newValue in
                         onTextChange?(newValue)
                     }
+                    
+                    #elseif os(macOS)
+                    
+                    TextField(
+                        "",
+                        text: $text,
+                        prompt: Text(placeholder)
+                            .font(themeManager.currentTheme.bodyFont)
+                            .foregroundColor(themeManager.currentTheme.textFaintColor)
+                    )
+                    .tint(themeManager.currentTheme.textColor)
+                    .submitLabel(submitLabel)
+                    .onSubmit {
+                        onSubmit?()
+                    }
+                    .foregroundColor(themeManager.currentTheme.textColor)
+                    .disabled(!isEnabled)
+                    .focused($isFocused)
+                    .onChange(of: text) { newValue in
+                        onTextChange?(newValue)
+                    }
+                    
+                    #endif
+                    
                 }
                 
                 if (validationState != nil) {

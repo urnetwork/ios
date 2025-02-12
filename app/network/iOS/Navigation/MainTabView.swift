@@ -8,6 +8,7 @@
 import SwiftUI
 import URnetworkSdk
 
+#if os(iOS)
 struct MainTabView: View {
     
     var api: SdkApi
@@ -19,8 +20,6 @@ struct MainTabView: View {
     @State private var opacity: Double = 0
     @StateObject var providerListSheetViewModel: ProviderListSheetViewModel = ProviderListSheetViewModel()
     
-    var vpnManager: VPNManager
-    
     @EnvironmentObject var themeManager: ThemeManager
     
     @State private var selectedTab = 0
@@ -28,7 +27,6 @@ struct MainTabView: View {
     init(
         api: SdkApi,
         device: SdkDeviceRemote,
-        vpnManager: VPNManager,
         logout: @escaping () -> Void,
         provideWhileDisconnected: Binding<Bool>
     ) {
@@ -37,11 +35,6 @@ struct MainTabView: View {
         self.device = device
         self._provideWhileDisconnected = provideWhileDisconnected
         self.connectViewController = device.openConnectViewController()
-        
-        // vpn manager
-//        self.vpnManager = VPNManager(device: device)
-        self.vpnManager = vpnManager
-        // vpnManager.loadOrCreateManager()
         
         setupTabBar()
     }
@@ -53,7 +46,14 @@ struct MainTabView: View {
             /**
              * Connect View
              */
-            ConnectView(
+//            ConnectView(
+//                api: api,
+//                logout: logout,
+//                device: device,
+//                connectViewController: connectViewController,
+//                providerListSheetViewModel: providerListSheetViewModel
+//            )
+            ConnectView_iOS(
                 api: api,
                 logout: logout,
                 device: device,
@@ -141,6 +141,7 @@ struct MainTabView: View {
     }
     
 }
+#endif
 
 //#Preview {
 //    MainTabView(

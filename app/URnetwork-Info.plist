@@ -23,6 +23,8 @@
 	</array>
 	<key>GIDClientID</key>
 	<string>338638865390-tdgpupo59durdck5es80iukafh0or4uq.apps.googleusercontent.com</string>
+	<key>ATSApplicationFontsPath</key>
+	<string>.</string>
 	<key>NEVPNConfiguration</key>
 	<array>
 		<string>network.ur.extension</string>

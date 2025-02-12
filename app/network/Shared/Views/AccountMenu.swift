@@ -43,6 +43,7 @@ struct AccountMenu: View {
                 .frame(width: 32, height: 32)
                 .clipShape(Circle())
         }
+        .menuStyle(.borderlessButton)
         
 
     }

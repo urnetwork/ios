@@ -220,8 +220,10 @@ struct AccountRootView: View {
                             .background(themeManager.currentTheme.borderBaseColor)
                         
                     }
+                    .contentShape(Rectangle())
                     
                 }
+                .buttonStyle(.plain)
                 
             }
             
@@ -257,6 +259,7 @@ struct AccountRootView: View {
                 }
             )
         }
+        #if os(iOS)
         .fullScreenCover(isPresented: $viewModel.isPresentedCreateAccount) {
             LoginNavigationView(
                 api: api,
@@ -272,6 +275,7 @@ struct AccountRootView: View {
                 }
             )
         }
+        #endif
     }
     
     private func handleSuccessWithJwt(_ jwt: String) async {
@@ -337,14 +341,18 @@ private struct AccountNavLink: View {
                         .foregroundColor(themeManager.currentTheme.textMutedColor)
                     
                 }
+                // .contentShape(Rectangle())
                 .padding(.vertical, 8)
                 
                 Divider()
                     .background(themeManager.currentTheme.borderBaseColor)
                 
             }
+            .contentShape(Rectangle())
             
         }
+        .buttonStyle(.plain)
+        // .contentShape(Rectangle())
         
     }
 }

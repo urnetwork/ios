@@ -28,6 +28,10 @@ extension LoginInitialView {
         
         @Published private(set) var isCheckingUserAuth: Bool = false
         
+        func setIsCheckingUserAuth(_ isChecking: Bool) -> Void {
+            isCheckingUserAuth = isChecking
+        }
+        
         // TODO: deprecate this
         @Published private(set) var loginErrorMessage: String?
         
@@ -48,6 +52,8 @@ extension LoginInitialView {
         
         func authLogin(args: SdkAuthLoginArgs) async -> AuthLoginResult {
             
+            print("inside auth login")
+            
             do {
                 let result: AuthLoginResult = try await withCheckedThrowingContinuation { [weak self] continuation in
                     
@@ -55,31 +61,48 @@ extension LoginInitialView {
                     
                     let callback = AuthLoginCallback { [weak self] result, error in
                         
+                        print("inside auth login callback")
+                        
                         guard let self = self else { return }
-                         
+                        
+                        print("aaa")
+                        
                         if let error {
+                            
+                            print("bbb error is: \(error)")
 
                             continuation.resume(throwing: error)
                             
                             return
                         }
                         
+                        print("ccc")
+                        
                         guard let result else {
+                            
+                            print("ddd")
                             
                             continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "No result found"]))
                             
                             return
                         }
                         
+                        print("eee")
+                        
                         if let resultError = result.error {
+                            
+                            print("fff")
                             
                             continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "result.error exists \(resultError.message)"]))
                             
                             return
                         }
                         
+                        print("ggg")
+                        
                         // JWT exists, proceed to authenticate network
                         if let jwt = result.network?.byJwt {
+                            print("hhh")
                             continuation.resume(returning: .login(jwt))
                             return
                         }
@@ -87,7 +110,11 @@ extension LoginInitialView {
                         // user auth requires password
                         if let authAllowed = result.authAllowed {
                             
+                            print("iii")
+                            
                             if authAllowed.contains("password") {
+                                
+                                print("jjj")
                                 
                                 /**
                                  * Login
@@ -96,13 +123,19 @@ extension LoginInitialView {
                                 
                             } else {
                                 
+                                print("lll")
+                                
                                 continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: "authAllowed missing password: \(authAllowed)"]))
                                 
                             }
                             
+                            print("mmm")
+                            
                             return
                             
                         }
+                        
+                        print("nnn")
                                        
                         /**
                          * Create new network
@@ -111,12 +144,19 @@ extension LoginInitialView {
                         
                     }
                     
-                    api?.authLogin(args, callback: callback)
+                    print("does api exist? \(api != nil)")
+                    
+                    if let api = api {
+                        api.authLogin(args, callback: callback)
+                    } else {
+                        print("no api found")
+                    }
+        
                     
                 }
                 
                 DispatchQueue.main.async {
-                    self.isCheckingUserAuth = false
+                    self.setIsCheckingUserAuth(false)
                 }
                 
                 return result
@@ -145,7 +185,7 @@ extension LoginInitialView.ViewModel {
         }
         
         DispatchQueue.main.async {
-            self.isCheckingUserAuth = true
+            self.setIsCheckingUserAuth(true)
         }
         
         let args = SdkAuthLoginArgs()
