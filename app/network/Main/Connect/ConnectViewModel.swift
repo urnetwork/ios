@@ -67,7 +67,7 @@ enum ConnectionStatus: String {
 }
 
 
-    
+@MainActor
 class ConnectViewModel: ObservableObject {
      
     /**
@@ -79,6 +79,11 @@ class ConnectViewModel: ObservableObject {
     @Published private(set) var providerRegions: [SdkConnectLocation] = []
     @Published private(set) var providerCities: [SdkConnectLocation] = []
     @Published private(set) var providerBestSearchMatches: [SdkConnectLocation] = []
+    
+    /**
+     * Provider loading state
+     */
+    @Published private(set) var providersLoading: Bool = false
     
     /**
      * Connection status
@@ -104,6 +109,7 @@ class ConnectViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private var debounceTimer: AnyCancellable?
     @Published var searchQuery: String = ""
+    private var lastQuery: String?
     
     /**
      * Prompt ratings
@@ -224,6 +230,8 @@ extension ConnectViewModel {
     private func searchProviders(_ query: String) async -> Result<Void, Error> {
         do {
             
+            providersLoading = true
+            
             let result: SdkFilteredLocations = try await withCheckedThrowingContinuation { [weak self] continuation in
                 
                 guard let self = self else { return }
@@ -254,9 +262,12 @@ extension ConnectViewModel {
             
             self.handleLocations(result)
             
+            providersLoading = false
+            
             return .success(())
             
         } catch (let error) {
+            providersLoading = false
             return .failure(error)
         }
     }
@@ -298,8 +309,13 @@ extension ConnectViewModel {
     }
     
     private func performSearch(_ query: String) {
-        Task {
-            await filterLocations(query)
+        if query != self.lastQuery {
+         
+            Task {
+                let _ = await filterLocations(query)
+                self.lastQuery = query
+            }
+            
         }
     }
     
@@ -316,6 +332,8 @@ extension ConnectViewModel {
     private func getAllProviders() async -> Result<Void, Error> {
         
         do {
+            
+            providersLoading = true
             
             let result: SdkFilteredLocations = try await withCheckedThrowingContinuation { [weak self] continuation in
                 
@@ -345,9 +363,14 @@ extension ConnectViewModel {
             
             self.handleLocations(result)
             
+            providersLoading = false
+            
             return .success(())
             
         } catch (let error) {
+            
+            providersLoading = false
+            
             return .failure(error)
         }
         

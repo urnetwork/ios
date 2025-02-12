@@ -18,7 +18,7 @@ struct ConnectView_macOS: View {
     
     @StateObject private var connectViewModel: ConnectViewModel
     
-    @State var isRefreshing: Bool = false
+    @State var isLoading: Bool = false
     
     var logout: () -> Void
     var api: SdkApi
@@ -40,46 +40,74 @@ struct ConnectView_macOS: View {
     }
     
     var body: some View {
-            
-        ScrollView {
+        
+        // NavigationStack {
          
             VStack {
-                ConnectButtonView(
-                    gridPoints:
-                        connectViewModel.gridPoints,
-                    gridWidth: connectViewModel.gridWidth,
-                    connectionStatus: connectViewModel.connectionStatus,
-                    windowCurrentSize: connectViewModel.windowCurrentSize,
-                    connect: connectViewModel.connect,
-                    disconnect: connectViewModel.disconnect
-                )
                 
-                ProviderTable(
-                    selectedProvider: connectViewModel.selectedProvider,
-                    connect: { provider in
-                        connectViewModel.connect(provider)
-                        // providerListSheetViewModel.isPresented = false
-                    },
-                    connectBestAvailable: {
-                        connectViewModel.connectBestAvailable()
-                        // providerListSheetViewModel.isPresented = false
-                    },
-                    providerCountries: connectViewModel.providerCountries,
-                    providerPromoted: connectViewModel.providerPromoted,
-                    providerDevices: connectViewModel.providerDevices,
-                    providerRegions: connectViewModel.providerRegions,
-                    providerCities: connectViewModel.providerCities,
-                    providerBestSearchMatches: connectViewModel.providerBestSearchMatches,
-                    searchQuery: $connectViewModel.searchQuery,
-                    refresh: {
-                        Task {
-                            isRefreshing = true
-                            let _ = await connectViewModel.filterLocations(connectViewModel.searchQuery)
-                            isRefreshing = false
+                HStack {
+                 
+                    VStack {
+                        
+                        ConnectButtonView(
+                            gridPoints:
+                                connectViewModel.gridPoints,
+                            gridWidth: connectViewModel.gridWidth,
+                            connectionStatus: connectViewModel.connectionStatus,
+                            windowCurrentSize: connectViewModel.windowCurrentSize,
+                            connect: connectViewModel.connect,
+                            disconnect: connectViewModel.disconnect
+                        )
+                        .frame(maxHeight: .infinity)
+                        
+                        HStack {
+                            
+                            SelectedProvider(
+                                selectedProvider: connectViewModel.selectedProvider,
+                                getProviderColor: connectViewModel.getProviderColor
+                            )
+                            
                         }
-                    },
-                    isRefreshing: isRefreshing
-                )
+                        .background(themeManager.currentTheme.tintedBackgroundBase)
+                        .clipShape(.capsule)
+                        
+                        Spacer().frame(height: 32)
+                        
+                    }
+                    .frame(maxWidth: .infinity)
+
+                    
+                    
+                    
+                    // Spacer()
+                    
+                    ProviderTable(
+                        selectedProvider: connectViewModel.selectedProvider,
+                        connect: { provider in
+                            connectViewModel.connect(provider)
+                            // providerListSheetViewModel.isPresented = false
+                        },
+                        connectBestAvailable: {
+                            connectViewModel.connectBestAvailable()
+                            // providerListSheetViewModel.isPresented = false
+                        },
+                        providerCountries: connectViewModel.providerCountries,
+                        providerPromoted: connectViewModel.providerPromoted,
+                        providerDevices: connectViewModel.providerDevices,
+                        providerRegions: connectViewModel.providerRegions,
+                        providerCities: connectViewModel.providerCities,
+                        providerBestSearchMatches: connectViewModel.providerBestSearchMatches,
+                        searchQuery: $connectViewModel.searchQuery,
+                        refresh: {
+                            Task {
+                                let _ = await connectViewModel.filterLocations(connectViewModel.searchQuery)
+                            }
+                        },
+                        isLoading: connectViewModel.providersLoading
+                    )
+                    
+                }
+                .frame(maxWidth: .infinity)
 //                    .searchable(
 //                        text: $connectViewModel.searchQuery,
 //                        // placement: .navigationBarDrawer(displayMode: .always),
@@ -87,7 +115,9 @@ struct ConnectView_macOS: View {
 //                    )
             }
             
-        }
+        
+            
+        // }
         
     }
 }
@@ -112,7 +142,7 @@ struct ProviderTable: View {
     @Binding var searchQuery: String
     
     var refresh: () -> Void
-    var isRefreshing: Bool
+    var isLoading: Bool
     
     var body: some View {
         
@@ -122,83 +152,102 @@ struct ProviderTable: View {
 //            .padding(.horizontal, 16)
 //            .background(themeManager.currentTheme.tintedBackgroundBase)
          
-            HStack {
-                Text("Available providers")
-                    .font(themeManager.currentTheme.toolbarTitleFont)
-                Spacer()
-                
-                Button(action: refresh) {
-                    // Text("refresh")
-                    
-                    Image(nsImage: NSImage(named: NSImage.refreshTemplateName)!)
-                    
-                }
-                .buttonStyle(.plain)
-                .disabled(isRefreshing)
-                // .background(Color.clear)
-            }
+//            HStack {
+//                Text("Available providers")
+//                    .font(themeManager.currentTheme.toolbarTitleFont)
+//                Spacer()
+//                
+//                Button(action: refresh) {
+//                    // Text("refresh")
+//                    
+//                    Image(nsImage: NSImage(named: NSImage.refreshTemplateName)!)
+//                    
+//                }
+//                .buttonStyle(.plain)
+//                .disabled(isRefreshing)
+//                // .background(Color.clear)
+//            }
             
             List {
                 
-                ProviderListGroup(
-                    groupName: "Best Search Matches",
-                    providers: providerBestSearchMatches,
-                    selectedProvider: selectedProvider,
-                    connect: connect
-                )
-                ProviderListGroup(
-                    groupName: "Promoted Locations",
-                    providers: providerPromoted,
-                    selectedProvider: selectedProvider,
-                    connect: connect,
-                    connectBestAvailable: connectBestAvailable,
-                    isPromotedLocations: true
-                )
-                ProviderListGroup(
-                    groupName: "Countries",
-                    providers: providerCountries,
-                    selectedProvider: selectedProvider,
-                    connect: connect
-                )
-                ProviderListGroup(
-                    groupName: "Regions",
-                    providers: providerRegions,
-                    selectedProvider: selectedProvider,
-                    connect: connect
-                )
-                ProviderListGroup(
-                    groupName: "Cities",
-                    providers: providerCities,
-                    selectedProvider: selectedProvider,
-                    connect: connect
-                )
-                ProviderListGroup(
-                    groupName: "Devices",
-                    providers: providerDevices,
-                    selectedProvider: selectedProvider,
-                    connect: connect
-                )
+                if (isLoading) {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(32)
+                } else {
+                
+                    ProviderListGroup(
+                        groupName: "Best Search Matches",
+                        providers: providerBestSearchMatches,
+                        selectedProvider: selectedProvider,
+                        connect: connect
+                    )
+                    ProviderListGroup(
+                        groupName: "Promoted Locations",
+                        providers: providerPromoted,
+                        selectedProvider: selectedProvider,
+                        connect: connect,
+                        connectBestAvailable: connectBestAvailable,
+                        isPromotedLocations: true
+                    )
+                    ProviderListGroup(
+                        groupName: "Countries",
+                        providers: providerCountries,
+                        selectedProvider: selectedProvider,
+                        connect: connect
+                    )
+                    ProviderListGroup(
+                        groupName: "Regions",
+                        providers: providerRegions,
+                        selectedProvider: selectedProvider,
+                        connect: connect
+                    )
+                    ProviderListGroup(
+                        groupName: "Cities",
+                        providers: providerCities,
+                        selectedProvider: selectedProvider,
+                        connect: connect
+                    )
+                    ProviderListGroup(
+                        groupName: "Devices",
+                        providers: providerDevices,
+                        selectedProvider: selectedProvider,
+                        connect: connect
+                    )
+                    
+                }
+                
             }
             // .listStyle(.plain)
     //                .searchable(
     //                    text: $searchText,
     //                    prompt: "Search providers"
     //                )
-            .frame(height: 300)
-            .cornerRadius(8)
+            // .frame(height: 300)
+            // .cornerRadius(8)
             .searchable(
                 text: $searchQuery,
                 // placement: .toolbar,
                 prompt: "Search providers"
             )
+            .frame(maxHeight: .infinity)
+            .toolbar { // Add the toolbar modifier here
+                ToolbarItem(placement: .automatic) { // Use .automatic for flexible placement
+                    Button(action: refresh) {
+                        Image(systemName: "arrow.clockwise") // Use a system image for the refresh icon
+                    }
+                    .disabled(isLoading)
+                }
+            }
             
         }
+        .frame(maxWidth: 340)
 //        .searchable(
 //            text: $searchQuery,
 //            // placement: .navigationBarDrawer(displayMode: .always),
 //            prompt: "Search providers"
 //        )
-        .padding(32)
+        // .padding(32)
         
     }
 }
