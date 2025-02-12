@@ -393,7 +393,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "export BRINGYOUR_HOME=`realpath ../..`\nexport WARP_HOME=\"$BRINGYOUR_HOME\"\nexport WARP_VERSION_HOME=\"$BRINGYOUR_HOME/version\"\nexport PATH=\"$PATH:$BRINGYOUR_HOME/warp/warpctl/build/darwin/arm64\"\nexport PATH=\"$PATH:/usr/local/go/bin:$HOME/go/bin\"\ncd ../../sdk\nmake init\nmake build_ios\n";
+			shellScript = "export BRINGYOUR_HOME=`realpath ../..`\nexport WARP_HOME=\"$BRINGYOUR_HOME\"\nexport WARP_VERSION_HOME=\"$BRINGYOUR_HOME/version\"\nexport PATH=\"$PATH:$BRINGYOUR_HOME/warp/warpctl/build/darwin/arm64\"\nexport PATH=\"$PATH:/usr/local/go/bin:$HOME/go/bin\"\ncd ../../sdk\nmake init\nmake build_apple\n";
 		};
 		D1B95A922CEBE7D200542E0E /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -410,7 +410,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/bash;
-			shellScript = "export BRINGYOUR_HOME=`realpath ../..`\nexport WARP_HOME=\"$BRINGYOUR_HOME\"\nexport WARP_VERSION_HOME=\"$BRINGYOUR_HOME/version\"\nexport PATH=\"$PATH:$BRINGYOUR_HOME/warp/warpctl/build/darwin/arm64\"\nexport PATH=\"$PATH:/usr/local/go/bin:$HOME/go/bin\"\ncd ../../sdk\nmake init\nmake build_ios\n";
+			shellScript = "export BRINGYOUR_HOME=`realpath ../..`\nexport WARP_HOME=\"$BRINGYOUR_HOME\"\nexport WARP_VERSION_HOME=\"$BRINGYOUR_HOME/version\"\nexport PATH=\"$PATH:$BRINGYOUR_HOME/warp/warpctl/build/darwin/arm64\"\nexport PATH=\"$PATH:/usr/local/go/bin:$HOME/go/bin\"\ncd ../../sdk\nmake init\nmake build_apple\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -593,7 +593,7 @@
 				CODE_SIGN_ENTITLEMENTS = network/network.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"network/Preview Content\"";
 				DEVELOPMENT_TEAM = 6BGU69Q742;
@@ -618,7 +618,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
-				MARKETING_VERSION = 2025.1.31;
+				MARKETING_VERSION = 2025.2.6;
 				PRODUCT_BUNDLE_IDENTIFIER = network.ur;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -643,7 +643,7 @@
 				CODE_SIGN_ENTITLEMENTS = network/network.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"network/Preview Content\"";
 				DEVELOPMENT_TEAM = 6BGU69Q742;
@@ -668,7 +668,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
-				MARKETING_VERSION = 2025.1.31;
+				MARKETING_VERSION = 2025.2.6;
 				PRODUCT_BUNDLE_IDENTIFIER = network.ur;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -782,7 +782,7 @@
 				CODE_SIGN_ENTITLEMENTS = extension/extension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 6BGU69Q742;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = extension/Info.plist;
@@ -794,7 +794,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2025.1.31;
+				MARKETING_VERSION = 2025.2.6;
 				PRODUCT_BUNDLE_IDENTIFIER = network.ur.extension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -816,7 +816,7 @@
 				CODE_SIGN_ENTITLEMENTS = extension/extension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 6BGU69Q742;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = extension/Info.plist;
@@ -828,7 +828,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2025.1.31;
+				MARKETING_VERSION = 2025.2.6;
 				PRODUCT_BUNDLE_IDENTIFIER = network.ur.extension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

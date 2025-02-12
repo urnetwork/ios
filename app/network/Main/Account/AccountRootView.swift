@@ -193,8 +193,9 @@ struct AccountRootView: View {
                     
                 }
                 
+                // TODO: desktop will have a different app ID
                 Button(action: {
-                    openURL(URL(string: "https://apps.apple.com/app/id6446097114?action=write-review")!)
+                    openURL(URL(string: "https://apps.apple.com/app/6741000606?action=write-review")!)
                 }) {
                     
                     VStack(spacing: 0) {
