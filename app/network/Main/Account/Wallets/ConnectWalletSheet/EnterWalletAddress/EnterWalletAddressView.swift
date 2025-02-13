@@ -50,7 +50,11 @@ struct EnterWalletAddressView: View {
                 }
             )
 
+            #if os(iOS)
             Spacer()
+            #elseif os(macOS)
+            Spacer().frame(height: 32)
+            #endif
             
             UrButton(
                 text: "Connect Wallet",
@@ -62,13 +66,13 @@ struct EnterWalletAddressView: View {
         }
         // .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+#if os(iOS)
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Text("Enter wallet address")
                     .font(themeManager.currentTheme.toolbarTitleFont).fontWeight(.bold)
             }
             
-            #if os(iOS)
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(
                     action: {
@@ -80,24 +84,10 @@ struct EnterWalletAddressView: View {
                 }
                 .disabled(!viewModel.isValidWalletAddress || accountWalletsViewModel.isCreatingWallet)
             }
-            #elseif os(macOS)
-            ToolbarItem {
-                Button(
-                    action: {
-                        connect()
-                    }
-                ) {
-                    Text("Connect")
-                        .font(themeManager.currentTheme.toolbarTitleFont)
-                }
-                .disabled(!viewModel.isValidWalletAddress || accountWalletsViewModel.isCreatingWallet)
-            }
-            #endif
             
         }
-        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
-        #endif
+#endif
         .padding(.horizontal)
         // .background(themeManager.currentTheme.backgroundColor)
     }

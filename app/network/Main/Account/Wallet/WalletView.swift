@@ -139,6 +139,19 @@ struct WalletView: View {
         .refreshable {
             await fetchPayments()
         }
+        #if os(macOS)
+        .toolbar {
+            ToolbarItem(placement: .automatic) {
+                Button(action: {
+                    Task {
+                        await fetchPayments()
+                    }
+                }) {
+                    Image(systemName: "arrow.clockwise")
+                }
+            }
+        }
+        #endif
     }
     
     private func makeDefaultWallet() {
@@ -150,7 +163,7 @@ struct WalletView: View {
         }
         
         Task {
-            await payoutWalletViewModel.updatePayoutWallet(walletId)
+            let _ = await payoutWalletViewModel.updatePayoutWallet(walletId)
             snackbarManager.showSnackbar(message: "Payout wallet updated")
         }
     }

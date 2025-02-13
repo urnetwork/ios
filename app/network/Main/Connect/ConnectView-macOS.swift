@@ -233,10 +233,10 @@ struct ProviderTable: View {
                 prompt: "Search providers"
             )
             .frame(maxHeight: .infinity)
-            .toolbar { // Add the toolbar modifier here
-                ToolbarItem(placement: .automatic) { // Use .automatic for flexible placement
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
                     Button(action: refresh) {
-                        Image(systemName: "arrow.clockwise") // Use a system image for the refresh icon
+                        Image(systemName: "arrow.clockwise")
                     }
                     .disabled(isLoading)
                 }
