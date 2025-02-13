@@ -14,7 +14,7 @@ struct ContentView: View {
     var api: SdkApi?
     
     @StateObject var viewModel = ViewModel()
-    @StateObject var deviceManager = DeviceManager()
+    @EnvironmentObject var deviceManager: DeviceManager
     @StateObject private var snackbarManager = UrSnackbarManager()
     
     @State private var opacity: Double = 0.0
@@ -40,7 +40,7 @@ struct ContentView: View {
                     .opacity(opacity)
 
                 case .main:
-                    if let device = deviceManager.device, let vpnManager = deviceManager.vpnManager {
+                    if let device = deviceManager.device, let _ = deviceManager.vpnManager {
                         MainView(
                             api: api,
                             device: device,
