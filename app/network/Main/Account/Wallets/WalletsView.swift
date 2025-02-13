@@ -107,13 +107,70 @@ struct WalletsView: View {
         }
         .sheet(isPresented: $viewModel.presentConnectWalletSheet) {
             
+            #if os(iOS)
             ConnectWalletNavigationStack(
                 api: api,
                 presentConnectWalletSheet: $viewModel.presentConnectWalletSheet
             )
             .presentationDetents([.height(264)])
+            
+            #elseif os(macOS)
+            VStack {
+                
+                Spacer().frame(height: 16)
+                
+                HStack {
+                    Text("Connect external wallet")
+                        .font(themeManager.currentTheme.toolbarTitleFont)
+                    Spacer()
+                    Button(action: {
+                        viewModel.presentConnectWalletSheet = false
+                    }) {
+                        Image(systemName: "xmark")
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.horizontal, 16)
+             
+                EnterWalletAddressView(
+                    onSuccess: {
+                        viewModel.presentConnectWalletSheet = false
+                    },
+                    api: api
+                )
+                
+                Spacer().frame(height: 16)
+                
+            }
+            #endif
+            
         }
+        #if os(macOS)
+        .toolbar {
+            ToolbarItem(placement: .automatic) {
+                Button(action: {
+                    Task {
+                        await refresh()
+                    }
+                }) {
+                    Image(systemName: "arrow.clockwise")
+                }
+                .disabled(accountWalletsViewModel.isCreatingWallet || accountWalletsViewModel.isLoadingTransferStats || accountWalletsViewModel.isLoadingAccountWallets || payoutWalletViewModel.isFetchingPayoutWallet || payoutWalletViewModel.isUpdatingPayoutWallet)
+            }
+        }
+        #endif
         .environmentObject(connectWalletProviderViewModel)
+    }
+    
+    private func refresh() async -> Void {
+        
+        async let fetchWallets: Void = accountWalletsViewModel.fetchAccountWallets()
+        async let fetchPayments: Void = accountPaymentsViewModel.fetchPayments()
+        async let fetchTransferStats: Void = accountWalletsViewModel.fetchTransferStats()
+        
+        // Wait for all tasks to complete
+        (_, _, _) = await (fetchWallets, fetchPayments, fetchTransferStats)
+        
     }
 }
 
@@ -168,6 +225,7 @@ struct WalletsHeader: View {
         }
         .padding(.horizontal)
     }
+    
 }
 
 #Preview {

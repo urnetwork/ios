@@ -48,6 +48,7 @@ struct PopulatedWalletsView: View {
                             .background(themeManager.currentTheme.tintedBackgroundBase)
                             .clipShape(Circle())
                     }
+                    .buttonStyle(.plain)
                     
                 }
                 .padding(.horizontal, 16)

@@ -151,7 +151,7 @@ struct UrTextField: View {
                     
                 } else {
                     
-                    #if canImport(UIKit)
+                    #if os(iOS)
                     
                     TextField(
                         "",
@@ -216,12 +216,14 @@ struct UrTextField: View {
             }
             .frame(height: 24)
         
+            #if os(iOS)
             // divider
             if (isEnabled) {
                 Divider()
                     .background(isFocused
                                 ? themeManager.currentTheme.borderStrongColor :themeManager.currentTheme.borderBaseColor)
             }
+            #endif
         
             // should we show supporting text if input is disabled?
             if let supportingText {
