@@ -83,6 +83,12 @@ struct ConnectButtonView: View {
                         
                         if connectionStatus == .disconnected {
                             connect()
+                            
+#if canImport(UIKit)
+                            let impact = UIImpactFeedbackGenerator(style: .soft)
+                            impact.impactOccurred()
+#endif
+                            
                         }
                         
                     }
@@ -126,6 +132,10 @@ struct ConnectButtonView: View {
                     text: "Disconnect",
                     action: {
                         disconnect()
+#if canImport(UIKit)
+                            let impact = UIImpactFeedbackGenerator(style: .soft)
+                            impact.impactOccurred()
+#endif
                     },
                     style: .outlineSecondary,
                     enabled: connectionStatus != .disconnected

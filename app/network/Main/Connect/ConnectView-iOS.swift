@@ -43,6 +43,9 @@ struct ConnectView_iOS: View {
     }
     
     var body: some View {
+        
+        let isGuest = deviceManager.parsedJwt?.guestMode ?? true
+        
         VStack {
             
             HStack {
@@ -51,7 +54,7 @@ struct ConnectView_iOS: View {
                     isGuest: isGuest,
                     logout: logout,
                     api: api,
-                    isPresentedCreateAccount: $viewModel.isPresentedCreateAccount
+                    isPresentedCreateAccount: $connectViewModel.isPresentedCreateAccount
                 )
             }
             .frame(height: 32)
@@ -78,56 +81,6 @@ struct ConnectView_iOS: View {
                     selectedProvider: connectViewModel.selectedProvider,
                     getProviderColor: connectViewModel.getProviderColor
                 )
-
-//                HStack {
-//                    
-//                    if let selectedProvider = connectViewModel.selectedProvider, selectedProvider.connectLocationId?.bestAvailable != true {
-//   
-//                        Image("ur.symbols.tab.connect")
-//                            .renderingMode(.template)
-//                            .resizable()
-//                            .frame(width: 32, height: 32)
-//                            .foregroundColor(connectViewModel.getProviderColor(selectedProvider))
-//                        
-//                        Spacer().frame(width: 16)
-//                        
-//                        VStack(alignment: .leading) {
-//                            Text(selectedProvider.name)
-//                                .font(themeManager.currentTheme.bodyFont)
-//                                .foregroundColor(themeManager.currentTheme.textColor)
-//                            
-//                            if selectedProvider.providerCount > 0 {
-//            
-//                                Text("\(selectedProvider.providerCount) providers")
-//                                    .font(themeManager.currentTheme.secondaryBodyFont)
-//                                    .foregroundColor(themeManager.currentTheme.textMutedColor)
-//                            }
-//            
-//                            
-//                        }
-//                    } else {
-//           
-//                        Image("ur.symbols.tab.connect")
-//                            .renderingMode(.template)
-//                            .resizable()
-//                            .frame(width: 32, height: 32)
-//                            .foregroundColor(.urCoral)
-//                        
-//                        Spacer().frame(width: 16)
-//                        
-//                        VStack(alignment: .leading) {
-//                            Text("Best available provider")
-//                                .font(themeManager.currentTheme.bodyFont)
-//                                .foregroundColor(themeManager.currentTheme.textColor)
-//                        }
-//                        
-//                    }
-//                    
-//                    Spacer().frame(width: 8)
-//                    
-//                }
-//                .padding(.vertical, 8)
-//                .padding(.horizontal, 16)
                 
             }
             .background(themeManager.currentTheme.tintedBackgroundBase)
