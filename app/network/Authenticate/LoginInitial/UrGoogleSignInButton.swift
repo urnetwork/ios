@@ -15,13 +15,14 @@ struct UrGoogleSignInButton: View {
     
     var body: some View {
         
-        return Button(action: {
+        #if os(iOS)
+        Button(action: {
             Task {
                 await action()
             }
         }) {
             HStack(alignment: .center) {
-                
+            
                 Image("GoogleIcon")
                     .resizable()
                     .scaledToFit()
@@ -32,12 +33,42 @@ struct UrGoogleSignInButton: View {
                         .font(
                             Font.system(size: 19, weight: .medium)
                         )
+                
             }
             .frame(maxWidth: .infinity)
         }
         .frame(height: 48)
         .background(Color.urLightBlue)
         .clipShape(Capsule())
+        
+        #elseif os(macOS)
+        Button(action: {
+            Task {
+                await action()
+            }
+        }) {
+            HStack(alignment: .center) {
+            
+                Image("GoogleIcon")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 12, height: 12)
+                
+                Text("Sign in with Google")
+                    .foregroundColor(themeManager.currentTheme.inverseTextColor)
+                        .font(
+                            Font.system(size: 12, weight: .medium)
+                        )
+                
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .frame(height: 30)
+        .background(Color.urLightBlue)
+        .cornerRadius(6)
+        // .clipShape(Capsule())
+        
+        #endif
         
     }
     
