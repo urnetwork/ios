@@ -48,13 +48,15 @@ struct AccountRootView: View {
                     .foregroundColor(themeManager.currentTheme.textColor)
                 
                 Spacer()
-                
+
+                #if os(iOS)
                 AccountMenu(
                     isGuest: isGuest,
                     logout: logout,
                     api: api,
                     isPresentedCreateAccount: $viewModel.isPresentedCreateAccount
                 )
+                #endif
                 
             }
             .frame(height: 32)

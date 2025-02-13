@@ -20,16 +20,36 @@ struct NetworkApp: App {
     
     let themeManager = ThemeManager.shared
     
+    @StateObject var deviceManager = DeviceManager()
+    
     var body: some Scene {
         WindowGroup {
             
             ContentView()
                 .environmentObject(themeManager)
+                .environmentObject(deviceManager)
                 .onOpenURL { url in
                     GIDSignIn.sharedInstance.handle(url)
                 }
                 .preferredColorScheme(.dark)
                 .background(themeManager.currentTheme.backgroundColor)
+        }
+        .commands {
+            
+            /**
+             * macOS menu items
+             */
+            
+            if deviceManager.device != nil {
+             
+                CommandMenu("Account") {
+                    Button("Sign out") {
+                        deviceManager.logout()
+                    }
+                }
+                
+            }
+            
         }
     }
 }

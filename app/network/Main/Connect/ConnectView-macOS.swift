@@ -40,86 +40,68 @@ struct ConnectView_macOS: View {
     }
     
     var body: some View {
-        
-        // NavigationStack {
          
-            VStack {
-                
-                HStack(spacing: 0) {
-                 
-                    VStack {
+        VStack {
+            
+            HStack(spacing: 0) {
+             
+                VStack {
+                    
+                    ConnectButtonView(
+                        gridPoints:
+                            connectViewModel.gridPoints,
+                        gridWidth: connectViewModel.gridWidth,
+                        connectionStatus: connectViewModel.connectionStatus,
+                        windowCurrentSize: connectViewModel.windowCurrentSize,
+                        connect: connectViewModel.connect,
+                        disconnect: connectViewModel.disconnect
+                    )
+                    .frame(maxHeight: .infinity)
+                    
+                    HStack {
                         
-                        ConnectButtonView(
-                            gridPoints:
-                                connectViewModel.gridPoints,
-                            gridWidth: connectViewModel.gridWidth,
-                            connectionStatus: connectViewModel.connectionStatus,
-                            windowCurrentSize: connectViewModel.windowCurrentSize,
-                            connect: connectViewModel.connect,
-                            disconnect: connectViewModel.disconnect
+                        SelectedProvider(
+                            selectedProvider: connectViewModel.selectedProvider,
+                            getProviderColor: connectViewModel.getProviderColor
                         )
-                        .frame(maxHeight: .infinity)
-                        
-                        HStack {
-                            
-                            SelectedProvider(
-                                selectedProvider: connectViewModel.selectedProvider,
-                                getProviderColor: connectViewModel.getProviderColor
-                            )
-                            
-                        }
-                        .background(themeManager.currentTheme.tintedBackgroundBase)
-                        .clipShape(.capsule)
-                        
-                        Spacer().frame(height: 32)
                         
                     }
-                    .frame(maxWidth: .infinity)
-
+                    .background(themeManager.currentTheme.tintedBackgroundBase)
+                    .clipShape(.capsule)
                     
-                    
-                    
-                    // Spacer()
-                    
-                    Divider()
-                    
-                    ProviderTable(
-                        selectedProvider: connectViewModel.selectedProvider,
-                        connect: { provider in
-                            connectViewModel.connect(provider)
-                            // providerListSheetViewModel.isPresented = false
-                        },
-                        connectBestAvailable: {
-                            connectViewModel.connectBestAvailable()
-                            // providerListSheetViewModel.isPresented = false
-                        },
-                        providerCountries: connectViewModel.providerCountries,
-                        providerPromoted: connectViewModel.providerPromoted,
-                        providerDevices: connectViewModel.providerDevices,
-                        providerRegions: connectViewModel.providerRegions,
-                        providerCities: connectViewModel.providerCities,
-                        providerBestSearchMatches: connectViewModel.providerBestSearchMatches,
-                        searchQuery: $connectViewModel.searchQuery,
-                        refresh: {
-                            Task {
-                                let _ = await connectViewModel.filterLocations(connectViewModel.searchQuery)
-                            }
-                        },
-                        isLoading: connectViewModel.providersLoading
-                    )
+                    Spacer().frame(height: 32)
                     
                 }
                 .frame(maxWidth: .infinity)
-//                    .searchable(
-//                        text: $connectViewModel.searchQuery,
-//                        // placement: .navigationBarDrawer(displayMode: .always),
-//                        prompt: "Search providers"
-//                    )
+                
+                Divider()
+                
+                ProviderTable(
+                    selectedProvider: connectViewModel.selectedProvider,
+                    connect: { provider in
+                        connectViewModel.connect(provider)
+                    },
+                    connectBestAvailable: {
+                        connectViewModel.connectBestAvailable()
+                    },
+                    providerCountries: connectViewModel.providerCountries,
+                    providerPromoted: connectViewModel.providerPromoted,
+                    providerDevices: connectViewModel.providerDevices,
+                    providerRegions: connectViewModel.providerRegions,
+                    providerCities: connectViewModel.providerCities,
+                    providerBestSearchMatches: connectViewModel.providerBestSearchMatches,
+                    searchQuery: $connectViewModel.searchQuery,
+                    refresh: {
+                        Task {
+                            let _ = await connectViewModel.filterLocations(connectViewModel.searchQuery)
+                        }
+                    },
+                    isLoading: connectViewModel.providersLoading
+                )
+                
             }
-            
-        
-            
-        // }
+            .frame(maxWidth: .infinity)
+        }
         
     }
 }
@@ -149,26 +131,6 @@ struct ProviderTable: View {
     var body: some View {
         
         VStack {
-            
-
-//            .padding(.horizontal, 16)
-//            .background(themeManager.currentTheme.tintedBackgroundBase)
-         
-//            HStack {
-//                Text("Available providers")
-//                    .font(themeManager.currentTheme.toolbarTitleFont)
-//                Spacer()
-//                
-//                Button(action: refresh) {
-//                    // Text("refresh")
-//                    
-//                    Image(nsImage: NSImage(named: NSImage.refreshTemplateName)!)
-//                    
-//                }
-//                .buttonStyle(.plain)
-//                .disabled(isRefreshing)
-//                // .background(Color.clear)
-//            }
             
             List {
                 
@@ -220,16 +182,8 @@ struct ProviderTable: View {
                 }
                 
             }
-            // .listStyle(.plain)
-    //                .searchable(
-    //                    text: $searchText,
-    //                    prompt: "Search providers"
-    //                )
-            // .frame(height: 300)
-            // .cornerRadius(8)
             .searchable(
                 text: $searchQuery,
-                // placement: .toolbar,
                 prompt: "Search providers"
             )
             .frame(maxHeight: .infinity)
@@ -244,12 +198,6 @@ struct ProviderTable: View {
             
         }
         .frame(maxWidth: 340)
-//        .searchable(
-//            text: $searchQuery,
-//            // placement: .navigationBarDrawer(displayMode: .always),
-//            prompt: "Search providers"
-//        )
-        // .padding(32)
         
     }
 }

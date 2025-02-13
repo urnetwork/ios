@@ -17,7 +17,6 @@ enum MainNavigationTab {
 #if os(macOS)
 struct MainNavigationSplitView: View {
     
-    // @State private var selectedTab = 0
     @EnvironmentObject var themeManager: ThemeManager
     
     @State private var selectedTab: MainNavigationTab = .connect
@@ -82,30 +81,19 @@ struct MainNavigationSplitView: View {
                 }
                 .foregroundColor(themeManager.currentTheme.textColor)
                 .tag(MainNavigationTab.support)
-                
+
             }
         }
-//        content: {
-//            
-//        }
         detail: {
             
             switch selectedTab {
             case .connect:
-//                ConnectView(
-//                    api: api,
-//                    logout: logout,
-//                    device: device,
-//                    connectViewController: connectViewController,
-//                    providerListSheetViewModel: providerListSheetViewModel
-//                )
                 ConnectView_macOS(
                         api: api,
                         logout: logout,
                         device: device,
                         connectViewController: connectViewController
                 )
-                // .background(themeManager.currentTheme.backgroundColor)
             case .account:
                 AccountNavStackView(
                     api: api,
@@ -113,7 +101,6 @@ struct MainNavigationSplitView: View {
                     provideWhileDisconnected: $provideWhileDisconnected,
                     logout: logout
                 )
-                // .background(themeManager.currentTheme.backgroundColor)
             case .support:
                 FeedbackView(
                     api: api

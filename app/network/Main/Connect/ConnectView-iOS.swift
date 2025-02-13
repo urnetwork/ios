@@ -45,16 +45,16 @@ struct ConnectView_iOS: View {
     var body: some View {
         VStack {
             
-//            HStack {
-//                Spacer()
-//                AccountMenu(
-//                    isGuest: isGuest,
-//                    logout: logout,
-//                    api: api,
-//                    isPresentedCreateAccount: $viewModel.isPresentedCreateAccount
-//                )
-//            }
-//            .frame(height: 32)
+            HStack {
+                Spacer()
+                AccountMenu(
+                    isGuest: isGuest,
+                    logout: logout,
+                    api: api,
+                    isPresentedCreateAccount: $viewModel.isPresentedCreateAccount
+                )
+            }
+            .frame(height: 32)
             
             Spacer()
             

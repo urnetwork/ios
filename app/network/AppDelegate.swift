@@ -109,17 +109,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func setupMenuBar() {
         let mainMenu = NSMenu()
         
-        let appMenuItem = NSMenuItem()
-        mainMenu.addItem(appMenuItem)
-        
-        let appMenu = NSMenu()
-        appMenuItem.submenu = appMenu
-        
-        appMenu.addItem(withTitle: "About", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
-        appMenu.addItem(NSMenuItem.separator())
-        // Use a different key equivalent to avoid conflict with Command+Q
-        appMenu.addItem(withTitle: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "x")
-        
+//        let appMenuItem = NSMenuItem()
+//        mainMenu.addItem(appMenuItem)
+//        
+//        let appMenu = NSMenu()
+//        appMenuItem.submenu = appMenu
+//        
+//        appMenu.addItem(withTitle: "About", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
+//        appMenu.addItem(NSMenuItem.separator())
+//        // Use a different key equivalent to avoid conflict with Command+Q
+//        appMenu.addItem(withTitle: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "x")
+//        
         NSApplication.shared.mainMenu = mainMenu
     }
     
