@@ -425,28 +425,6 @@ private struct LoginInitialFormView: View {
                 handleGoogleSignInButton: handleGoogleSignInButton
             )
             
-            
-//            SignInWithAppleButton(.signIn) { request in
-//                request.requestedScopes = [.email]
-//            } onCompletion: { result in
-//                Task {
-//                    await handleAppleLoginResult(result)
-//                }
-//            }
-//            .frame(height: 48)
-//            .clipShape(Capsule())
-//            .signInWithAppleButtonStyle(.white)
-//            .buttonStyle(.plain)
-//            
-//            Spacer()
-//                .frame(height: 24)
-//            
-//            UrGoogleSignInButton(
-//                action: handleGoogleSignInButton
-//            )
-//            .buttonStyle(.plain)
-            
-            
             Spacer()
                 .frame(height: 24)
             
@@ -479,6 +457,11 @@ private struct LoginInitialFormView: View {
 
 #if os(iOS)
 private struct SSOButtons: View {
+    
+    var handleAppleLoginResult: (Result<ASAuthorization, Error>) async -> Void
+    var handleGoogleSignInButton: () async -> Void
+
+    
     var body: some View {
         
         VStack {
