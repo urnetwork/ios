@@ -135,6 +135,20 @@ struct UrTextField: View {
                             .font(themeManager.currentTheme.bodyFont)
                             .foregroundColor(themeManager.currentTheme.textFaintColor)
                     )
+                    .textFieldStyle(.plain)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(themeManager.currentTheme.tintedBackgroundBase)
+                    .cornerRadius(4)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(
+                                isFocused
+                                ? themeManager.currentTheme.textMutedColor
+                                : themeManager.currentTheme.borderBaseColor,
+                                lineWidth: 1
+                            )
+                    )
                     .tint(themeManager.currentTheme.textColor)
                     .submitLabel(submitLabel)
                     .onSubmit {
@@ -183,6 +197,20 @@ struct UrTextField: View {
                         prompt: Text(placeholder)
                             .font(themeManager.currentTheme.bodyFont)
                             .foregroundColor(themeManager.currentTheme.textFaintColor)
+                    )
+                    .textFieldStyle(.plain)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(themeManager.currentTheme.tintedBackgroundBase)
+                    .cornerRadius(4)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(
+                                isFocused
+                                ? themeManager.currentTheme.textMutedColor
+                                : themeManager.currentTheme.borderBaseColor,
+                                lineWidth: 1
+                            )
                     )
                     .tint(themeManager.currentTheme.textColor)
                     .submitLabel(submitLabel)

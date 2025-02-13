@@ -276,14 +276,24 @@ struct LoginInitialView: View {
     
     private func handleGoogleSignInButton() async {
         
-        #if os(iOS)
-        guard let rootViewController = getRootViewController() else {
-            print("no root view controller found")
-            return
-        }
-        
         do {
+            #if os(iOS)
+            
+            guard let rootViewController = getRootViewController() else {
+                print("no root view controller found")
+                return
+            }
+            
             let signInResult = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController)
+            #elseif os(macOS)
+            
+            guard let presentingWindow = NSApplication.shared.windows.first else {
+              print("There is no presenting window!")
+              return
+            }
+            
+            let signInResult = try await GIDSignIn.sharedInstance.signIn(withPresenting: presentingWindow)
+            #endif
             
             let createArgsResult = viewModel.createGoogleAuthLoginArgs(signInResult)
             switch createArgsResult {
@@ -319,7 +329,7 @@ struct LoginInitialView: View {
              snackbarManager.showSnackbar(message: "There was an error logging in")
          }
         
-        #endif
+        
         
     }
     
@@ -410,25 +420,9 @@ private struct LoginInitialFormView: View {
             Spacer()
                 .frame(height: 24)
             
-            SignInWithAppleButton(.signIn) { request in
-                request.requestedScopes = [.email]
-            } onCompletion: { result in
-                
-                print("SignInWithAppleButton: onCompletion")
-                
-                Task {
-                    await handleAppleLoginResult(result)
-                }
-            }
-            .frame(height: 48)
-            .clipShape(Capsule())
-            .signInWithAppleButtonStyle(.white)
-            
-            Spacer()
-                .frame(height: 24)
-            
-            UrGoogleSignInButton(
-                action: handleGoogleSignInButton
+            SSOButtons(
+                handleAppleLoginResult: handleAppleLoginResult,
+                handleGoogleSignInButton: handleGoogleSignInButton
             )
             
             Spacer()
@@ -450,6 +444,7 @@ private struct LoginInitialFormView: View {
                             .font(themeManager.currentTheme.bodyFont)
                             .foregroundColor(themeManager.currentTheme.textColor)
                     }
+                    .buttonStyle(.plain)
                     
                 }
                 
@@ -459,6 +454,80 @@ private struct LoginInitialFormView: View {
         .frame(maxWidth: 400)
     }
 }
+
+#if os(iOS)
+private struct SSOButtons: View {
+    
+    var handleAppleLoginResult: (Result<ASAuthorization, Error>) async -> Void
+    var handleGoogleSignInButton: () async -> Void
+
+    
+    var body: some View {
+        
+        VStack {
+        
+            SignInWithAppleButton(.signIn) { request in
+                request.requestedScopes = [.email]
+            } onCompletion: { result in
+                Task {
+                    await handleAppleLoginResult(result)
+                }
+            }
+            .frame(height: 48)
+            .clipShape(Capsule())
+            .signInWithAppleButtonStyle(.white)
+            .buttonStyle(.plain)
+            
+            Spacer()
+                .frame(height: 24)
+            
+            UrGoogleSignInButton(
+                action: handleGoogleSignInButton
+            )
+            .buttonStyle(.plain)
+            
+        }
+        
+    }
+}
+#elseif os(macOS)
+private struct SSOButtons: View {
+    
+    var handleAppleLoginResult: (Result<ASAuthorization, Error>) async -> Void
+    var handleGoogleSignInButton: () async -> Void
+
+    
+    var body: some View {
+        
+        HStack {
+        
+            SignInWithAppleButton(.signIn) { request in
+                request.requestedScopes = [.email]
+            } onCompletion: { result in
+                Task {
+                    await handleAppleLoginResult(result)
+                }
+            }
+            // .frame(height: 48)
+            .frame(maxWidth: .infinity)
+            // .clipShape(Capsule())
+            .signInWithAppleButtonStyle(.white)
+            .buttonStyle(.plain)
+            
+//            Spacer()
+//                .frame(height: 24)
+            
+            UrGoogleSignInButton(
+                action: handleGoogleSignInButton
+            )
+            .buttonStyle(.plain)
+            
+        }
+        
+    }
+}
+#endif
+
 
 //#Preview {
 //    ZStack {
