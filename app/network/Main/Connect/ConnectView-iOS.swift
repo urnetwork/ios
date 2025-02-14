@@ -18,6 +18,8 @@ struct ConnectView_iOS: View {
     
     @StateObject private var connectViewModel: ConnectViewModel
     
+    @ObservedObject var referralLinkViewModel: ReferralLinkViewModel
+    
     var logout: () -> Void
     var api: SdkApi
     @ObservedObject var providerListSheetViewModel: ProviderListSheetViewModel
@@ -27,7 +29,8 @@ struct ConnectView_iOS: View {
         logout: @escaping () -> Void,
         device: SdkDeviceRemote?,
         connectViewController: SdkConnectViewController?,
-        providerListSheetViewModel: ProviderListSheetViewModel
+        providerListSheetViewModel: ProviderListSheetViewModel,
+        referralLinkViewModel: ReferralLinkViewModel
     ) {
         _connectViewModel = StateObject.init(wrappedValue: ConnectViewModel(
             api: api,
@@ -37,6 +40,7 @@ struct ConnectView_iOS: View {
         self.logout = logout
         self.api = api
         self.providerListSheetViewModel = providerListSheetViewModel
+        self.referralLinkViewModel = referralLinkViewModel
         
         // adds clear button to search providers text field
         UITextField.appearance().clearButtonMode = .whileEditing
@@ -53,8 +57,8 @@ struct ConnectView_iOS: View {
                 AccountMenu(
                     isGuest: isGuest,
                     logout: logout,
-                    api: api,
-                    isPresentedCreateAccount: $connectViewModel.isPresentedCreateAccount
+                    isPresentedCreateAccount: $connectViewModel.isPresentedCreateAccount,
+                    referralLinkViewModel: referralLinkViewModel
                 )
             }
             .frame(height: 32)

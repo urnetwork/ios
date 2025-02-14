@@ -12,8 +12,9 @@ struct AccountMenu: View {
     
     var isGuest: Bool
     var logout: () -> Void
-    var api: SdkApi
     @Binding var isPresentedCreateAccount: Bool
+    
+    @ObservedObject var referralLinkViewModel: ReferralLinkViewModel
     
     var body: some View {
     
@@ -33,7 +34,7 @@ struct AccountMenu: View {
                 Label("Sign out", systemImage: "rectangle.portrait.and.arrow.right")
             }
             
-            ReferralShareLink(api: api) {
+            ReferralShareLink(referralLinkViewModel: referralLinkViewModel) {
                 Label("Share URnetwork", systemImage: "square.and.arrow.up")
             }
             
@@ -49,11 +50,11 @@ struct AccountMenu: View {
     }
 }
 
-#Preview {
-    AccountMenu(
-        isGuest: false,
-        logout: {},
-        api: SdkApi(),
-        isPresentedCreateAccount: .constant(false)
-    )
-}
+//#Preview {
+//    AccountMenu(
+//        isGuest: false,
+//        logout: {},
+//        isPresentedCreateAccount: .constant(false),
+//        referralLinkViewModel: ReferralLinkViewModel(api: SdkApi())
+//    )
+//}

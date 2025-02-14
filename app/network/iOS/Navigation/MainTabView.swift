@@ -20,6 +20,10 @@ struct MainTabView: View {
     @State private var opacity: Double = 0
     @StateObject var providerListSheetViewModel: ProviderListSheetViewModel = ProviderListSheetViewModel()
     
+    @StateObject var accountPaymentsViewModel: AccountPaymentsViewModel
+    @StateObject var networkUserViewModel: NetworkUserViewModel
+    @StateObject var referralLinkViewModel: ReferralLinkViewModel
+    
     @EnvironmentObject var themeManager: ThemeManager
     
     @State private var selectedTab = 0
@@ -33,8 +37,18 @@ struct MainTabView: View {
         self.api = api
         self.logout = logout
         self.device = device
-        self._provideWhileDisconnected = provideWhileDisconnected
         self.connectViewController = device.openConnectViewController()
+        
+        _accountPaymentsViewModel = StateObject.init(wrappedValue: AccountPaymentsViewModel(
+                api: api
+            )
+        )
+        
+        _provideWhileDisconnected = provideWhileDisconnected
+        
+        _networkUserViewModel = StateObject(wrappedValue: NetworkUserViewModel(api: api))
+        
+        _referralLinkViewModel = StateObject(wrappedValue: ReferralLinkViewModel(api: api))
         
         setupTabBar()
     }
@@ -46,19 +60,13 @@ struct MainTabView: View {
             /**
              * Connect View
              */
-//            ConnectView(
-//                api: api,
-//                logout: logout,
-//                device: device,
-//                connectViewController: connectViewController,
-//                providerListSheetViewModel: providerListSheetViewModel
-//            )
             ConnectView_iOS(
                 api: api,
                 logout: logout,
                 device: device,
                 connectViewController: connectViewController,
-                providerListSheetViewModel: providerListSheetViewModel
+                providerListSheetViewModel: providerListSheetViewModel,
+                referralLinkViewModel: referralLinkViewModel
             )
             .background(themeManager.currentTheme.backgroundColor)
             .tabItem {
@@ -81,7 +89,10 @@ struct MainTabView: View {
                 api: api,
                 device: device,
                 provideWhileDisconnected: $provideWhileDisconnected,
-                logout: logout
+                logout: logout,
+                accountPaymentsViewModel: accountPaymentsViewModel,
+                networkUserViewModel: networkUserViewModel,
+                referralLinkViewModel: referralLinkViewModel
             )
             .background(themeManager.currentTheme.backgroundColor)
             .tabItem {
