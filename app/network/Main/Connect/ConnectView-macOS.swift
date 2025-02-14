@@ -197,7 +197,7 @@ struct ProviderTable: View {
             }
             
         }
-        .frame(maxWidth: 340)
+        .frame(maxWidth: 260)
         
     }
 }

@@ -18,11 +18,19 @@ struct ProviderListItemView: View {
     var isSelected: Bool
     var connect: () -> Void
     
+    #if os(iOS)
+    let padding: CGFloat = 16
+    let circleWidth: CGFloat = 40
+    #elseif os(macOS)
+    let padding: CGFloat = 0
+    let circleWidth: CGFloat = 30
+    #endif
+    
     var body: some View {
         HStack {
             
             Circle()
-                .frame(width: 40, height: 40)
+                .frame(width: circleWidth, height: circleWidth)
                 .foregroundColor(color)
             
             Spacer().frame(width: 16)
@@ -49,7 +57,7 @@ struct ProviderListItemView: View {
             
         }
         .padding(.vertical, 8)
-        .padding(.horizontal, 16)
+        .padding(.horizontal, padding)
         .frame(maxWidth: .infinity)
         .contentShape(Rectangle())
         .onTapGesture {
