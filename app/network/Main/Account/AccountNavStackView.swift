@@ -15,9 +15,12 @@ struct AccountNavStackView: View {
     
     @StateObject var accountPreferencesViewModel: AccountPreferencesViewModel
     @StateObject var accountWalletsViewModel: AccountWalletsViewModel
-    @StateObject var accountPaymentsViewModel: AccountPaymentsViewModel
+    // @StateObject var accountPaymentsViewModel: AccountPaymentsViewModel
     @StateObject var payoutWalletViewModel: PayoutWalletViewModel
-    @StateObject private var networkUserViewModel: NetworkUserViewModel
+    
+    @ObservedObject var networkUserViewModel: NetworkUserViewModel
+    @ObservedObject var accountPaymentsViewModel: AccountPaymentsViewModel
+    @ObservedObject var referralLinkViewModel: ReferralLinkViewModel
     
     var api: SdkApi
     var device: SdkDeviceRemote
@@ -28,7 +31,10 @@ struct AccountNavStackView: View {
         api: SdkApi,
         device: SdkDeviceRemote,
         provideWhileDisconnected: Binding<Bool>,
-        logout: @escaping () -> Void
+        logout: @escaping () -> Void,
+        accountPaymentsViewModel: AccountPaymentsViewModel,
+        networkUserViewModel: NetworkUserViewModel,
+        referralLinkViewModel: ReferralLinkViewModel
     ) {
         self.api = api
         _accountPreferencesViewModel = StateObject.init(wrappedValue: AccountPreferencesViewModel(
@@ -39,21 +45,25 @@ struct AccountNavStackView: View {
                 api: api
             )
         )
-        _accountPaymentsViewModel = StateObject.init(wrappedValue: AccountPaymentsViewModel(
-                api: api
-            )
-        )
+//        _accountPaymentsViewModel = StateObject.init(wrappedValue: AccountPaymentsViewModel(
+//                api: api
+//            )
+//        )
         
         _payoutWalletViewModel = StateObject.init(wrappedValue: PayoutWalletViewModel(
                 api: api
             )
         )
         
-        _networkUserViewModel = StateObject(wrappedValue: NetworkUserViewModel(api: api))
+        // _networkUserViewModel = StateObject(wrappedValue: NetworkUserViewModel(api: api))
+        
+        self.accountPaymentsViewModel = accountPaymentsViewModel
+        self.networkUserViewModel = networkUserViewModel
         
         self.device = device
         self._provideWhileDisconnected = provideWhileDisconnected
         self.logout = logout
+        self.referralLinkViewModel = referralLinkViewModel
     }
     
     var body: some View {
@@ -64,7 +74,8 @@ struct AccountNavStackView: View {
                 navigate: viewModel.navigate,
                 logout: logout,
                 totalPayments: accountPaymentsViewModel.totalPayoutsUsdc,
-                api: api
+                api: api,
+                referralLinkViewModel: referralLinkViewModel
             )
             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
             .navigationDestination(for: AccountNavigationPath.self) { path in
@@ -166,12 +177,14 @@ struct AccountNavStackView: View {
     
 }
 
-#Preview {
-    AccountNavStackView(
-        api: SdkApi(),
-        device: SdkDeviceRemote(),
-        provideWhileDisconnected: .constant(true),
-        logout: {}
-    )
-    .environmentObject(ThemeManager.shared)
-}
+//#Preview {
+//    AccountNavStackView(
+//        api: SdkApi(),
+//        device: SdkDeviceRemote(),
+//        provideWhileDisconnected: .constant(true),
+//        logout: {},
+//        accountPaymentsViewModel: AccountPaymentsViewModel(api: nil),
+//        networkUserViewModel: NetworkUserViewModel(api: SdkApi())
+//    )
+//    .environmentObject(ThemeManager.shared)
+//}

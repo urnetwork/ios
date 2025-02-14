@@ -23,16 +23,20 @@ struct AccountRootView: View {
     @StateObject private var viewModel: ViewModel = ViewModel()
     @StateObject private var subscriptionManager = SubscriptionManager()
     
+    @ObservedObject var referralLinkViewModel: ReferralLinkViewModel
+    
     init(
         navigate: @escaping (AccountNavigationPath) -> Void,
         logout: @escaping () -> Void,
         totalPayments: Double,
-        api: SdkApi
+        api: SdkApi,
+        referralLinkViewModel: ReferralLinkViewModel
     ) {
         self.navigate = navigate
         self.logout = logout
         self.api = api
         self.totalPayments = totalPayments
+        self.referralLinkViewModel = referralLinkViewModel
     }
     
     
@@ -53,8 +57,8 @@ struct AccountRootView: View {
                 AccountMenu(
                     isGuest: isGuest,
                     logout: logout,
-                    api: api,
-                    isPresentedCreateAccount: $viewModel.isPresentedCreateAccount
+                    isPresentedCreateAccount: $viewModel.isPresentedCreateAccount,
+                    referralLinkViewModel: referralLinkViewModel
                 )
                 #endif
                 
@@ -169,7 +173,7 @@ struct AccountRootView: View {
                     }
                 )
                 
-                ReferralShareLink(api: api) {
+                ReferralShareLink(referralLinkViewModel: referralLinkViewModel) {
                     
                     VStack(spacing: 0) {
                         HStack {

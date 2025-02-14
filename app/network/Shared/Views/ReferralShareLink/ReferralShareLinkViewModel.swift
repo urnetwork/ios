@@ -9,71 +9,66 @@ import Foundation
 import URnetworkSdk
 
 
+@MainActor
+class ReferralLinkViewModel: ObservableObject {
     
-extension ReferralShareLink {
- 
-    @MainActor
-    class ViewModel: ObservableObject {
+    @Published private(set) var referralCode: String?
+    @Published private(set) var isLoading: Bool = false
+    
+    let domain = "ReferSheetViewModel"
+    
+    init(api: SdkApi) {
+        self.fetchReferralLink(api)
+    }
+    
+    func fetchReferralLink(_ api: SdkApi) {
         
-        @Published private(set) var referralCode: String?
-        @Published private(set) var isLoading: Bool = false
-        
-        let domain = "ReferSheetViewModel"
-        
-        init(api: SdkApi) {
-            self.fetchReferralLink(api)
+        if isLoading {
+            return
         }
         
-        func fetchReferralLink(_ api: SdkApi) {
+        self.isLoading = true
+        
+        Task {
             
-            if isLoading {
-                return
-            }
-            
-            self.isLoading = true
-            
-            Task {
+            do {
                 
-                do {
+                let result: SdkGetNetworkReferralCodeResult = try await withCheckedThrowingContinuation { [weak self] continuation in
                     
-                    let result: SdkGetNetworkReferralCodeResult = try await withCheckedThrowingContinuation { [weak self] continuation in
+                    guard let self = self else { return }
+                    
+                    let callback = GetNetworkReferralCodeCallback { result, err in
                         
-                        guard let self = self else { return }
-                        
-                        let callback = GetNetworkReferralCodeCallback { result, err in
-                            
-                            if let err = err {
-                                continuation.resume(throwing: err)
-                                return
-                            }
-                            
-                            if let result = result {
-                                
-                                if let resultErr = result.error {
-                                    continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: resultErr.message]))
-                                    return
-                                }
-                                
-                                continuation.resume(returning: result)
-                                return
-                                
-                            } else {
-                                continuation.resume(throwing: NSError(domain: self.domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "result is nil"]))
-                            }
+                        if let err = err {
+                            continuation.resume(throwing: err)
+                            return
                         }
                         
-                        api.getNetworkReferralCode(callback)
+                        if let result = result {
+                            
+                            if let resultErr = result.error {
+                                continuation.resume(throwing: NSError(domain: self.domain, code: -1, userInfo: [NSLocalizedDescriptionKey: resultErr.message]))
+                                return
+                            }
+                            
+                            continuation.resume(returning: result)
+                            return
+                            
+                        } else {
+                            continuation.resume(throwing: NSError(domain: self.domain, code: 0, userInfo: [NSLocalizedDescriptionKey: "result is nil"]))
+                        }
                     }
                     
-                    self.referralCode = result.referralCode
-                    self.isLoading = false
-                    
-                } catch(let error) {
-                    self.isLoading = false
-                    print("error fetching referral link: \(error.localizedDescription)")
+                    api.getNetworkReferralCode(callback)
                 }
+                
+                self.referralCode = result.referralCode
+                self.isLoading = false
+                
+            } catch(let error) {
+                self.isLoading = false
+                print("error fetching referral link: \(error.localizedDescription)")
             }
-            
         }
         
     }

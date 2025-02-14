@@ -30,6 +30,10 @@ struct MainNavigationSplitView: View {
     // can probably pass this down from MainView
     @StateObject var providerListSheetViewModel: ProviderListSheetViewModel = ProviderListSheetViewModel()
     
+    @StateObject var accountPaymentsViewModel: AccountPaymentsViewModel
+    @StateObject var networkUserViewModel: NetworkUserViewModel
+    @StateObject var referralLinkViewModel: ReferralLinkViewModel
+    
     init(
         api: SdkApi,
         device: SdkDeviceRemote,
@@ -42,6 +46,14 @@ struct MainNavigationSplitView: View {
         self._provideWhileDisconnected = provideWhileDisconnected
         self.connectViewController = device.openConnectViewController()
 
+        _accountPaymentsViewModel = StateObject.init(wrappedValue: AccountPaymentsViewModel(
+                api: api
+            )
+        )
+        
+        _networkUserViewModel = StateObject(wrappedValue: NetworkUserViewModel(api: api))
+        
+        _referralLinkViewModel = StateObject(wrappedValue: ReferralLinkViewModel(api: api))
     }
     
     var body: some View {
@@ -99,7 +111,10 @@ struct MainNavigationSplitView: View {
                     api: api,
                     device: device,
                     provideWhileDisconnected: $provideWhileDisconnected,
-                    logout: logout
+                    logout: logout,
+                    accountPaymentsViewModel: accountPaymentsViewModel,
+                    networkUserViewModel: networkUserViewModel,
+                    referralLinkViewModel: referralLinkViewModel
                 )
             case .support:
                 FeedbackView(
