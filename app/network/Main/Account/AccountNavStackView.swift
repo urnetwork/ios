@@ -15,7 +15,6 @@ struct AccountNavStackView: View {
     
     @StateObject var accountPreferencesViewModel: AccountPreferencesViewModel
     @StateObject var accountWalletsViewModel: AccountWalletsViewModel
-    // @StateObject var accountPaymentsViewModel: AccountPaymentsViewModel
     @StateObject var payoutWalletViewModel: PayoutWalletViewModel
     
     @ObservedObject var networkUserViewModel: NetworkUserViewModel
@@ -45,17 +44,11 @@ struct AccountNavStackView: View {
                 api: api
             )
         )
-//        _accountPaymentsViewModel = StateObject.init(wrappedValue: AccountPaymentsViewModel(
-//                api: api
-//            )
-//        )
         
         _payoutWalletViewModel = StateObject.init(wrappedValue: PayoutWalletViewModel(
                 api: api
             )
         )
-        
-        // _networkUserViewModel = StateObject(wrappedValue: NetworkUserViewModel(api: api))
         
         self.accountPaymentsViewModel = accountPaymentsViewModel
         self.networkUserViewModel = networkUserViewModel
