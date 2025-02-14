@@ -310,6 +310,12 @@ struct ProviderListGroup: View {
     var connectBestAvailable: () -> Void = {}
     var isPromotedLocations: Bool = false
     
+    #if os(iOS)
+    let padding: CGFloat = 16
+    #elseif os(macOS)
+    let padding: CGFloat = 0
+    #endif
+    
     var body: some View {
         if !providers.isEmpty {
             Section(
@@ -321,7 +327,7 @@ struct ProviderListGroup: View {
                     
                     Spacer()
                 }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, padding)
                     .padding(.vertical, 8)
             ) {
                 
