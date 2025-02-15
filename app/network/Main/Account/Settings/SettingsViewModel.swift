@@ -8,6 +8,9 @@
 import Foundation
 import URnetworkSdk
 import UserNotifications
+#if os(macOS)
+import ServiceManagement
+#endif
 
 extension SettingsView {
     
@@ -18,7 +21,13 @@ extension SettingsView {
         
         init(api: SdkApi) {
             self.api = api
+            
+            #if os(macOS)
+            self.launchAtStartupEnabled = SMAppService.mainApp.status == .enabled
+            #endif
+            
             checkNotificationSettings()
+            
         }
         
         @Published var canReceiveNotifications: Bool = false {
@@ -34,6 +43,15 @@ extension SettingsView {
          */
         @Published var isPresentedDeleteAccountConfirmation: Bool = false
         @Published var isDeletingNetwork: Bool = false
+        
+        #if os(macOS)
+        @Published var launchAtStartupEnabled: Bool {
+            didSet {
+                // update here
+                setLaunchAtStartup(launchAtStartupEnabled)
+            }
+        }
+        #endif
         
         let domain = "SettingsViewModel"
         
@@ -127,6 +145,29 @@ extension SettingsView {
             }
             
         }
+        
+        #if os(macOS)
+        private func setLaunchAtStartup(_ enabled: Bool) {
+            print("setLaunchAtStartup hit with enabled value: \(enabled)")
+            
+            if (enabled == (SMAppService.mainApp.status == .enabled)) {
+                print("caught, enabled value equals SMAppService.mainApp.status")
+                return
+            }
+            
+            do {
+                if enabled {
+                    print("enabling launch at system start")
+                    try SMAppService.mainApp.register()
+                } else {
+                    print("disabling launch at system start")
+                    try SMAppService.mainApp.unregister()
+                }
+            } catch {
+                print("Failed to set launch at startup: \(error)")
+            }
+        }
+        #endif
         
     }
     

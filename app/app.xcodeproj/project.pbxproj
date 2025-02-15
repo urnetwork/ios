@@ -41,6 +41,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		1783A00B2D60111600024F80 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		D1B95A912CEBE76400542E0E /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -55,6 +64,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1783A00D2D60111600024F80 /* URnetworkLaunchHelper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = URnetworkLaunchHelper; sourceTree = BUILT_PRODUCTS_DIR; };
 		178F47EA2CEDA80A00CD9C3D /* URnetwork-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "URnetwork-Info.plist"; sourceTree = "<group>"; };
 		D1880DF52D36F732001DE81F /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D1B95A4F2CEBDD6900542E0E /* URnetwork.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = URnetwork.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,6 +85,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		1783A00E2D60111700024F80 /* URnetworkLaunchHelper */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = URnetworkLaunchHelper;
+			sourceTree = "<group>";
+		};
 		D1B95A512CEBDD6900542E0E /* network */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = network;
@@ -101,6 +116,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1783A00A2D60111600024F80 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D1B95A4C2CEBDD6900542E0E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -146,6 +168,7 @@
 				D1B95A632CEBDD6A00542E0E /* networkTests */,
 				D1B95A6D2CEBDD6A00542E0E /* networkUITests */,
 				D1B95A852CEBE76400542E0E /* extension */,
+				1783A00E2D60111700024F80 /* URnetworkLaunchHelper */,
 				D1B95A822CEBE76400542E0E /* Frameworks */,
 				D1B95A502CEBDD6900542E0E /* Products */,
 			);
@@ -158,6 +181,7 @@
 				D1B95A602CEBDD6A00542E0E /* networkTests.xctest */,
 				D1B95A6A2CEBDD6A00542E0E /* networkUITests.xctest */,
 				D1B95A812CEBE76400542E0E /* URnetworkVPN.appex */,
+				1783A00D2D60111600024F80 /* URnetworkLaunchHelper */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -173,6 +197,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1783A00C2D60111600024F80 /* URnetworkLaunchHelper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1783A0112D60111700024F80 /* Build configuration list for PBXNativeTarget "URnetworkLaunchHelper" */;
+			buildPhases = (
+				1783A0092D60111600024F80 /* Sources */,
+				1783A00A2D60111600024F80 /* Frameworks */,
+				1783A00B2D60111600024F80 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				1783A00E2D60111700024F80 /* URnetworkLaunchHelper */,
+			);
+			name = URnetworkLaunchHelper;
+			packageProductDependencies = (
+			);
+			productName = URnetworkLaunchHelper;
+			productReference = 1783A00D2D60111600024F80 /* URnetworkLaunchHelper */;
+			productType = "com.apple.product-type.tool";
+		};
 		D1B95A4E2CEBDD6900542E0E /* URnetwork */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D1B95A742CEBDD6B00542E0E /* Build configuration list for PBXNativeTarget "URnetwork" */;
@@ -281,6 +327,9 @@
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
+					1783A00C2D60111600024F80 = {
+						CreatedOnToolsVersion = 16.2;
+					};
 					D1B95A4E2CEBDD6900542E0E = {
 						CreatedOnToolsVersion = 16.1;
 					};
@@ -341,6 +390,7 @@
 				D1B95A5F2CEBDD6A00542E0E /* networkTests */,
 				D1B95A692CEBDD6A00542E0E /* networkUITests */,
 				D1B95A802CEBE76400542E0E /* URnetworkVPN */,
+				1783A00C2D60111600024F80 /* URnetworkLaunchHelper */,
 			);
 		};
 /* End PBXProject section */
@@ -415,6 +465,13 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1783A0092D60111600024F80 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D1B95A4B2CEBDD6900542E0E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -464,6 +521,34 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		1783A0122D60111700024F80 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 6BGU69Q742;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=macosx*]" = network.ur.launch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		1783A0132D60111700024F80 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 6BGU69Q742;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=macosx*]" = network.ur.launch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		D1B95A722CEBDD6B00542E0E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -848,6 +933,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1783A0112D60111700024F80 /* Build configuration list for PBXNativeTarget "URnetworkLaunchHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1783A0122D60111700024F80 /* Debug */,
+				1783A0132D60111700024F80 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		D1B95A4A2CEBDD6900542E0E /* Build configuration list for PBXProject "app" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
