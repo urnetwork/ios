@@ -7,6 +7,9 @@
 
 import SwiftUI
 import URnetworkSdk
+#if os(macOS)
+import ServiceManagement
+#endif
 
 struct SettingsView: View {
     
@@ -35,6 +38,12 @@ struct SettingsView: View {
         guard let clientId = clientId?.idStr else { return "" }
         return "https://ur.io/c?\(clientId)"
     }
+    
+    #if os(macOS)
+    private func isLaunchAtStartupEnabled() -> Bool {
+        return SMAppService.mainApp.status == .enabled
+    }
+    #endif
     
     var body: some View {
         
@@ -149,6 +158,25 @@ struct SettingsView: View {
                     .cornerRadius(8)
 
                     Spacer().frame(height: 32)
+                    
+                    #if os(macOS)
+                    
+                    HStack {
+                        UrLabel(text: "System")
+                        
+                        Spacer()
+                    }
+                    
+                    UrSwitchToggle(isOn: $viewModel.launchAtStartupEnabled) {
+                        Text("Launch URnetwork on system startup")
+                            .font(themeManager.currentTheme.bodyFont)
+                            .foregroundColor(themeManager.currentTheme.textColor)
+                    }
+                    
+                    Spacer().frame(height: 32)
+                    
+                    #endif
+                    
                     
                     /**
                      * Connections
