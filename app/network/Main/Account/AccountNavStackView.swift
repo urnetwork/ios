@@ -66,9 +66,9 @@ struct AccountNavStackView: View {
             AccountRootView(
                 navigate: viewModel.navigate,
                 logout: logout,
-                totalPayments: accountPaymentsViewModel.totalPayoutsUsdc,
                 api: api,
-                referralLinkViewModel: referralLinkViewModel
+                referralLinkViewModel: referralLinkViewModel,
+                accountPaymentsViewModel: accountPaymentsViewModel
             )
             .background(themeManager.currentTheme.backgroundColor.ignoresSafeArea())
             .navigationDestination(for: AccountNavigationPath.self) { path in
