@@ -39,12 +39,6 @@ struct SettingsView: View {
         return "https://ur.io/c?\(clientId)"
     }
     
-    #if os(macOS)
-    private func isLaunchAtStartupEnabled() -> Bool {
-        return SMAppService.mainApp.status == .enabled
-    }
-    #endif
-    
     var body: some View {
         
         GeometryReader { geometry in
