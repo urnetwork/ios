@@ -18,25 +18,26 @@ struct AccountRootView: View {
     var navigate: (AccountNavigationPath) -> Void
     var logout: () -> Void
     var api: SdkApi
-    var totalPayments: Double
     
     @StateObject private var viewModel: ViewModel = ViewModel()
     @StateObject private var subscriptionManager = SubscriptionManager()
     
     @ObservedObject var referralLinkViewModel: ReferralLinkViewModel
+    @ObservedObject var accountPaymentsViewModel: AccountPaymentsViewModel
     
     init(
         navigate: @escaping (AccountNavigationPath) -> Void,
         logout: @escaping () -> Void,
-        totalPayments: Double,
         api: SdkApi,
-        referralLinkViewModel: ReferralLinkViewModel
+        referralLinkViewModel: ReferralLinkViewModel,
+        accountPaymentsViewModel: AccountPaymentsViewModel
     ) {
         self.navigate = navigate
         self.logout = logout
         self.api = api
-        self.totalPayments = totalPayments
+        // self.totalPayments = totalPayments
         self.referralLinkViewModel = referralLinkViewModel
+        self.accountPaymentsViewModel = accountPaymentsViewModel
     }
     
     
@@ -108,7 +109,9 @@ struct AccountRootView: View {
                 
                 HStack(alignment: .firstTextBaseline) {
                     
-                    Text(totalPayments > 0 ? String(format: "%.4f", totalPayments) : "0")
+                    let totalPayouts = accountPaymentsViewModel.totalPayoutsUsdc
+                    
+                    Text(totalPayouts > 0 ? String(format: "%.4f", totalPayouts) : "0")
                         .font(themeManager.currentTheme.titleCondensedFont)
                         .foregroundColor(themeManager.currentTheme.textColor)
                     
@@ -280,6 +283,20 @@ struct AccountRootView: View {
                     }
                 }
             )
+        }
+        #endif
+        #if os(macOS)
+        .toolbar {
+            ToolbarItem(placement: .automatic) {
+                Button(action: {
+                    Task {
+                        await accountPaymentsViewModel.fetchPayments()
+                    }
+                }) {
+                    Image(systemName: "arrow.clockwise")
+                }
+                .disabled(accountPaymentsViewModel.isLoadingPayments)
+            }
         }
         #endif
     }
