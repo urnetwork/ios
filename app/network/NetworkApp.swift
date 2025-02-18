@@ -89,7 +89,7 @@ struct NetworkApp: App {
         #if os(macOS)
         MenuBarExtra(
             "URnetwork System Menu",
-            image: "MenuBarIcon",
+            image: "MenuBarProvideNoConnect",
             isInserted: $showMenuBarExtra
         ) {
             Button("Show", action: {
